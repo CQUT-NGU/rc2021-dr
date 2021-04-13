@@ -1,0 +1,15 @@
+.gitattributes      eol=lf
+.gitignore          eol=lf
+
+license     eol=lf
+Makefile    eol=lf
+
+*.txt       eol=lf
+*.sh        eol=lf
+*.json      eol=lf
+*.cfg       eol=lf
+
+*.py        eol=lf
+*.s         eol=lf
+*.c         eol=lf
+*.h         eol=lf
