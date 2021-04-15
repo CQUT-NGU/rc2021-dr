@@ -3,7 +3,7 @@
  * @file         bsp_spi.c/h
  * @brief        spi of boards
  * @author       ngu
- * @date         20210101
+ * @date         20210427
  * @version      1
  * @copyright    Copyright (c) 2021
  * @code         utf-8                                                  @endcode
@@ -19,6 +19,7 @@
 #define __BSP_SPI_H__
 
 /* Includes ------------------------------------------------------------------*/
+#include "bsp_dma.h"
 #include "main.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -55,7 +56,7 @@ extern void spi_dma_init(SPI_HandleTypeDef *hspi);
  * @brief        Start SPI DMA
  * @param[in]    buf_tx: the buffer of transfer
  * @param[out]   buf_rx: the buffer of reciever
- * @param[in]    len: the length of buffer
+ * @param[in]    len:    the length of buffer
 */
 extern void spi_dma_start(SPI_HandleTypeDef *hspi,
                           uint32_t           buf_tx,
@@ -74,6 +75,7 @@ __END_DECLS
                   (uint32_t)(rx),   \
                   (uint16_t)(len))
 
+/* __BSP_SPI_H__ -------------------------------------------------------------*/
 #endif /* __BSP_SPI_H__ */
 
 /************************ (C) COPYRIGHT ngu ********************END OF FILE****/

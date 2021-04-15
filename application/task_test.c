@@ -36,7 +36,6 @@ extern TIM_HandleTypeDef htim8;
 
 void servo_start(void)
 {
-    HAL_TIM_Base_Start(&htim8);
     HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_1);
     HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_2);
     HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_3);
@@ -47,61 +46,75 @@ void servo_stop(void)
     HAL_TIM_PWM_Stop(&htim8, TIM_CHANNEL_1);
     HAL_TIM_PWM_Stop(&htim8, TIM_CHANNEL_2);
     HAL_TIM_PWM_Stop(&htim8, TIM_CHANNEL_3);
-    HAL_TIM_Base_Stop(&htim8);
 }
 
 void task_test(void *pvParameters)
 {
-    ctrl_rc_t *rc = ctrl_rc_point();
-    ctrl_pc_t *pc = ctrl_pc_point();
+    const ctrl_rc_t *rc = ctrl_rc_point();
+    ctrl_pc_t *      pc = ctrl_pc_point();
 
-    servo_start();
+    //servo_start();
+
+    __HAL_TIM_SET_PRESCALER(&htim8, 168);
+    __HAL_TIM_SetAutoreload(&htim8, 999);
+    __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, 500);
+
+    uint8_t flag_stop = 1;
 
     for (;;)
     {
-        if (rc->rc.s[1U] == RC_SW_UP)
+        switch (pc->c)
         {
-            /* 1000 ~ 2000 */
-            uint16_t servo_up   = 1000 + 100 * rc->rc.ch[3] / 66;
-            uint16_t servo_down = 1400 - 100 * rc->rc.ch[1] / 66;
-            /* 1400 ~ 400 */
-
-            if (rc->rc.ch[1U] < -10 || rc->rc.ch[3U] < -10)
+        case 't':
+        {
+            int32_t tmp = (int32_t)pc->x;
+            __HAL_TIM_SET_PRESCALER(&htim8, tmp);
+            tmp = (int32_t)pc->y;
+            __HAL_TIM_SetAutoreload(&htim8, tmp);
+            __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, (tmp / 2));
+            if (flag_stop)
             {
-                /* Clip ball steering gear reset */
-                __HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_2, 1000U);
-                /* Pitch steering gear reset */
-                __HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_3, 1400U);
+                flag_stop = 0;
+                HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_2);
             }
-            else
+            break;
+        }
+
+        default:
+        {
+            if (rc->rc.s[1] == RC_SW_DOWN || rc->rc.s[0] == RC_SW_DOWN)
             {
-                /* Clip ball steering gear */
-                __HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_2, servo_up > 1000U ? servo_up : 1000U);
-                /* Pitch steering gear */
-                __HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_3, servo_down > 400U ? servo_down : 400U);
+                if (rc->rc.ch[3] > 10)
+                {
+                    GPIOC->BSRR = GPIO_PIN_6;
+                    __HAL_TIM_PRESCALER(&htim8, 660 - rc->rc.ch[3]);
+                    if (flag_stop)
+                    {
+                        flag_stop = 0;
+                        HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_2);
+                    }
+                }
+                else if (rc->rc.ch[3] < -10)
+                {
+                    GPIOC->BSRR = (uint32_t)GPIO_PIN_6 << 16;
+                    __HAL_TIM_PRESCALER(&htim8, 660 + rc->rc.ch[3]);
+                    if (flag_stop)
+                    {
+                        flag_stop = 0;
+                        HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_2);
+                    }
+                }
+                else
+                {
+                    if (!flag_stop)
+                    {
+                        flag_stop = 1;
+                        HAL_TIM_PWM_Stop(&htim8, TIM_CHANNEL_2);
+                    }
+                }
             }
+            break;
         }
-
-        if (rc->rc.ch[4U] < -10) /* clockwise rotation */
-        {
-            GPIOE->BSRR = (uint32_t)GPIO_PIN_9; /* kick the ball */
-        }
-        else if (rc->rc.ch[4U] > 10) /* contrarotate */
-        {
-            GPIOE->BSRR = (uint32_t)GPIO_PIN_11; /* throw the ball */
-        }
-        else /* relay reset */
-        {
-            GPIOE->BSRR = (uint32_t)GPIO_PIN_9 << 16;
-            GPIOE->BSRR = (uint32_t)GPIO_PIN_11 << 16;
-        }
-
-        if (pc->c == 'a') /* ctrl by pc */
-        {
-            /* servo up */
-            __HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_2, pc->x);
-            /* servo down */
-            __HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_3, pc->y);
         }
 
         osDelay(2U);

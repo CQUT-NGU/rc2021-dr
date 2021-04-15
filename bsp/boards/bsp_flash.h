@@ -3,7 +3,7 @@
  * @file         bsp_flash.c/h
  * @brief        flash of boards
  * @author       ngu
- * @date         20210101
+ * @date         2021027
  * @version      1
  * @copyright    Copyright (c) 2020-2021
  * @code         utf-8                                                  @endcode

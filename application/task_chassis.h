@@ -3,7 +3,7 @@
  * @file         task_chassis.c/h
  * @brief        task chassis
  * @author       ngu
- * @date         20210101
+ * @date         20210427
  * @version      1
  * @copyright    Copyright (c) 2021
  * @code         utf-8                                                  @endcode
@@ -17,6 +17,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "cc.h"
 #include "ctrl.h"
+#include "task_ins.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
@@ -66,7 +67,7 @@ typedef struct
     ctrl_pc_t *      data_pc;
 
     /* the point to the euler angle of gyro sensor */
-    //const float *angle_ins;
+    const float *angle_ins;
 
     chassis_mode_e  mode;     /* state machine */
     chassis_motor_t motor[4]; /* chassis motor data */
@@ -86,11 +87,11 @@ typedef struct
     /* chassis rotation speed, positive means counterclockwise,unit rad/s */
     float wz;
 
-    /* chassis set vertical speed,positive means forward,unit m/s */
+    /* chassis set vertical speed, positive means forward,unit m/s */
     float vx_set;
-    /* chassis set horizontal speed,positive means left,unit m/s */
+    /* chassis set horizontal speed, positive means left,unit m/s */
     float vy_set;
-    /* chassis set rotation speed,positive means counterclockwise,unit rad/s */
+    /* chassis set rotation speed, positive means counterclockwise,unit rad/s */
     float wz_set;
 
     /* the relative angle between chassis and gimbal */
@@ -105,13 +106,12 @@ typedef struct
     float vy_max; /* max letf speed, unit m/s */
     float vy_min; /* max right speed, unit m/s */
 
-    /* the yaw angle calculated by gyro sensor and gimbal motor */
-    float yaw;
-    /* the pitch angle calculated by gyro sensor and gimbal motor */
-    float pitch;
     /* the roll angle calculated by gyro sensor and gimbal motor */
     float roll;
-
+    /* the pitch angle calculated by gyro sensor and gimbal motor */
+    float pitch;
+    /* the yaw angle calculated by gyro sensor and gimbal motor */
+    float yaw;
 } chassis_move_t;
 
 /* Exported functions prototypes ---------------------------------------------*/

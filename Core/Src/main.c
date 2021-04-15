@@ -22,6 +22,7 @@
 #include "cmsis_os.h"
 #include "can.h"
 #include "dma.h"
+#include "i2c.h"
 #include "spi.h"
 #include "tim.h"
 #include "usart.h"
@@ -31,7 +32,6 @@
 /* USER CODE BEGIN Includes */
 #include "bsp.h"
 #include "ctrl.h"
-
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -96,17 +96,22 @@ int main(void)
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_USART3_UART_Init();
-  MX_USART1_UART_Init();
   MX_CAN1_Init();
   MX_TIM4_Init();
   MX_TIM5_Init();
   MX_SPI1_Init();
+  MX_USART6_UART_Init();
+  MX_I2C3_Init();
+  MX_TIM10_Init();
+  MX_TIM8_Init();
   /* USER CODE BEGIN 2 */
     delay_init();
     usart_init();
     ctrl_rc_init();
     ctrl_pc_init();
     can_filter_init();
+    spi_dma_init(&hspi1);
+    //i2c_dma_tx_init(&hi2c3);
     os_printf("OK\r\n");
   /* USER CODE END 2 */
 

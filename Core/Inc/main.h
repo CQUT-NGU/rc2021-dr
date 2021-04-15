@@ -29,6 +29,7 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
+#include "stm32f4xx_hal.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -62,14 +63,29 @@ void Error_Handler(void);
 #define DBUS_GPIO_Port GPIOC
 #define NULL_Pin GPIO_PIN_10
 #define NULL_GPIO_Port GPIOC
+#define IST8310_RST_Pin GPIO_PIN_6
+#define IST8310_RST_GPIO_Port GPIOG
 #define LED_R_Pin GPIO_PIN_12
 #define LED_R_GPIO_Port GPIOH
+#define IST8310_DRDY_Pin GPIO_PIN_3
+#define IST8310_DRDY_GPIO_Port GPIOG
+#define IST8310_DRDY_EXTI_IRQn EXTI3_IRQn
 #define LED_G_Pin GPIO_PIN_11
 #define LED_G_GPIO_Port GPIOH
 #define LED_B_Pin GPIO_PIN_10
 #define LED_B_GPIO_Port GPIOH
 #define buzzer_Pin GPIO_PIN_14
 #define buzzer_GPIO_Port GPIOD
+#define CS1_Accel_Pin GPIO_PIN_4
+#define CS1_Accel_GPIO_Port GPIOA
+#define INT1_ACCEL_Pin GPIO_PIN_4
+#define INT1_ACCEL_GPIO_Port GPIOC
+#define INT1_ACCEL_EXTI_IRQn EXTI4_IRQn
+#define INT1_GRYO_Pin GPIO_PIN_5
+#define INT1_GRYO_GPIO_Port GPIOC
+#define INT1_GRYO_EXTI_IRQn EXTI9_5_IRQn
+#define CS1_Gyro_Pin GPIO_PIN_0
+#define CS1_Gyro_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

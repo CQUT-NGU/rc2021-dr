@@ -3,15 +3,10 @@
  * @file         bsp_can.c/h
  * @brief        can of boards
  * @author       ngu
- * @date         20210101
+ * @date         20210427
  * @version      1
  * @copyright    Copyright (c) 2021
  * @code         utf-8                                                  @endcode
- * @details
- *               CAN1_RX ------> PD0
- *               CAN1_TX ------> PD1
- *               CAN2_RX ------> PB5
- *               CAN2_TX ------> PB6
  * *****************************************************************************
 */
 

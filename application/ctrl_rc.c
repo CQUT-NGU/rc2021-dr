@@ -3,7 +3,7 @@
  * @file         ctrl_rc.c/h
  * @brief        control by remote
  * @author       ngu
- * @date         20210101
+ * @date         20210427
  * @version      1
  * @copyright    Copyright (c) 2021
  * @code         utf-8                                                  @endcode
@@ -17,14 +17,12 @@
 #include "bsp_usart.h"
 #include "main.h"
 
-extern UART_HandleTypeDef huart3;
-
 /* Private define ------------------------------------------------------------*/
-
 #undef hrc
-#define hrc huart3
-#undef RC_IRQHandler
-#define RC_IRQHandler USART3_IRQHandler
+#define hrc huart_rc
+
+/* Private includes ----------------------------------------------------------*/
+extern UART_HandleTypeDef hrc;
 
 /* Private macro -------------------------------------------------------------*/
 /* Private typedef -----------------------------------------------------------*/

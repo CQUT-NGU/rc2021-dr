@@ -3,12 +3,12 @@
  * @file         bsp.h
  * @brief        Header file of bsp
  * @author       ngu
- * @date         20210101
+ * @date         20210427
  * @version      1
  * @copyright    Copyright (c) 2021
  * @code         utf-8                                                  @endcode
  * *****************************************************************************
- */
+*/
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __BSP_H__
@@ -19,8 +19,11 @@
 #include "bsp_can.h"
 #include "bsp_delay.h"
 #include "bsp_flash.h"
+#include "bsp_i2c.h"
+#include "bsp_imu_pwm.h"
 #include "bsp_led.h"
 #include "bsp_spi.h"
+#include "bsp_uart.h"
 #include "bsp_usart.h"
 
 /* Using the operating system */

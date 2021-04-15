@@ -3,7 +3,7 @@
  * @file         ctrl_pc.c/h
  * @brief        control by usart
  * @author       ngu
- * @date         20210101
+ * @date         20210427
  * @version      1
  * @copyright    Copyright (c) 2021
  * @code         utf-8                                                  @endcode
@@ -19,15 +19,13 @@
 
 #include <stdlib.h>
 
-extern UART_HandleTypeDef huart1;
-
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
-
 #undef hpc
-#define hpc huart1
-#undef PC_IRQHandler
-#define PC_IRQHandler USART1_IRQHandler
+#define hpc huart_os
+
+/* Private includes ----------------------------------------------------------*/
+extern UART_HandleTypeDef hpc;
 
 /* Private macro -------------------------------------------------------------*/
 
@@ -57,7 +55,8 @@ extern UART_HandleTypeDef huart1;
         buff[j++] = buf[i++];                \
     }                                        \
     buff[j] = 0;                             \
-    x       = (float)atof((char *)buff);
+                                             \
+    x = atoff((char *)buff);
 
 /* Private variables ---------------------------------------------------------*/
 
@@ -155,9 +154,10 @@ static void ctrl_pc(volatile const uint8_t *buf,
                     uint16_t                len,
                     ctrl_pc_t *             pc)
 {
-    uint8_t  buff[32] = {0};
-    uint16_t i        = 2U;
-    uint8_t  j        = 0U;
+    uint8_t buff[32] = {0};
+
+    uint16_t i = 2U;
+    uint8_t  j = 0U;
 
     do
     {

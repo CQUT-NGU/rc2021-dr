@@ -8,11 +8,11 @@
  * @copyright    Copyright (c) 2021
  * @code         utf-8                                                  @endcode
  * @details
- *               USART6_TX ------> PG14
- *               USART6_RX ------> PG9
  *               USART1_RX ------> PB7
  *               USART1_TX ------> PA9
- *               USART3_RX ------> PC11
+ *               USART3_RX ------> PC11 ------> DBUS
+ *               USART6_TX ------> PG14
+ *               USART6_RX ------> PG9
  * *****************************************************************************
 */
 
@@ -21,17 +21,25 @@
 #define __BSP_USART_H__
 
 /* Includes ------------------------------------------------------------------*/
+#include "bsp_dma.h"
 #include "main.h"
 
 /* Private includes ----------------------------------------------------------*/
 #include <stdint.h>
 
-extern UART_HandleTypeDef huart1;
-extern UART_HandleTypeDef huart3;
-
 /* Exported constants --------------------------------------------------------*/
 
-#define huart_os huart1
+#define huart_rc huart3 /* dbus, connect to the remote control */
+#undef RC_IRQHandler
+#define RC_IRQHandler USART3_IRQHandler
+
+#define huart_os huart6 /* usart, connect to the upper computer */
+#undef PC_IRQHandler
+#define PC_IRQHandler USART6_IRQHandler
+
+/* Private includes ----------------------------------------------------------*/
+extern UART_HandleTypeDef huart_rc;
+extern UART_HandleTypeDef huart_os;
 
 /* Exported macro ------------------------------------------------------------*/
 #undef __BEGIN_DECLS
@@ -59,7 +67,7 @@ __BEGIN_DECLS
 extern void usart_disable(UART_HandleTypeDef *huart);
 
 /**
- * @brief        ENable USART
+ * @brief        Enable USART
  * @param[in]    huart: UART handle Structure pointer
 */
 extern void usart_enable(UART_HandleTypeDef *huart);
@@ -140,8 +148,10 @@ __END_DECLS
 
 static inline void usart_init(void)
 {
-    usart_dma_init(&huart1);
-    usart_dma_rx_init(&huart3);
+    /* Enable the usart that connect to the upper computer */
+    usart_dma_init(&huart_os);
+    /* Enable the usart that connect to the remote control */
+    usart_dma_rx_init(&huart_rc);
 }
 
 /* __BSP_USART_H__ -----------------------------------------------------------*/

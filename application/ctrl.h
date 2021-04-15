@@ -3,7 +3,7 @@
  * @file         ctrl.c/h
  * @brief        control
  * @author       ngu
- * @date         20210101
+ * @date         20210427
  * @version      1
  * @copyright    Copyright (c) 2021
  * @code         utf-8                                                  @endcode
@@ -47,4 +47,4 @@ __END_DECLS
 /* __CTRL_H__ ----------------------------------------------------------------*/
 #endif /* __CTRL_H__ */
 
-/************************ (C) COPYRIGHT tqfx *******************END OF FILE****/
+/************************ (C) COPYRIGHT ngu ********************END OF FILE****/

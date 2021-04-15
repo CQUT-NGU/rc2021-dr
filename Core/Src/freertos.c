@@ -73,6 +73,30 @@ const osThreadAttr_t chassis_attributes = {
   .cb_size = sizeof(chssisControlBlock),
   .priority = (osPriority_t) osPriorityHigh,
 };
+/* Definitions for ins */
+osThreadId_t insHandle;
+uint32_t insBuffer[ 512 ];
+osStaticThreadDef_t insControlBlock;
+const osThreadAttr_t ins_attributes = {
+  .name = "ins",
+  .stack_mem = &insBuffer[0],
+  .stack_size = sizeof(insBuffer),
+  .cb_mem = &insControlBlock,
+  .cb_size = sizeof(insControlBlock),
+  .priority = (osPriority_t) osPriorityHigh,
+};
+/* Definitions for test */
+osThreadId_t testHandle;
+uint32_t testBuffer[ 256 ];
+osStaticThreadDef_t testControlBlock;
+const osThreadAttr_t test_attributes = {
+  .name = "test",
+  .stack_mem = &testBuffer[0],
+  .stack_size = sizeof(testBuffer),
+  .cb_mem = &testControlBlock,
+  .cb_size = sizeof(testControlBlock),
+  .priority = (osPriority_t) osPriorityLow,
+};
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -81,6 +105,8 @@ const osThreadAttr_t chassis_attributes = {
 
 void task_led(void *argument);
 extern void task_chassis(void *argument);
+extern void task_ins(void *argument);
+extern void task_test(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -116,6 +142,12 @@ void MX_FREERTOS_Init(void) {
 
   /* creation of chassis */
   chassisHandle = osThreadNew(task_chassis, NULL, &chassis_attributes);
+
+  /* creation of ins */
+  insHandle = osThreadNew(task_ins, NULL, &ins_attributes);
+
+  /* creation of test */
+  testHandle = osThreadNew(task_test, NULL, &test_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */

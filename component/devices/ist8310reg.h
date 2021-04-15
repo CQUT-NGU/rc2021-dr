@@ -1,17 +1,16 @@
-/*!< @encoding utf-8 */
 /**
  * *****************************************************************************
- * @file         ist8310reg.c/h
+ * @file         ist8310reg.h
  * @brief        ist8310 of divices
- * @author       tqfx
- * @date         20210101
- * @version      0.01
- * @copyright    Copyright (c) 2020-2021
+ * @author       ngu
+ * @date         20210427
+ * @version      1
+ * @copyright    Copyright (c) 2021
+ * @code         utf-8                                                  @endcode
  * *****************************************************************************
- */
+*/
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-
 #ifndef __IST8310REG_H__
 #define __IST8310REG_H__
 
@@ -43,10 +42,24 @@
 #define IST8310_ODR_MODE 0x01
 
 /* Exported macro ------------------------------------------------------------*/
+#undef __BEGIN_DECLS
+#undef __END_DECLS
+
+#if defined(__cplusplus)
+#define __BEGIN_DECLS \
+    extern "C"        \
+    {
+#define __END_DECLS }
+#else
+#define __BEGIN_DECLS
+#define __END_DECLS
+#endif /* __cplusplus */
+
 /* Exported types ------------------------------------------------------------*/
 /* Exported functions prototypes ---------------------------------------------*/
 /* Private defines -----------------------------------------------------------*/
 
+/* __IST8310REG_H__ ----------------------------------------------------------*/
 #endif /* __IST8310REG_H__ */
 
-/************************ (C) COPYRIGHT tqfx *******************END OF FILE****/
+/************************ (C) COPYRIGHT ngu ********************END OF FILE****/

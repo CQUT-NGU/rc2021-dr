@@ -3,7 +3,7 @@
  * @file         task_chassis.c/h
  * @brief        task chassis
  * @author       ngu
- * @date         20210101
+ * @date         20210427
  * @version      1
  * @copyright    Copyright (c) 2021
  * @code         utf-8                                                  @endcode
@@ -23,32 +23,34 @@
 #include "cmsis_os.h"
 #endif /* USED_OS */
 
+extern float ins_angle[3]; /* euler angle, unit rad */
+
 /* Private define ------------------------------------------------------------*/
 
 /* in the beginning of task ,wait a time */
 #define CHASSIS_TASK_INIT_TIME 357
 
 /* the channel num of controlling horizontal speed */
-#define CHASSIS_Y_CHANNEL 2
+#define CHASSIS_X_CHANNEL 0
 /* the channel num of controlling vertial speed */
-#define CHASSIS_X_CHANNEL 3
+#define CHASSIS_Y_CHANNEL 1
 
 /* in some mode, can use remote control to control rotation speed */
-#define CHASSIS_WZ_CHANNEL 0
+#define CHASSIS_WZ_CHANNEL 2
 
 /* the channel of choosing chassis mode */
 #define CHASSIS_MODE_CHANNEL 0
 /* rocker value (max 660) change to horizontal speed (m/s) */
-#define CHASSIS_VY_RC_SEN 0.005f
+#define CHASSIS_VX_RC_SEN 0.005f
 /* rocker value (max 660) change to vertial speed (m/s) */
-#define CHASSIS_VX_RC_SEN 0.006f
+#define CHASSIS_VY_RC_SEN 0.005f
 /* in following yaw angle mode, rocker value add to angle */
 #define CHASSIS_ANGLE_Z_RC_SEN 0.000002f
 /* in not following yaw angle mode, rocker value change to rotation speed */
 #define CHASSIS_WZ_RC_SEN 0.01f
 
-#define CHASSIS_ACCEL_X_NUM 0.1666666667f
-#define CHASSIS_ACCEL_Y_NUM 0.3333333333f
+#define CHASSIS_ACCEL_X_NUM 0.3333333333f
+#define CHASSIS_ACCEL_Y_NUM 0.1666666667f
 
 /* rocker value deadline */
 #define CHASSIS_RC_DEADLINE 10
@@ -82,9 +84,9 @@
 /* single chassis motor max speed */
 #define MAX_WHEEL_SPEED 4.0f
 /* chassis forward or back max speed */
-#define NORMAL_MAX_CHASSIS_SPEED_X 2.0f
+#define NORMAL_MAX_CHASSIS_SPEED_Y 2.0f
 /* chassis left or right max speed */
-#define NORMAL_MAX_CHASSIS_SPEED_Y 1.5f
+#define NORMAL_MAX_CHASSIS_SPEED_X 2.0f
 
 #define CHASSIS_WZ_SET_SCALE 0.1f
 
@@ -173,8 +175,6 @@ static void chassis_init(chassis_move_t *move)
     const static float lpf_x = {CHASSIS_ACCEL_X_NUM};
     const static float lpf_y = {CHASSIS_ACCEL_Y_NUM};
 
-    uint8_t i; /* conut */
-
     /* in beginning， chassis mode is stop */
     move->mode = CHASSIS_VECTOR_STOP;
 
@@ -185,11 +185,12 @@ static void chassis_init(chassis_move_t *move)
     move->data_pc = ctrl_pc_point();
 
     /* get gyro sensor euler angle point */
+    move->angle_ins = ins_angle;
 
     /* get gimbal motor data point */
 
     /* get chassis motor data point, initialize motor speed PID */
-    for (i = 0U; i != 4U; ++i)
+    for (uint8_t i = 0U; i != 4U; ++i)
     {
         move->motor[i].measure = chassis_point(i);
         cc_pid_position(&move->pid_speed[i],
@@ -226,9 +227,7 @@ static void chassis_init(chassis_move_t *move)
 */
 static void chassis_update(chassis_move_t *move)
 {
-    uint8_t i;
-
-    for (i = 0U; i != 4; ++i)
+    for (uint8_t i = 0U; i != 4; ++i)
     {
         /* update motor speed, accel is differential of speed PID */
         move->motor[i].v = move->motor[i].measure->v_rpm *
@@ -265,22 +264,15 @@ static void chassis_update(chassis_move_t *move)
      * calculate chassis euler angle,
      * if chassis add a new gyro sensor,please change this code
     */
-#if 0
-    move->yaw =
-        const_rad(*(move->angle_ins + INS_YAW_ADDRESS_OFFSET));
-    // - move->yaw_motor->relative_angle);
+    move->roll = move->angle_ins[INS_ROLL];
 
-    move->pitch =
-        const_rad(*(move->angle_ins + INS_PITCH_ADDRESS_OFFSET));
-    //- move->pitch_motor->relative_angle);
+    move->pitch = const_rad(move->angle_ins[INS_PITCH]);
 
-    move->roll =
-        *(move->angle_ins + INS_ROLL_ADDRESS_OFFSET);
-#endif
+    move->yaw = const_rad(move->angle_ins[INS_YAW]);
 }
 
 /**
- * @brief        accroding to the channel value of remote control, 
+ * @brief        accroding to the channel value of remote control,
  *               calculate chassis horizontal and vertical speed set-point
  * @param[out]   vx_set: horizontal speed set-point
  * @param[out]   vy_set: vertical speed set-point
@@ -298,12 +290,12 @@ static void chassis_rc(float *         vx_set,
 
     /**
      * deadline, because some remote control need be calibrated,
-     * the value of rocker is not zero in middle place 
+     * the value of rocker is not zero in middle place
     */
-    vx_channel = LIMIT_RC(move->data_rc->rc.ch[CHASSIS_Y_CHANNEL],
+    vx_channel = LIMIT_RC(move->data_rc->rc.ch[CHASSIS_X_CHANNEL],
                           CHASSIS_RC_DEADLINE);
 
-    vy_channel = LIMIT_RC(move->data_rc->rc.ch[CHASSIS_X_CHANNEL],
+    vy_channel = LIMIT_RC(move->data_rc->rc.ch[CHASSIS_Y_CHANNEL],
                           CHASSIS_RC_DEADLINE);
 
     vx_set_channel = vx_channel * CHASSIS_VX_RC_SEN;
@@ -337,6 +329,7 @@ static void chassis_rc(float *         vx_set,
     cc_lpf(&move->vy_slow, vy_set_channel);
 
     /* stop command, need not slow change, set zero derectly */
+#if 0
     if (vx_set_channel < CHASSIS_RC_DEADLINE * CHASSIS_VX_RC_SEN &&
         vx_set_channel > -CHASSIS_RC_DEADLINE * CHASSIS_VX_RC_SEN)
     {
@@ -348,6 +341,7 @@ static void chassis_rc(float *         vx_set,
     {
         move->vy_slow.out = 0.0f;
     }
+#endif
 
     *vx_set = move->vx_slow.out;
     *vy_set = move->vy_slow.out;
@@ -376,6 +370,11 @@ static void chassis_mode_set(chassis_move_t *move)
     else if (move->data_rc->rc.s[CHASSIS_MODE_CHANNEL] == RC_SW_DOWN)
     {
         move->mode = CHASSIS_VECTOR_STOP;
+
+        move->data_pc->c = 0;
+        move->data_pc->x = 0;
+        move->data_pc->y = 0;
+        move->data_pc->z = 0;
     }
 }
 
@@ -401,17 +400,13 @@ static void chassis_mode_ctrl(float *         vx_set,
         *vy_set = 0;
         *wz_set = 0;
 
-        move->data_pc->c = 0;
-        move->data_pc->x = 0;
-        move->data_pc->y = 0;
-        move->data_pc->z = 0;
-
         break;
     }
 
     case CHASSIS_VECTOR_NO_FOLLOW_YAW:
     {
         chassis_rc(vx_set, vy_set, move);
+
         *wz_set = -move->data_rc->rc.ch[CHASSIS_WZ_CHANNEL] * CHASSIS_WZ_RC_SEN;
 
         switch (move->data_pc->c)
@@ -421,6 +416,7 @@ static void chassis_mode_ctrl(float *         vx_set,
             *vx_set = move->data_pc->x;
             *vy_set = move->data_pc->y;
             *wz_set = move->data_pc->z;
+
             break;
         }
         default:
@@ -514,18 +510,17 @@ static void chassis_loop_set(chassis_move_t *move)
     }
     else if (move->mode == CHASSIS_VECTOR_STOP)
     {
-        /* in raw mode, set-point is sent to CAN bus */
+        move->vx_set = vx_set;
+        move->vy_set = vy_set;
+        move->wz_set = angle_set;
 
-        move->vx_set      = vx_set;
-        move->vy_set      = vy_set;
-        move->wz_set      = angle_set;
         move->vx_slow.out = 0.0f;
         move->vy_slow.out = 0.0f;
     }
 }
 
 /**
- * @brief        four mecanum wheels speed is calculated by three param. 
+ * @brief        four mecanum wheels speed is calculated by three param.
  * @param[in]    vx_set: horizontal speed
  * @param[in]    vy_set: vertial speed
  * @param[in]    wz_set: rotation speed
@@ -558,8 +553,6 @@ static void chassis_loop(chassis_move_t *move)
 
     float wheel_speed[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 
-    uint8_t i;
-
     /* mecanum wheel speed calculation */
     chassis_mecanum(move->vx_set,
                     move->vy_set,
@@ -567,7 +560,7 @@ static void chassis_loop(chassis_move_t *move)
                     wheel_speed);
 
     /* calculate the max speed in four wheels, limit the max speed */
-    for (i = 0U; i != 4U; ++i)
+    for (uint8_t i = 0U; i != 4U; ++i)
     {
         move->motor[i].v_set = wheel_speed[i];
 
@@ -583,14 +576,14 @@ static void chassis_loop(chassis_move_t *move)
     {
         vector = MAX_WHEEL_SPEED / vector_max;
 
-        for (i = 0U; i != 4U; ++i)
+        for (uint8_t i = 0U; i != 4U; ++i)
         {
             move->motor[i].v_set *= vector;
         }
     }
 
     /* calculate pid */
-    for (i = 0U; i != 4U; ++i)
+    for (uint8_t i = 0U; i != 4U; ++i)
     {
         move->motor[i].i_current = (int16_t)cc_pid(&move->pid_speed[i],
                                                    move->motor[i].v,

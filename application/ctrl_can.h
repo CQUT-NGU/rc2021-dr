@@ -3,7 +3,7 @@
  * @file         ctrl_can.c/h
  * @brief        can control
  * @author       ngu
- * @date         20210101
+ * @date         20210427
  * @version      1
  * @copyright    Copyright (c) 2021
  * @code         utf-8                                                  @endcode
@@ -88,6 +88,12 @@ extern void chassis_ctrl(int16_t motor1,
                          int16_t motor2,
                          int16_t motor3,
                          int16_t motor4);
+
+/**
+ * @brief        send CAN packet of ID 0x700,
+ *               it will set chassis motor 3508 to quick ID setting
+*/
+extern void chassis_reset(void);
 
 __END_DECLS
 

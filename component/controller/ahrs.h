@@ -43,63 +43,75 @@ __BEGIN_DECLS
 
 /**
  * @brief        Initialize quaternion
- * @param[in]    hx: x axis direction of Earth's magnetic field
- * @param[in]    hy: y axis direction of Earth's magnetic field
+ * @param[in]    q[4]: quaternionq[0]+q[1]* i +q[2]* j +q[3]* k
+ * @param[in]    hx:   x axis direction of Earth's magnetic field
+ * @param[in]    hy:   y axis direction of Earth's magnetic field
 */
-extern void ahrs_quaternion_init(int16_t hx,
-                                 int16_t hy);
+extern void ahrs_quat_init(float   q[4],
+                           int16_t hx,
+                           int16_t hy);
 
 /**
  * @brief        Quaternion to Euler Angle
- * @param[out]   rol: Rotate around the x axis, roll
- * @param[out]   pit: Rotate around the y axis, pitch
- * @param[out]   yaw: Rotate around the z axis, yaw
+ * @param[in]    q[4]: quaternionq[0]+q[1]* i +q[2]* j +q[3]* k
+ * @param[out]   rol:  rotate around the x axis, roll
+ * @param[out]   pit:  rotate around the y axis, pitch
+ * @param[out]   yaw:  rotate around the z axis, yaw
 */
-extern void ahrs_euler_angle(float *rol,
+extern void ahrs_euler_angle(float  q[4],
+                             float *rol,
                              float *pit,
                              float *yaw);
 
 /**
  * @brief        Mehony AHRS attitude calculation with magnetometer
- * @param[in]    g:  x,y,z axis of gyroscope
- * @param[in]    a:  x,y,z axis of accelerometer
- * @param[in]    m:  x,y,z axis of magnetometer
- * @param[in]    ht: half of sampling period
+ * @param[in]    q[4]: quaternionq[0]+q[1]* i +q[2]* j +q[3]* k
+ * @param[in]    g:    x,y,z axis of gyroscope
+ * @param[in]    a:    x,y,z axis of accelerometer
+ * @param[in]    m:    x,y,z axis of magnetometer
+ * @param[in]    ht:   half of sampling period
 */
-extern void ahrs_mahony(volatile float g[3],
+extern void ahrs_mahony(volatile float q[4],
+                        volatile float g[3],
                         volatile float a[3],
                         volatile float m[3],
                         volatile float ht);
 
 /**
  * @brief        Mehony AHRS attitude calculation without magnetometer
- * @param[in]    g:  x,y,z axis of gyroscope
- * @param[in]    a:  x,y,z axis of accelerometer
- * @param[in]    ht: half of sampling period
+ * @param[in]    q[4]: quaternionq[0]+q[1]* i +q[2]* j +q[3]* k
+ * @param[in]    g:    x,y,z axis of gyroscope
+ * @param[in]    a:    x,y,z axis of accelerometer
+ * @param[in]    ht:   half of sampling period
 */
-extern void ahrs_mahony_imu(volatile float g[3],
+extern void ahrs_mahony_imu(volatile float q[4],
+                            volatile float g[3],
                             volatile float a[3],
                             volatile float ht);
 
 /**
  * @brief        Madgwick AHRS attitude calculation with magnetometer
- * @param[in]    g: x,y,z axis of gyroscope
- * @param[in]    a: x,y,z axis of accelerometer
- * @param[in]    m: x,y,z axis of magnetometer
- * @param[in]    t: sampling period
+ * @param[in]    q[4]: quaternionq[0]+q[1]* i +q[2]* j +q[3]* k
+ * @param[in]    g:    x,y,z axis of gyroscope
+ * @param[in]    a:    x,y,z axis of accelerometer
+ * @param[in]    m:    x,y,z axis of magnetometer
+ * @param[in]    t:    sampling period
 */
-extern void ahrs_madgwick(volatile float g[3],
+extern void ahrs_madgwick(volatile float q[4],
+                          volatile float g[3],
                           volatile float a[3],
                           volatile float m[3],
                           volatile float t);
 
 /**
  * @brief        Madgwick AHRS attitude calculation without magnetometer
- * @param[in]    g: x,y,z axis of gyroscope
- * @param[in]    a: x,y,z axis of accelerometer
- * @param[in]    t: sampling period
+ * @param[in]    q[4]: quaternionq[0]+q[1]* i +q[2]* j +q[3]* k
+ * @param[in]    g:    x,y,z axis of gyroscope
+ * @param[in]    a:    x,y,z axis of accelerometer
+ * @param[in]    t:    sampling period
 */
-extern void ahrs_madgwick_imu(volatile float g[3],
+extern void ahrs_madgwick_imu(volatile float q[4],
+                              volatile float g[3],
                               volatile float a[3],
                               volatile float t);
 

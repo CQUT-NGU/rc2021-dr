@@ -3,7 +3,7 @@
  * @file         ctrl_can.c/h
  * @brief        can control
  * @author       ngu
- * @date         20210101
+ * @date         20210427
  * @version      1
  * @copyright    Copyright (c) 2021
  * @code         utf-8                                                  @endcode
@@ -108,6 +108,38 @@ void chassis_ctrl(int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4
     chassis_tx_can_data[5] = (motor3 & 0xFFU);
     chassis_tx_can_data[6] = (motor4 >> 8);
     chassis_tx_can_data[7] = (motor4 & 0xFFU);
+
+    /**
+     * Add a message to the first free Tx mailbox and
+     * activate the corresponding transmission request 
+    */
+    (void)HAL_CAN_AddTxMessage(&CHASSIS_CAN,
+                               &chassis_tx_message,
+                               chassis_tx_can_data,
+                               &send_mail_box);
+}
+
+void chassis_reset(void)
+{
+    /*!< the TxMailbox used to store the Tx message */
+    uint32_t send_mail_box;
+    /*!< Specifies the type of identifier for the message */
+    chassis_tx_message.IDE = CAN_ID_STD;
+    /*!< Specifies the type of frame for the message */
+    chassis_tx_message.RTR = CAN_RTR_DATA;
+    /*!< Specifies the standard identifier */
+    chassis_tx_message.StdId = 0x700;
+    /*!< Specifies the length of the frame that will be transmitted */
+    chassis_tx_message.DLC = 0x08U;
+
+    chassis_tx_can_data[0] = 0;
+    chassis_tx_can_data[1] = 0;
+    chassis_tx_can_data[2] = 0;
+    chassis_tx_can_data[3] = 0;
+    chassis_tx_can_data[4] = 0;
+    chassis_tx_can_data[5] = 0;
+    chassis_tx_can_data[6] = 0;
+    chassis_tx_can_data[7] = 0;
 
     /**
      * Add a message to the first free Tx mailbox and

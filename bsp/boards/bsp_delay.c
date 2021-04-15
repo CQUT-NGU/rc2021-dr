@@ -2,8 +2,8 @@
  * *****************************************************************************
  * @file         bsp_delay.c/h
  * @brief        delay of boards
- * @author       ngu
- * @date         20210101
+ * @author       tqfx
+ * @date         20210427
  * @version      1
  * @copyright    Copyright (c) 2021
  * @code         utf-8                                                  @endcode
@@ -85,4 +85,4 @@ void delay_ms(uint16_t nms)
     } while (tcnt < ticks);
 }
 
-/************************ (C) COPYRIGHT ngu ********************END OF FILE****/
+/************************ (C) COPYRIGHT tqfx *******************END OF FILE****/

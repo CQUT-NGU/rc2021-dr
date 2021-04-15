@@ -51,7 +51,7 @@ __BEGIN_DECLS
  * @brief        fast inverse square-root, to calculate 1/sqrt(x)
  *               http://en.wikipedia.org/wiki/Fast_inverse_square_root
  * @param[in]    x: the number need to be calculated
- * @return       1/sqrt(x)
+ * @return       float 1/sqrt(x)
 */
 extern float inv_sqrt(float x);
 

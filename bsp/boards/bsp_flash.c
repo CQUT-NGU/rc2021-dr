@@ -3,7 +3,7 @@
  * @file         bsp_flash.c/h
  * @brief        flash of boards
  * @author       ngu
- * @date         20210101
+ * @date         20210427
  * @version      1
  * @copyright    Copyright (c) 2020-2021
  * @code         utf-8                                                  @endcode
@@ -334,7 +334,8 @@ void flash_erase(uint32_t addr,
                  uint16_t len)
 {
     FLASH_EraseInitTypeDef flash_erase = {0};
-    uint32_t               error;
+
+    uint32_t error;
 
     /*!< Initial FLASH sector to erase when Mass erase is disabled */
     flash_erase.Sector = flash_sector(addr);
@@ -362,8 +363,10 @@ void flash_read(uint32_t  addr,
 
 int8_t flash_write(uint32_t addr, uint32_t *buf, uint32_t len)
 {
-    uint32_t n        = 0;
-    int8_t   ret      = 0;
+    int8_t ret = 0;
+
+    uint32_t n = 0;
+
     uint32_t addr_end = flash_addr_next(addr);
 
     /*!< Unlock the FLASH control register access */
@@ -400,8 +403,9 @@ int8_t flash_writen(uint32_t  addr,
                     uint32_t *buf,
                     uint32_t  len)
 {
-    uint32_t n   = 0U;
-    int8_t   ret = 0;
+    int8_t ret = 0;
+
+    uint32_t n = 0U;
 
     HAL_FLASH_Unlock();
 

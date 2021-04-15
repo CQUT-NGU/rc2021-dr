@@ -3,7 +3,7 @@
  * @file         task_led.c/h
  * @brief        led task
  * @author       ngu
- * @date         20210101
+ * @date         20210407
  * @version      1
  * @copyright    Copyright (c) 2021
  * @code         utf-8                                                  @endcode
@@ -35,16 +35,17 @@
 void task_led(void *pvParameters)
 {
     buzzer_start();
-    buzzer_set(0, 0x4FFFU);
+    buzzer_set(0, 0x2FFFU);
     osDelay(1000U);
     buzzer_set(0, 0);
     buzzer_stop();
 
     led_pwm_start();
 
+    uint16_t count;
+
     for (;;)
     {
-        static uint16_t count;
         for (count = 0U; count != 1000U; ++count)
         {
             led_pwm_set(LED_R, count);

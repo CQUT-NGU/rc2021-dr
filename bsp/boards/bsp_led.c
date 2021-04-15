@@ -3,7 +3,7 @@
  * @file         bsp_led.c/h
  * @brief        led of boards
  * @author       ngu
- * @date         20210101
+ * @date         20210427
  * @version      1
  * @copyright    Copyright (c) 2021
  * @code         utf-8                                                  @endcode
@@ -20,8 +20,6 @@
 /* Private includes ----------------------------------------------------------*/
 #include "main.h"
 
-extern TIM_HandleTypeDef htim5;
-
 /* Private define ------------------------------------------------------------*/
 
 #undef htim
@@ -33,6 +31,9 @@ extern TIM_HandleTypeDef htim5;
 #define LED_CHANNEL_G TIM_CHANNEL_2
 #undef LED_CHANNEL_B
 #define LED_CHANNEL_B TIM_CHANNEL_1
+
+/* Private includes ----------------------------------------------------------*/
+extern TIM_HandleTypeDef htim;
 
 /* Private macro -------------------------------------------------------------*/
 
@@ -51,17 +52,17 @@ extern TIM_HandleTypeDef htim5;
     } while (0)
 
 #undef LED_R
-#define LED_R(GPIOx, PIN, STATE)       \
-    do                                 \
-    {                                  \
-        if ((GPIOx->IDR & PIN) == PIN) \
-        {                              \
-            STATE = LED_OFF;           \
-        }                              \
-        else                           \
-        {                              \
-            STATE = LED_ON;            \
-        }                              \
+#define LED_R(GPIOx, PIN, STATE) \
+    do                           \
+    {                            \
+        if (GPIOx->IDR & PIN)    \
+        {                        \
+            STATE = LED_OFF;     \
+        }                        \
+        else                     \
+        {                        \
+            STATE = LED_ON;      \
+        }                        \
     } while (0)
 
 #undef LED_T
