@@ -51,6 +51,7 @@ extern float ins_angle[3]; /* euler angle, unit rad */
 
 #define CHASSIS_ACCEL_X_NUM 0.1f
 #define CHASSIS_ACCEL_Y_NUM 0.1f
+#define CHASSIS_ACCEL_Z_NUM 0.1f
 
 /* rocker value deadline */
 #define CHASSIS_RC_DEADLINE 10
@@ -59,7 +60,7 @@ extern float ins_angle[3]; /* euler angle, unit rad */
 #define MOTOR_SPEED_TO_CHASSIS_SPEED_VY 0.25f
 #define MOTOR_SPEED_TO_CHASSIS_SPEED_WZ 0.25f
 
-#define MOTOR_DISTANCE_TO_CENTER 0.2f
+#define MOTOR_DISTANCE_TO_CENTER 0.5f
 
 /* chassis task control time 2ms */
 #define CHASSIS_CONTROL_TIME_MS 2
@@ -174,6 +175,7 @@ static void chassis_init(chassis_move_t *move)
 
     const static float lpf_x = {CHASSIS_ACCEL_X_NUM};
     const static float lpf_y = {CHASSIS_ACCEL_Y_NUM};
+    const static float lpf_z = {CHASSIS_ACCEL_Z_NUM};
 
     /* in beginning， chassis mode is stop */
     move->mode = CHASSIS_VECTOR_STOP;
@@ -208,6 +210,7 @@ static void chassis_init(chassis_move_t *move)
     /* first order low-pass filter  replace ramp function */
     cc_lpf_init(&move->vx_slow, lpf_x, CHASSIS_CONTROL_TIME);
     cc_lpf_init(&move->vy_slow, lpf_y, CHASSIS_CONTROL_TIME);
+    cc_lpf_init(&move->wz_slow, lpf_z, CHASSIS_CONTROL_TIME);
 
     /* max and min speed */
     move->vx_max = NORMAL_MAX_CHASSIS_SPEED_X;
@@ -407,7 +410,17 @@ static void chassis_mode_ctrl(float *         vx_set,
     {
         chassis_rc(vx_set, vy_set, move);
 
-        *wz_set = -move->data_rc->rc.ch[CHASSIS_WZ_CHANNEL] * CHASSIS_WZ_RC_SEN;
+        int16_t wz_channel = LIMIT_RC(move->data_rc->rc.ch[CHASSIS_WZ_CHANNEL],
+                                      CHASSIS_RC_DEADLINE);
+
+        cc_lpf(&move->wz_slow, wz_channel * CHASSIS_WZ_RC_SEN);
+#if 0
+        if (wz_channel < CHASSIS_RC_DEADLINE && wz_channel > -CHASSIS_RC_DEADLINE)
+        {
+            move->wz_slow.out = 0;
+        }
+#endif
+        *wz_set = -move->wz_slow.out;
 
         switch (move->data_pc->c)
         {
@@ -430,7 +443,9 @@ static void chassis_mode_ctrl(float *         vx_set,
     {
         chassis_rc(vx_set, vy_set, move);
 
-        *wz_set = -3.14159265f * move->data_rc->rc.ch[CHASSIS_WZ_CHANNEL] / 660;
+        cc_lpf(&move->wz_slow, move->data_rc->rc.ch[CHASSIS_WZ_CHANNEL]);
+
+        *wz_set = -3.14159265f * move->wz_slow.out / 660;
 
         switch (move->data_pc->c)
         {

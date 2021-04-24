@@ -79,6 +79,8 @@ typedef struct
     cc_lpf_t vx_slow;
     /* use first order filter to slow set-point */
     cc_lpf_t vy_slow;
+    /* use first order filter to slow set-point */
+    cc_lpf_t wz_slow;
 
     /* chassis vertical speed, positive means forward,unit m/s */
     float vx;
