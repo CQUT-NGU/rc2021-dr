@@ -49,8 +49,8 @@ extern float ins_angle[3]; /* euler angle, unit rad */
 /* in not following yaw angle mode, rocker value change to rotation speed */
 #define CHASSIS_WZ_RC_SEN 0.01f
 
-#define CHASSIS_ACCEL_X_NUM 0.3333333333f
-#define CHASSIS_ACCEL_Y_NUM 0.1666666667f
+#define CHASSIS_ACCEL_X_NUM 0.1f
+#define CHASSIS_ACCEL_Y_NUM 0.1f
 
 /* rocker value deadline */
 #define CHASSIS_RC_DEADLINE 10
