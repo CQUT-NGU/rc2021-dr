@@ -443,9 +443,9 @@ static void chassis_mode_ctrl(float *         vx_set,
     {
         chassis_rc(vx_set, vy_set, move);
 
-        cc_lpf(&move->wz_slow, move->data_rc->rc.ch[CHASSIS_WZ_CHANNEL]);
-
-        *wz_set = -3.14159265f * move->wz_slow.out / 660;
+        *wz_set = const_rad(move->yaw_set -
+                            move->data_rc->rc.ch[CHASSIS_WZ_CHANNEL] *
+                                CHASSIS_ANGLE_Z_RC_SEN);
 
         switch (move->data_pc->c)
         {
