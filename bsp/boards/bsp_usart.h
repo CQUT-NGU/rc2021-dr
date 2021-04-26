@@ -129,13 +129,24 @@ extern void usart_dma_tx(UART_HandleTypeDef *huart,
                          uint16_t            len);
 
 /**
- * @brief        Print string to USART
+ * @brief        print string to USART
  * @param[in]    format: printf format
 */
 extern void os_printf(const char *format, ...);
 
 /**
- * @brief        Print float to USART
+ * @brief        push float data to buffer by little-endian mode
+ * @param[in]    f: float data
+*/
+extern void os_pushf(float f);
+
+/**
+ * @brief        print float and tail data to USART by little-endian mode
+*/
+extern void os_tail(void);
+
+/**
+ * @brief        print float to USART
  * @param[in]    x: float number
  * @param[in]    l: float number
 */
