@@ -20,17 +20,21 @@
 #include <stdio.h>
 
 /* Private define ------------------------------------------------------------*/
+
+#define BUFSIZ8  256
+#define BUFSIZ32 16
+
 /* Private macro -------------------------------------------------------------*/
 /* Private typedef -----------------------------------------------------------*/
 /* Private types -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 
-static uint8_t buf_8[128U];
-
-static float   buf_32[16];
+static va_list ap;
+static uint8_t cnt_8 = 0U;
+static uint8_t buf_8[BUFSIZ8];
 static uint8_t cnt_32 = 0U;
-
-static uint8_t tail[4] = {0x00U, 0x00U, 0x80U, 0x7FU};
+static float   buf_32[BUFSIZ32];
+static uint8_t tail[sizeof(float)] = {0x00U, 0x00U, 0x80U, 0x7FU};
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private user code ---------------------------------------------------------*/
@@ -197,15 +201,12 @@ void usart_dma_tx(UART_HandleTypeDef *huart,
 
 void os_printf(const char *format, ...)
 {
-    static uint8_t n = 0U;
-
-    static va_list ap;
     va_start(ap, format);
-    n = vsprintf((char *)buf_8, format, ap);
+    cnt_8 = vsprintf((char *)buf_8, format, ap);
     va_end(ap);
 
     /* USART transmit by DMA Stream */
-    usart_dma_tx(&huart_os, buf_8, n);
+    usart_dma_tx(&huart_os, buf_8, cnt_8);
 
     /* Wait Complete Transmit flag to be set */
     BSP_DMA_WAIT_TC(huart_os.hdmatx);
@@ -219,6 +220,29 @@ void os_pushf(float f)
 void os_tail(void)
 {
     buf_32[cnt_32++] = (*(float *)tail);
+
+    /* USART transmit by DMA Stream */
+    usart_dma_tx(&huart_os, (uint8_t *)buf_32, sizeof(float) * cnt_32);
+    cnt_32 = 0U;
+
+    /* Wait Complete Transmit flag to be set */
+    BSP_DMA_WAIT_TC(huart_os.hdmatx);
+}
+
+void os_justfloat(uint8_t n, ...)
+{
+    va_list ap;
+    cnt_32 = 0U;
+
+    va_start(ap, n);
+    while (cnt_32 != n)
+    {
+        buf_32[cnt_32++] = va_arg(ap, double);
+    }
+    buf_32[cnt_32++] = (*(float *)tail);
+    va_end(ap);
+
+    /* USART transmit by DMA Stream */
     usart_dma_tx(&huart_os, (uint8_t *)buf_32, sizeof(float) * cnt_32);
     cnt_32 = 0U;
 
@@ -228,27 +252,28 @@ void os_tail(void)
 
 void os_putf(float x, uint8_t l)
 {
-    uint8_t n = sprintf((char *)buf_8, "%li", (long)x);
+    cnt_8 = sprintf((char *)buf_8, "%li", (long)x);
 
     if (l)
     {
-        buf_8[n++] = '.';
+        buf_8[cnt_8++] = '.';
     }
-    for (uint8_t i = 0U; i < l && i != 32U; ++i)
+
+    for (uint8_t i = 0U; i < l; ++i)
     {
         x *= 10;
         if (x < 0)
         {
-            buf_8[n++] = '0' - (long)x % 10;
+            buf_8[cnt_8++] = '0' - (long)x % 10;
         }
         else
         {
-            buf_8[n++] = '0' + (long)x % 10;
+            buf_8[cnt_8++] = '0' + (long)x % 10;
         }
     }
 
     /* USART transmit by DMA Stream */
-    usart_dma_tx(&huart_os, buf_8, n);
+    usart_dma_tx(&huart_os, buf_8, cnt_8);
 
     /* Wait Complete Transmit flag to be set */
     BSP_DMA_WAIT_TC(huart_os.hdmatx);

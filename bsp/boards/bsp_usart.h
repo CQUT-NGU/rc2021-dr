@@ -135,6 +135,13 @@ extern void usart_dma_tx(UART_HandleTypeDef *huart,
 extern void os_printf(const char *format, ...);
 
 /**
+ * @brief        print float data to USART by little-endian mode
+ * @param[in]    n: number of float data
+ * @param[in]    ...: float data
+*/
+extern void os_justfloat(uint8_t n, ...);
+
+/**
  * @brief        push float data to buffer by little-endian mode
  * @param[in]    f: float data
 */

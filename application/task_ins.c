@@ -638,6 +638,8 @@ void task_ins(void const *pvParameters)
         os_printf(",");
         os_putf(bmi.temp, 5);
         os_printf("\r\n");
+#elif 1
+        os_justfloat(4, ins_angle[0], ins_angle[1], ins_angle[2], bmi.temp);
 #endif
     }
 }
