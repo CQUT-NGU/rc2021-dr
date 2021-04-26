@@ -38,6 +38,9 @@
 #define IMU_SHFITS_DR     0 /* Data Recorder */
 #define IMU_SHFITS_SPI    1 /* SPI is running */
 #define IMU_SHFITS_UPDATE 2 /* Data is updated */
+#define IMU_FLAG_DR       (1U << IMU_SHFITS_DR)
+#define IMU_FLAG_SPI      (1U << IMU_SHFITS_SPI)
+#define IMU_FLAG_UPDATE   (1U << IMU_SHFITS_UPDATE)
 
 #define BMI088_GYRO_RX_BUF_DATA_OFFSET  1
 #define BMI088_ACCEL_RX_BUF_DATA_OFFSET 2
@@ -199,14 +202,14 @@ static void imu_spi_dma(void)
     }
 
     /* Start reading accelerometer's data */
-    if ((flag_update_gyro & (1 << IMU_SHFITS_DR)) &&
-        !(flag_update_accel & (1 << IMU_SHFITS_SPI)) &&
-        !(flag_update_temp & (1 << IMU_SHFITS_SPI)))
+    if ((flag_update_gyro & IMU_FLAG_DR) &&
+        !(flag_update_accel & IMU_FLAG_SPI) &&
+        !(flag_update_temp & IMU_FLAG_SPI))
     {
         /* Clear the flag of data recorder */
-        flag_update_gyro &= ~(1 << IMU_SHFITS_DR);
+        flag_update_gyro &= ~IMU_FLAG_DR;
         /* Set the flag that SPI is running */
-        flag_update_gyro |= (1 << IMU_SHFITS_SPI);
+        flag_update_gyro |= IMU_FLAG_SPI;
 
         BMI088_GYRO_NS_L;
         spi_dma_start(&hspi1,
@@ -217,14 +220,14 @@ static void imu_spi_dma(void)
     }
 
     /* Start reading accelerometer's temperature */
-    if ((flag_update_accel & (1 << IMU_SHFITS_DR)) &&
-        !(flag_update_gyro & (1 << IMU_SHFITS_SPI)) &&
-        !(flag_update_temp & (1 << IMU_SHFITS_SPI)))
+    if ((flag_update_accel & IMU_FLAG_DR) &&
+        !(flag_update_gyro & IMU_FLAG_SPI) &&
+        !(flag_update_temp & IMU_FLAG_SPI))
     {
         /* Clear the flag of data recorder */
-        flag_update_accel &= ~(1 << IMU_SHFITS_DR);
+        flag_update_accel &= ~IMU_FLAG_DR;
         /* Set the flag that SPI is running */
-        flag_update_accel |= (1 << IMU_SHFITS_SPI);
+        flag_update_accel |= IMU_FLAG_SPI;
 
         BMI088_ACCEL_NS_L;
         spi_dma_start(&hspi1,
@@ -235,14 +238,14 @@ static void imu_spi_dma(void)
     }
 
     /* Start reading gyroscope's data */
-    if ((flag_update_temp & (1 << IMU_SHFITS_DR)) &&
-        !(flag_update_gyro & (1 << IMU_SHFITS_SPI)) &&
-        !(flag_update_accel & (1 << IMU_SHFITS_SPI)))
+    if ((flag_update_temp & IMU_FLAG_DR) &&
+        !(flag_update_gyro & IMU_FLAG_SPI) &&
+        !(flag_update_accel & IMU_FLAG_SPI))
     {
         /* Clear the flag of data recorder */
-        flag_update_temp &= ~(1 << IMU_SHFITS_DR);
+        flag_update_temp &= ~IMU_FLAG_DR;
         /* Set the flag that SPI is running */
-        flag_update_temp |= (1 << IMU_SHFITS_SPI);
+        flag_update_temp |= IMU_FLAG_SPI;
 
         BMI088_ACCEL_NS_L;
         spi_dma_start(&hspi1,
@@ -258,9 +261,9 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     if (GPIO_Pin == INT1_ACCEL_PIN)
     {
         /* Set the flag that accelerometer's data is update */
-        flag_update_accel |= (1 << IMU_SHFITS_DR);
+        flag_update_accel |= IMU_FLAG_DR;
         /* Set the flag that accelerometer's temperature is update */
-        flag_update_temp |= (1 << IMU_SHFITS_DR);
+        flag_update_temp |= IMU_FLAG_DR;
 
         if (flag_imu_dma)
         {
@@ -270,7 +273,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     else if (GPIO_Pin == INT1_GYRO_PIN)
     {
         /* Set the flag that gyroscope's data is update */
-        flag_update_gyro |= (1 << IMU_SHFITS_DR);
+        flag_update_gyro |= IMU_FLAG_DR;
 
         if (flag_imu_dma)
         {
@@ -280,7 +283,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     else if (GPIO_Pin == IST8310_DRDY_PIN)
     {
         /* Set the flag that magnetometer's data is update */
-        flag_update_mag |= (1 << IMU_SHFITS_DR);
+        flag_update_mag |= IMU_FLAG_DR;
     }
     else if (GPIO_Pin == GPIO_PIN_0)
     {
@@ -303,34 +306,34 @@ void DMA2_Stream2_IRQHandler(void)
         BSP_DMA_CLEAR_TC(hspi1.hdmarx);
 
         /* read over gyroscope */
-        if (flag_update_gyro & (1 << IMU_SHFITS_SPI))
+        if (flag_update_gyro & IMU_FLAG_SPI)
         {
             /* Clear the flag that SPI is running */
-            flag_update_gyro &= ~(1 << IMU_SHFITS_SPI);
+            flag_update_gyro &= ~IMU_FLAG_SPI;
             /* Set the flag that gyroscope's data is updated */
-            flag_update_gyro |= (1 << IMU_SHFITS_UPDATE);
+            flag_update_gyro |= IMU_FLAG_UPDATE;
             /* Release the slave machine */
             BMI088_GYRO_NS_H;
         }
 
         /* read over accelerometer */
-        if (flag_update_accel & (1 << IMU_SHFITS_SPI))
+        if (flag_update_accel & IMU_FLAG_SPI)
         {
             /* Clear the flag that SPI is running */
-            flag_update_accel &= ~(1 << IMU_SHFITS_SPI);
+            flag_update_accel &= ~IMU_FLAG_SPI;
             /* Set the flag that accelerometer's data is updated */
-            flag_update_accel |= (1 << IMU_SHFITS_UPDATE);
+            flag_update_accel |= IMU_FLAG_UPDATE;
             /* Release the slave machine */
             BMI088_ACCEL_NS_H;
         }
 
         /* read over temperature */
-        if (flag_update_temp & (1 << IMU_SHFITS_SPI))
+        if (flag_update_temp & IMU_FLAG_SPI)
         {
             /* Clear the flag that SPI is running */
-            flag_update_temp &= ~(1 << IMU_SHFITS_SPI);
+            flag_update_temp &= ~IMU_FLAG_SPI;
             /* Set the flag that accelerometer's temperature is updated */
-            flag_update_temp |= (1 << IMU_SHFITS_UPDATE);
+            flag_update_temp |= IMU_FLAG_UPDATE;
             /* Release the slave machine */
             BMI088_ACCEL_NS_H;
         }
@@ -338,7 +341,7 @@ void DMA2_Stream2_IRQHandler(void)
         /* open the SPI DMA accord to the value of flag_update_imu */
         imu_spi_dma();
 
-        if (flag_update_gyro & (1 << IMU_SHFITS_UPDATE))
+        if (flag_update_gyro & IMU_FLAG_UPDATE)
         {
             /* update magnetometer' data by EXTI0 */
             __HAL_GPIO_EXTI_GENERATE_SWIT(GPIO_PIN_0);
@@ -559,20 +562,20 @@ void task_ins(void const *pvParameters)
         }
 
         /* read over gyroscope */
-        if (flag_update_gyro & (1 << IMU_SHFITS_UPDATE))
+        if (flag_update_gyro & IMU_FLAG_UPDATE)
         {
             /* Clear the flag that data is updated */
-            flag_update_gyro &= ~(1 << IMU_SHFITS_UPDATE);
+            flag_update_gyro &= ~IMU_FLAG_UPDATE;
 
             bmi088_read_over_gyro(dma_rx_buf_gyro + BMI088_GYRO_RX_BUF_DATA_OFFSET,
                                   bmi.gyro);
         }
 
         /* read over accelerometer */
-        if (flag_update_accel & (1 << IMU_SHFITS_UPDATE))
+        if (flag_update_accel & IMU_FLAG_UPDATE)
         {
             /* Clear the flag that data is updated */
-            flag_update_accel &= ~(1 << IMU_SHFITS_UPDATE);
+            flag_update_accel &= ~IMU_FLAG_UPDATE;
 
             bmi088_read_over_accel(dma_rx_buf_accel + BMI088_ACCEL_RX_BUF_DATA_OFFSET,
                                    bmi.accel,
@@ -580,10 +583,10 @@ void task_ins(void const *pvParameters)
         }
 
         /* read over temperature */
-        if (flag_update_temp & (1 << IMU_SHFITS_UPDATE))
+        if (flag_update_temp & IMU_FLAG_UPDATE)
         {
             /* Clear the flag that data is updated */
-            flag_update_temp &= ~(1 << IMU_SHFITS_UPDATE);
+            flag_update_temp &= ~IMU_FLAG_UPDATE;
 
             bmi088_read_over_temp(dma_rx_buf_temp + BMI088_ACCEL_RX_BUF_DATA_OFFSET,
                                   &bmi.temp);
@@ -592,10 +595,10 @@ void task_ins(void const *pvParameters)
         }
 
         /* read magnetometer */
-        if (flag_update_mag &= 1 << IMU_SHFITS_DR)
+        if (flag_update_mag &= IMU_FLAG_DR)
         {
-            flag_update_mag &= ~(1 << IMU_SHFITS_DR);
-            flag_update_mag |= (1 << IMU_SHFITS_SPI);
+            flag_update_mag &= ~IMU_FLAG_DR;
+            flag_update_mag |= IMU_FLAG_SPI;
 
             ist8310_read(ist.mag);
         }
