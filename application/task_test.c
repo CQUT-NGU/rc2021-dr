@@ -18,7 +18,7 @@
 
 #include "bsp.h"
 #include "bsp_delay.h"
-#include "cc.h"
+#include "ca.h"
 #include "cmsis_os.h"
 #include "ctrl.h"
 #include "main.h"
@@ -55,8 +55,8 @@ void task_test(void *pvParameters)
 
     ctrl_pc_t *pc = ctrl_pc_point();
 
-    cc_lpf_t lpf;
-    cc_lpf_init(&lpf, 0.1f, 0.002f);
+    ca_lpf_f32_t lpf;
+    ca_lpf_f32_init(&lpf, 0.1f, 0.002f);
 
     //servo_start();
 
@@ -91,11 +91,11 @@ void task_test(void *pvParameters)
         }
 
         default:
-            if (rc->rc.s[1] == RC_SW_DOWN && rc->rc.s[0] == RC_SW_DOWN)
+            if (rc->rc.s[1] == RC_SW_MID && rc->rc.s[0] == RC_SW_DOWN)
             {
                 int16_t tmp = 75;
-                cc_lpf(&lpf, rc->rc.ch[2]);
-                if (rc->rc.ch[2] > 10)
+                ca_lpf_f32(&lpf, rc->rc.ch[3]);
+                if (rc->rc.ch[3] > 10)
                 {
                     GPIOC->BSRR = GPIO_PIN_6;
                     tmp -= (int16_t)lpf.out / 10;
@@ -105,7 +105,7 @@ void task_test(void *pvParameters)
                         HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_2);
                     }
                 }
-                else if (rc->rc.ch[2] < -10)
+                else if (rc->rc.ch[3] < -10)
                 {
                     GPIOC->BSRR = (uint32_t)GPIO_PIN_6 << 16U;
                     tmp += (int16_t)lpf.out / 10;

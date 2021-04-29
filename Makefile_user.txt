@@ -10,13 +10,10 @@ C_SOURCES += bsp/boards/bsp_spi.c
 C_SOURCES += bsp/boards/bsp_i2c.c
 C_SOURCES += bsp/boards/bsp_imu_pwm.c
 
-C_SOURCES += component/controller/cc_math.c
-C_SOURCES += component/controller/cc_lpf.c
-C_SOURCES += component/controller/cc_pid.c
-C_SOURCES += component/controller/ahrs.c
-C_SOURCES += component/devices/bmi088.c
-C_SOURCES += component/devices/ist8310.c
-#C_SOURCES += component/devices/imu_ahrs.c
+C_SOURCES += bsp/devices/bmi088.c
+C_SOURCES += bsp/devices/ist8310.c
+
+C_SOURCES += ca/ca.c
 
 C_SOURCES += application/ctrl_can.c
 C_SOURCES += application/ctrl_rc.c
@@ -29,6 +26,6 @@ C_SOURCES += application/task_test.c
 C_INCLUDES += -I .
 
 C_INCLUDES += -I bsp/boards/
+C_INCLUDES += -I bsp/devices/
+C_INCLUDES += -I ca/
 C_INCLUDES += -I application/
-C_INCLUDES += -I component/controller/
-C_INCLUDES += -I component/devices/

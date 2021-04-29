@@ -17,17 +17,20 @@
 
 /* Private includes ----------------------------------------------------------*/
 #include "bsp.h"
-#include "cc.h"
+#include "ca.h"
 #include "main.h"
 
 /* ahrs */
 #include "ahrs.h"
 #include "bmi088.h"
 #include "ist8310.h"
+#include "zyx.h"
 
 #if USED_OS
 #include "cmsis_os.h"
 #endif /* USED_OS */
+
+#include <math.h>
 
 /* Private define ------------------------------------------------------------*/
 
@@ -38,9 +41,11 @@
 #define IMU_SHFITS_DR     0 /* Data Recorder */
 #define IMU_SHFITS_SPI    1 /* SPI is running */
 #define IMU_SHFITS_UPDATE 2 /* Data is updated */
+#define IMU_NOTIFY_SHFITS 3
 #define IMU_FLAG_DR       (1U << IMU_SHFITS_DR)
 #define IMU_FLAG_SPI      (1U << IMU_SHFITS_SPI)
 #define IMU_FLAG_UPDATE   (1U << IMU_SHFITS_UPDATE)
+#define IMU_FLAG_NOTIFY   (1U << IMU_NOTIFY_SHFITS)
 
 #define BMI088_GYRO_RX_BUF_DATA_OFFSET  1
 #define BMI088_ACCEL_RX_BUF_DATA_OFFSET 2
@@ -153,13 +158,15 @@ float offset_mag[3];
 /* Offset of magnetometer data calibration */
 float offset_cali_mag[3];
 
-static const float PID_temp[3] = {
+static const float kpid_temp[3] = {
     TEMPERATURE_PID_KP,
     TEMPERATURE_PID_KI,
     TEMPERATURE_PID_KD,
 };
-static cc_pid_t pid_temp;
-static uint8_t  temp_first; /* the flag of the first temperature */
+
+static ca_pid_f32_t pid_temp;
+
+static uint8_t temp_first; /* the flag of the first temperature */
 
 //static const float timing_time = 0.001f; /* task run time , unit s */
 
@@ -168,11 +175,19 @@ static float accel_fliter_2[3] = {0.0f, 0.0f, 0.0f};
 static float accel_fliter_3[3] = {0.0f, 0.0f, 0.0f};
 
 /* the number of fliter */
+#if 1
 static const float fliter_num[3] = {
     1.929454039488895f,
     -0.93178349823448126f,
     0.002329458745586203f,
 };
+#elif 0
+static const float fliter_num[3] = {
+    0.1f,
+    0.1f,
+    0.1f,
+};
+#endif
 
 /* x,y,z axis of gyroscope */
 static float ins_gyro[3] = {0.0f, 0.0f, 0.0f};
@@ -343,6 +358,9 @@ void DMA2_Stream2_IRQHandler(void)
 
         if (flag_update_gyro & IMU_FLAG_UPDATE)
         {
+            flag_update_gyro &= ~IMU_FLAG_UPDATE;
+            flag_update_gyro |= IMU_FLAG_NOTIFY;
+
             /* update magnetometer' data by EXTI0 */
             __HAL_GPIO_EXTI_GENERATE_SWIT(GPIO_PIN_0);
         }
@@ -453,20 +471,11 @@ void ins_cali_gyro_set(float scale[3], float offset[3])
 */
 static void imu_temp_control(float temp)
 {
-    uint16_t temp_pwm;
-
     static uint8_t temp_time = 0;
 
     if (temp_first)
     {
-        cc_pid(&pid_temp, temp, 40);
-        if (pid_temp.out < 0.0f)
-        {
-            pid_temp.out = 0.0f;
-        }
-
-        temp_pwm = (uint16_t)pid_temp.out;
-        imu_pwm_set(temp_pwm);
+        imu_pwm_set((uint16_t)ca_pid_f32(&pid_temp, temp, 40));
     }
     else
     {
@@ -478,7 +487,7 @@ static void imu_temp_control(float temp)
             {
                 temp_first = 1;
 
-                pid_temp.out_i = MPU6500_TEMP_PWM_MAX / 2.0f;
+                pid_temp.x[2] = MPU6500_TEMP_PWM_MAX / 2.0f;
             }
         }
 
@@ -501,6 +510,164 @@ static float ht_get(void)
     update_last = update_now;
 
     return ret;
+}
+
+/**
+ * @brief        Initialize quaternion
+ * @param[in]    q[4]: quaternion q[0] + q[1] * i + q[2] * j + q[3] * k
+ * @param[in]    hx: x axis direction of Earth's magnetic field
+ * @param[in]    hy: y axis direction of Earth's magnetic field
+*/
+void quat_init(float   q[4],
+               int16_t hx,
+               int16_t hy)
+{
+#ifdef BOARD_IS_DOWN
+    if (hx < 0 && hy < 0)
+    {
+        if (fabsf(hx / hy) >= 1)
+        {
+            q[0] = -0.005f;
+            q[1] = -0.199f;
+            q[2] = 0.979f;
+            q[3] = -0.0089f;
+        }
+        else
+        {
+            q[0] = -0.008f;
+            q[1] = -0.555f;
+            q[2] = 0.83f;
+            q[3] = -0.002f;
+        }
+    }
+    else if (hx < 0 && hy > 0)
+    {
+        if (fabsf(hx / hy) >= 1)
+        {
+            q[0] = 0.005f;
+            q[1] = -0.199f;
+            q[2] = -0.978f;
+            q[3] = 0.012f;
+        }
+        else
+        {
+            q[0] = 0.005f;
+            q[1] = -0.553f;
+            q[2] = -0.83f;
+            q[3] = -0.0023f;
+        }
+    }
+    else if (hx > 0 && hy > 0)
+    {
+        if (fabsf(hx / hy) >= 1)
+        {
+            q[0] = 0.0012f;
+            q[1] = -0.978f;
+            q[2] = -0.199f;
+            q[3] = -0.005f;
+        }
+        else
+        {
+            q[0] = 0.0023f;
+            q[1] = -0.83f;
+            q[2] = -0.553f;
+            q[3] = 0.0023f;
+        }
+    }
+    else if (hx > 0 && hy < 0)
+    {
+        if (fabsf(hx / hy) >= 1)
+        {
+            q[0] = 0.0025f;
+            q[1] = 0.978f;
+            q[2] = -0.199f;
+            q[3] = 0.008f;
+        }
+        else
+        {
+            q[0] = 0.0025f;
+            q[1] = 0.83f;
+            q[2] = -0.56f;
+            q[3] = 0.0045f;
+        }
+    }
+#else
+    if (hx < 0 && hy < 0)
+    {
+        if (fabsf(hx / hy) >= 1)
+        {
+            q[0] = 0.195f;
+            q[1] = -0.015f;
+            q[2] = 0.0043f;
+            q[3] = 0.979f;
+        }
+        else
+        {
+            q[0] = 0.555f;
+            q[1] = -0.015f;
+            q[2] = 0.006f;
+            q[3] = 0.829f;
+        }
+    }
+    else if (hx < 0 && hy > 0)
+    {
+        if (fabsf(hx / hy) >= 1)
+        {
+            q[0] = -0.193f;
+            q[1] = -0.009f;
+            q[2] = -0.006f;
+            q[3] = 0.979f;
+        }
+        else
+        {
+            q[0] = -0.552f;
+            q[1] = -0.0048f;
+            q[2] = -0.0115f;
+            q[3] = 0.8313f;
+        }
+    }
+    else if (hx > 0 && hy > 0)
+    {
+        if (fabsf(hx / hy) >= 1)
+        {
+            q[0] = -0.9785f;
+            q[1] = 0.008f;
+            q[2] = -0.02f;
+            q[3] = 0.195f;
+        }
+        else
+        {
+            q[0] = -0.9828f;
+            q[1] = 0.002f;
+            q[2] = -0.0167f;
+            q[3] = 0.5557f;
+        }
+    }
+    else if (hx > 0 && hy < 0)
+    {
+        if (fabsf(hx / hy) >= 1)
+        {
+            q[0] = -0.979f;
+            q[1] = 0.0116f;
+            q[2] = -0.0167f;
+            q[3] = -0.195f;
+        }
+        else
+        {
+            q[0] = -0.83f;
+            q[1] = 0.014f;
+            q[2] = -0.012f;
+            q[3] = -0.556f;
+        }
+    }
+#endif /* BOARD_IS_DOWN */
+    else
+    {
+        q[0] = 1;
+        q[1] = 0;
+        q[2] = 0;
+        q[3] = 0;
+    }
 }
 
 /**
@@ -527,12 +694,13 @@ void task_ins(void const *pvParameters)
     /* rotate and zero drift */
     imu_cali_slove(ins_gyro, ins_accel, ins_mag, &bmi, &ist);
 
-    ahrs_quat_init(ins_quat, ins_mag[INS_MAG_X], ins_mag[INS_MAG_Y]);
+    quat_init(ins_quat, ins_mag[INS_MAG_X], ins_mag[INS_MAG_Y]);
 
-    cc_pid_position(&pid_temp,
-                    PID_temp,
-                    TEMPERATURE_PID_MAX_OUT,
-                    TEMPERATURE_PID_MAX_IOUT);
+    ca_pid_f32_position(&pid_temp,
+                        kpid_temp,
+                        0,
+                        TEMPERATURE_PID_MAX_OUT,
+                        TEMPERATURE_PID_MAX_IOUT);
 
     accel_fliter_1[INS_ACCEL_X] =
         accel_fliter_2[INS_ACCEL_X] =
@@ -562,10 +730,10 @@ void task_ins(void const *pvParameters)
         }
 
         /* read over gyroscope */
-        if (flag_update_gyro & IMU_FLAG_UPDATE)
+        if (flag_update_gyro & IMU_FLAG_NOTIFY)
         {
             /* Clear the flag that data is updated */
-            flag_update_gyro &= ~IMU_FLAG_UPDATE;
+            flag_update_gyro &= ~IMU_FLAG_NOTIFY;
 
             bmi088_read_over_gyro(dma_rx_buf_gyro + BMI088_GYRO_RX_BUF_DATA_OFFSET,
                                   bmi.gyro);
@@ -627,11 +795,10 @@ void task_ins(void const *pvParameters)
 
         /* Mehony AHRS attitude calculation with magnetometer */
         ahrs_mahony(ins_quat, ins_gyro, accel_fliter_3, ins_mag, ht_get());
+
         /* Quaternion to Euler Angle */
-        ahrs_euler_angle(ins_quat,
-                         &ins_angle[INS_ROLL],
-                         &ins_angle[INS_PITCH],
-                         &ins_angle[INS_YAW]);
+        zyx_f32_quat_euler(ins_quat, ins_angle);
+
 #if 0
         os_putf(ins_angle[0], 5);
         os_printf(",");
@@ -641,7 +808,7 @@ void task_ins(void const *pvParameters)
         os_printf(",");
         os_putf(bmi.temp, 5);
         os_printf("\r\n");
-#elif 1
+#elif 0
         os_justfloat(4, ins_angle[0], ins_angle[1], ins_angle[2], bmi.temp);
 #endif
     }

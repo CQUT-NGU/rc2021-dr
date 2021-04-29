@@ -33,9 +33,9 @@
 #undef RC_IRQHandler
 #define RC_IRQHandler USART3_IRQHandler
 
-#define huart_os huart6 /* usart, connect to the upper computer */
+#define huart_os huart1 /* usart, connect to the upper computer */
 #undef PC_IRQHandler
-#define PC_IRQHandler USART6_IRQHandler
+#define PC_IRQHandler USART1_IRQHandler
 
 /* Private includes ----------------------------------------------------------*/
 extern UART_HandleTypeDef huart_rc;

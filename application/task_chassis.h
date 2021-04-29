@@ -15,7 +15,7 @@
 #define __TASK_CHASSIS_H__
 
 /* Includes ------------------------------------------------------------------*/
-#include "cc.h"
+#include "ca.h"
 #include "ctrl.h"
 #include "task_ins.h"
 
@@ -39,14 +39,14 @@
 
 typedef enum
 {
-    /* chassis will follow yaw gimbal motor relative angle */
-    CHASSIS_VECTOR_FOLLOW_GIMBAL_YAW,
+    CHASSIS_VECTOR_STOP,
     /* chassis will have yaw angle(chassis_yaw) close-looped control */
     CHASSIS_VECTOR_FOLLOW_CHASSIS_YAW,
     /* chassis will have rotation speed control */
     CHASSIS_VECTOR_NO_FOLLOW_YAW,
     /* control-current will be sent to CAN bus derectly */
-    CHASSIS_VECTOR_STOP,
+    CHASSIS_VECTOR_SLOW,
+
 } chassis_mode_e;
 
 typedef struct
@@ -72,15 +72,15 @@ typedef struct
     chassis_mode_e  mode;     /* state machine */
     chassis_motor_t motor[4]; /* chassis motor data */
 
-    cc_pid_t pid_speed[4]; /* motor speed PID */
-    cc_pid_t pid_angle;    /* follow angle PID */
+    ca_pid_f32_t pid_speed[4]; /* motor speed PID */
+    ca_pid_f32_t pid_angle;    /* follow angle PID */
 
     /* use first order filter to slow set-point */
-    cc_lpf_t vx_slow;
+    ca_lpf_f32_t vx_slow;
     /* use first order filter to slow set-point */
-    cc_lpf_t vy_slow;
+    ca_lpf_f32_t vy_slow;
     /* use first order filter to slow set-point */
-    cc_lpf_t wz_slow;
+    ca_lpf_f32_t wz_slow;
 
     /* chassis vertical speed, positive means forward,unit m/s */
     float vx;

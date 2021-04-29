@@ -20,9 +20,9 @@
 /* Private includes ----------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 
-#define INS_ROLL  0
+#define INS_YAW   0
 #define INS_PITCH 1
-#define INS_YAW   2
+#define INS_ROLL  3
 
 /* Exported macro ------------------------------------------------------------*/
 #undef __BEGIN_DECLS
