@@ -3,7 +3,7 @@
  * @file         bsp_buzzer.c/h
  * @brief        buzzer of boards
  * @author       ngu
- * @date         20210427
+ * @date         20210501
  * @version      1
  * @copyright    Copyright (c) 2021
  * @code         utf-8                                                  @endcode
@@ -36,7 +36,7 @@ extern TIM_HandleTypeDef htim;
 void buzzer_start(void)
 {
     /*!< Set the TIM Autoreload Register value on runtime */
-    __HAL_TIM_SetAutoreload(&htim, 20999U);
+    __HAL_TIM_SetAutoreload(&htim, BUZZER_PWM_MAX - 1U);
     /*!< Set the TIM Clock Division value on runtime */
     __HAL_TIM_SetClockDivision(&htim, TIM_CLOCKDIVISION_DIV1);
     /*!< Starts the PWM signal generation */

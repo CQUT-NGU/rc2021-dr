@@ -35,8 +35,8 @@
 void task_led(void *pvParameters)
 {
     buzzer_start();
-    buzzer_set(0, 0x2FFFU);
-    osDelay(1000U);
+    buzzer_set(0, BUZZER_PWM_DIV2);
+    osDelay(1000);
     buzzer_set(0, 0);
     buzzer_stop();
 
@@ -46,22 +46,22 @@ void task_led(void *pvParameters)
 
     for (;;)
     {
-        for (count = 0U; count != 1000U; ++count)
+        for (count = 0U; count != LED_PWM_MAX; ++count)
         {
             led_pwm_set(LED_R, count);
-            led_pwm_set(LED_B, 1000U - count);
+            led_pwm_set(LED_B, LED_PWM_MAX - count);
             osDelay(1U);
         }
-        for (count = 0U; count != 1000U; ++count)
+        for (count = 0U; count != LED_PWM_MAX; ++count)
         {
             led_pwm_set(LED_G, count);
-            led_pwm_set(LED_R, 1000U - count);
+            led_pwm_set(LED_R, LED_PWM_MAX - count);
             osDelay(1U);
         }
-        for (count = 0U; count != 1000U; ++count)
+        for (count = 0U; count != LED_PWM_MAX; ++count)
         {
             led_pwm_set(LED_B, count);
-            led_pwm_set(LED_G, 1000U - count);
+            led_pwm_set(LED_G, LED_PWM_MAX - count);
             osDelay(1U);
         }
     }

@@ -3,7 +3,7 @@
  * @file         bsp_buzzer.c/h
  * @brief        buzzer of boards
  * @author       ngu
- * @date         20210427
+ * @date         20210501
  * @version      1
  * @copyright    Copyright (c) 2021
  * @code         utf-8                                                  @endcode
@@ -20,6 +20,16 @@
 #include <stdint.h>
 
 /* Exported constants --------------------------------------------------------*/
+
+#define BUZZER_PWM_MAX   21000U
+#define BUZZER_PWM_DIV1  (BUZZER_PWM_MAX >> 0U)
+#define BUZZER_PWM_DIV2  (BUZZER_PWM_MAX >> 1U)
+#define BUZZER_PWM_DIV4  (BUZZER_PWM_MAX >> 2U)
+#define BUZZER_PWM_DIV8  (BUZZER_PWM_MAX >> 3U)
+#define BUZZER_PWM_DIV16 (BUZZER_PWM_MAX >> 4U)
+#define BUZZER_PWM_DIV32 (BUZZER_PWM_MAX >> 5U)
+#define BUZZER_PWM_DIV64 (BUZZER_PWM_MAX >> 6U)
+
 /* Exported macro ------------------------------------------------------------*/
 #undef __BEGIN_DECLS
 #undef __END_DECLS
@@ -51,7 +61,7 @@ extern void buzzer_stop(void);
 
 /**
  * @brief        Set pwm of the buzzer
- * @param[in]    psc: 0x0000 ~ 0xFFF
+ * @param[in]    psc: 0x0000 ~ 0x0FFF
  * @param[in]    pwm: 0x0000 ~ 0x4FFF
 */
 extern void buzzer_set(uint16_t psc,

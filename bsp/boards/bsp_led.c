@@ -3,7 +3,7 @@
  * @file         bsp_led.c/h
  * @brief        led of boards
  * @author       ngu
- * @date         20210427
+ * @date         20210501
  * @version      1
  * @copyright    Copyright (c) 2021
  * @code         utf-8                                                  @endcode
@@ -141,9 +141,9 @@ void led_toggle(led_e pin)
 void led_pwm_start(void)
 {
     /*!< Set the TIM Prescaler on runtime */
-    __HAL_TIM_SET_PRESCALER(&htim, 83U);
+    __HAL_TIM_SET_PRESCALER(&htim, LED_PRESCALER - 1U);
     /*!< Set the TIM Autoreload Register value on runtime */
-    __HAL_TIM_SetAutoreload(&htim, 999U);
+    __HAL_TIM_SetAutoreload(&htim, LED_PWM_MAX - 1U);
     /*!< Set the TIM Clock Division value on runtime */
     __HAL_TIM_SetClockDivision(&htim, TIM_CLOCKDIVISION_DIV1);
     /*!< Starts the PWM signal generation */

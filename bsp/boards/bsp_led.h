@@ -3,7 +3,7 @@
  * @file         bsp_led.c/h
  * @brief        led of boards
  * @author       ngu
- * @date         20210427
+ * @date         20210501
  * @version      1
  * @copyright    Copyright (c) 2021
  * @code         utf-8                                                  @endcode
@@ -25,7 +25,15 @@
 #include <stdint.h>
 
 /* Exported constants --------------------------------------------------------*/
-#define LED_PORT GPIOH
+
+#define LED_PORT      GPIOH
+#define LED_PRESCALER 84U
+
+#define LED_PWM_MAX  1000U
+#define LED_PWM_DIV1 (LED_PWM_MAX >> 0U)
+#define LED_PWM_DIV2 (LED_PWM_MAX >> 0U)
+#define LED_PWM_DIV4 (LED_PWM_MAX >> 0U)
+#define LED_PWM_DIV8 (LED_PWM_MAX >> 0U)
 
 /* Exported macro ------------------------------------------------------------*/
 #undef __BEGIN_DECLS
@@ -45,15 +53,15 @@
 
 typedef enum
 {
-    LED_ON  = 0U,      /*!< turn on */
-    LED_OFF = !LED_ON, /*!< turn off */
+    LED_ON  = 0U,      /* turn on */
+    LED_OFF = !LED_ON, /* turn off */
 } led_state_e;
 
 typedef enum
 {
-    LED_R = GPIO_PIN_12, /*!< red */
-    LED_G = GPIO_PIN_11, /*!< green */
-    LED_B = GPIO_PIN_10, /*!< blue */
+    LED_R = GPIO_PIN_12, /* red */
+    LED_G = GPIO_PIN_11, /* green */
+    LED_B = GPIO_PIN_10, /* blue */
 } led_e;
 
 /* Exported functions prototypes ---------------------------------------------*/
@@ -94,7 +102,7 @@ extern void led_pwm_stop(void);
 /**
  * @brief        set pwm of the red led
  * @param[in]    pin:   led_e { LED_R LED_G LED_B }
- * @param[in]    value: 0 ~ 1000U
+ * @param[in]    value: 0 ~ LED_PWM_MAX
  */
 extern void led_pwm_set(led_e    pin,
                         uint16_t value);
