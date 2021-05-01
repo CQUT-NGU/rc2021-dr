@@ -44,10 +44,12 @@ extern float ins_angle[3]; /* euler angle, unit rad */
 #define CHASSIS_VX_RC_SEN 0.005F
 /* rocker value (max 660) change to vertial speed (m/s) */
 #define CHASSIS_VY_RC_SEN 0.005F
+/* vertial speed slowly */
+#define CHASSIS_RC_SLOW_SEN 0.1F
 /* in following yaw angle mode, rocker value add to angle */
 #define CHASSIS_ANGLE_Z_RC_SEN 0.000002F
 /* in not following yaw angle mode, rocker value change to rotation speed */
-#define CHASSIS_WZ_RC_SEN 0.01f
+#define CHASSIS_WZ_RC_SEN 0.01F
 
 #define CHASSIS_ACCEL_X_NUM 0.1F
 #define CHASSIS_ACCEL_Y_NUM 0.1F
@@ -270,11 +272,11 @@ static void chassis_update(chassis_move_t *move)
      * calculate chassis euler angle,
      * if chassis add a new gyro sensor,please change this code
     */
-    move->roll = move->angle_ins[INS_ROLL];
+    move->roll = move->angle_ins[ZYX_ROLL];
 
-    move->pitch = restrict_rad_f32(move->angle_ins[INS_PITCH]);
+    move->pitch = restrict_rad_f32(move->angle_ins[ZYX_PITCH]);
 
-    move->yaw = restrict_rad_f32(move->angle_ins[INS_YAW]);
+    move->yaw = restrict_rad_f32(move->angle_ins[ZYX_YAW]);
 }
 
 /**
@@ -288,24 +290,24 @@ static void chassis_rc(float *         vx_set,
                        float *         vy_set,
                        chassis_move_t *move)
 {
-    int16_t vx_channel;
-    int16_t vy_channel;
-
-    float vx_set_channel;
-    float vy_set_channel;
-
     /**
      * deadline, because some remote control need be calibrated,
      * the value of rocker is not zero in middle place
     */
-    vx_channel = LIMIT_RC(move->data_rc->rc.ch[CHASSIS_X_CHANNEL],
-                          CHASSIS_RC_DEADLINE);
+    int16_t vx_channel = LIMIT_RC(move->data_rc->rc.ch[CHASSIS_X_CHANNEL],
+                                  CHASSIS_RC_DEADLINE);
 
-    vy_channel = LIMIT_RC(move->data_rc->rc.ch[CHASSIS_Y_CHANNEL],
-                          CHASSIS_RC_DEADLINE);
+    int16_t vy_channel = LIMIT_RC(move->data_rc->rc.ch[CHASSIS_Y_CHANNEL],
+                                  CHASSIS_RC_DEADLINE);
 
-    vx_set_channel = vx_channel * CHASSIS_VX_RC_SEN;
-    vy_set_channel = vy_channel * CHASSIS_VY_RC_SEN;
+    float vx_set_channel = vx_channel * CHASSIS_VX_RC_SEN;
+    float vy_set_channel = vy_channel * CHASSIS_VY_RC_SEN;
+
+    if (move->mode == CHASSIS_VECTOR_SLOW)
+    {
+        vx_set_channel *= CHASSIS_RC_SLOW_SEN;
+        vy_set_channel *= CHASSIS_RC_SLOW_SEN;
+    }
 
     /* keyboard set speed set-point */
     if (move->data_rc->key.v & CHASSIS_RIGHT_KEY)
@@ -341,7 +343,6 @@ static void chassis_rc(float *         vx_set,
     {
         move->vx_slow.out = 0.0F;
     }
-
     if (vy_set_channel < CHASSIS_RC_DEADLINE * CHASSIS_VY_RC_SEN &&
         vy_set_channel > -CHASSIS_RC_DEADLINE * CHASSIS_VY_RC_SEN)
     {
@@ -359,28 +360,23 @@ static void chassis_rc(float *         vx_set,
 */
 static void chassis_mode_set(chassis_move_t *move)
 {
-    if (move->data_rc->rc.s[!CHASSIS_MODE_CHANNEL] != RC_SW_MID)
+    if (move->data_rc->rc.s[RC_SW_L] != RC_SW_MID)
     {
         move->mode = CHASSIS_VECTOR_STOP;
         return;
     }
 
-    if (move->data_rc->rc.s[CHASSIS_MODE_CHANNEL] == RC_SW_UP)
+    if (move->data_rc->rc.s[RC_SW_R] == RC_SW_UP)
     {
         move->mode = CHASSIS_VECTOR_FOLLOW_CHASSIS_YAW;
     }
-    else if (move->data_rc->rc.s[CHASSIS_MODE_CHANNEL] == RC_SW_MID)
+    else if (move->data_rc->rc.s[RC_SW_R] == RC_SW_MID)
     {
         move->mode = CHASSIS_VECTOR_NO_FOLLOW_YAW;
     }
-    else if (move->data_rc->rc.s[CHASSIS_MODE_CHANNEL] == RC_SW_DOWN)
+    else if (move->data_rc->rc.s[RC_SW_R] == RC_SW_DOWN)
     {
         move->mode = CHASSIS_VECTOR_SLOW;
-
-        move->data_pc->c = 0;
-        move->data_pc->x = 0;
-        move->data_pc->y = 0;
-        move->data_pc->z = 0;
     }
 }
 
@@ -408,7 +404,14 @@ static void chassis_mode_ctrl(float *         vx_set,
         int16_t wz_channel = LIMIT_RC(move->data_rc->rc.ch[CHASSIS_WZ_CHANNEL],
                                       CHASSIS_RC_DEADLINE);
 
-        ca_lpf_f32(&move->wz_slow, wz_channel * CHASSIS_WZ_RC_SEN);
+        float wz_set_channel = wz_channel * CHASSIS_WZ_RC_SEN;
+
+        if (move->mode == CHASSIS_VECTOR_SLOW)
+        {
+            wz_set_channel *= CHASSIS_RC_SLOW_SEN;
+        }
+
+        ca_lpf_f32(&move->wz_slow, wz_set_channel);
 #if 0
         if (wz_channel < CHASSIS_RC_DEADLINE && wz_channel > -CHASSIS_RC_DEADLINE)
         {
@@ -439,8 +442,8 @@ static void chassis_mode_ctrl(float *         vx_set,
         chassis_rc(vx_set, vy_set, move);
 
         *wz_set = restrict_rad_f32(move->yaw_set -
-                            move->data_rc->rc.ch[CHASSIS_WZ_CHANNEL] *
-                                CHASSIS_ANGLE_Z_RC_SEN);
+                                   move->data_rc->rc.ch[CHASSIS_WZ_CHANNEL] *
+                                       CHASSIS_ANGLE_Z_RC_SEN);
 
         switch (move->data_pc->c)
         {
@@ -494,19 +497,14 @@ static void chassis_loop_set(chassis_move_t *move)
         move->vx_set = LIMIT(vx_set, move->vx_min, move->vx_max);
         move->vy_set = LIMIT(vy_set, move->vy_min, move->vy_max);
     }
-    else if (move->mode == CHASSIS_VECTOR_NO_FOLLOW_YAW)
+    else if (move->mode == CHASSIS_VECTOR_NO_FOLLOW_YAW ||
+             move->mode == CHASSIS_VECTOR_SLOW)
     {
         /* "angle_set" is rotation speed set-point */
 
         move->wz_set = angle_set;
         move->vx_set = LIMIT(vx_set, move->vx_min, move->vx_max);
         move->vy_set = LIMIT(vy_set, move->vy_min, move->vy_max);
-    }
-    else if (move->mode == CHASSIS_VECTOR_SLOW)
-    {
-        move->vx_set = 0.1F * vx_set;
-        move->vy_set = 0.1F * vy_set;
-        move->wz_set = 0.1F * angle_set;
     }
     else if (move->mode == CHASSIS_VECTOR_STOP)
     {

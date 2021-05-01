@@ -63,6 +63,12 @@ void Error_Handler(void);
 #define DBUS_GPIO_Port GPIOC
 #define NULL_Pin GPIO_PIN_10
 #define NULL_GPIO_Port GPIOC
+#define RELAY_Pin GPIO_PIN_7
+#define RELAY_GPIO_Port GPIOI
+#define NIP_DIR_Pin GPIO_PIN_6
+#define NIP_DIR_GPIO_Port GPIOI
+#define NIP_PWM_Pin GPIO_PIN_6
+#define NIP_PWM_GPIO_Port GPIOC
 #define IST8310_RST_Pin GPIO_PIN_6
 #define IST8310_RST_GPIO_Port GPIOG
 #define LED_R_Pin GPIO_PIN_12
@@ -81,9 +87,17 @@ void Error_Handler(void);
 #define INT1_ACCEL_Pin GPIO_PIN_4
 #define INT1_ACCEL_GPIO_Port GPIOC
 #define INT1_ACCEL_EXTI_IRQn EXTI4_IRQn
+#define PICK_R_PWM_Pin GPIO_PIN_13
+#define PICK_R_PWM_GPIO_Port GPIOE
 #define INT1_GRYO_Pin GPIO_PIN_5
 #define INT1_GRYO_GPIO_Port GPIOC
 #define INT1_GRYO_EXTI_IRQn EXTI9_5_IRQn
+#define PICK_L_PWM_Pin GPIO_PIN_9
+#define PICK_L_PWM_GPIO_Port GPIOE
+#define PICK_L_DIR_Pin GPIO_PIN_11
+#define PICK_L_DIR_GPIO_Port GPIOE
+#define PICK_R_DIR_Pin GPIO_PIN_14
+#define PICK_R_DIR_GPIO_Port GPIOE
 #define CS1_Gyro_Pin GPIO_PIN_0
 #define CS1_Gyro_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */

@@ -73,6 +73,10 @@
 #define INS_MAG_Y 1
 #define INS_MAG_Z 2
 
+#define INS_YAW   ZYX_YAW
+#define INS_PITCH ZYX_PITCH
+#define INS_ROLL  ZYX_ROLL
+
 #define BMI088_BOARD_INSTALL_SPIN_MATRIX \
     {                                    \
         {0.0f, 1.0f, 0.0f},              \

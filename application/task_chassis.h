@@ -29,7 +29,8 @@
 #define __BEGIN_DECLS \
     extern "C"        \
     {
-#define __END_DECLS }
+#define __END_DECLS \
+    }
 #else
 #define __BEGIN_DECLS
 #define __END_DECLS
@@ -39,12 +40,13 @@
 
 typedef enum
 {
+    /* chassis will stop */
     CHASSIS_VECTOR_STOP,
     /* chassis will have yaw angle(chassis_yaw) close-looped control */
     CHASSIS_VECTOR_FOLLOW_CHASSIS_YAW,
     /* chassis will have rotation speed control */
     CHASSIS_VECTOR_NO_FOLLOW_YAW,
-    /* control-current will be sent to CAN bus derectly */
+    /* chassis will have rotation speed control slowly */
     CHASSIS_VECTOR_SLOW,
 
 } chassis_mode_e;
@@ -53,18 +55,19 @@ typedef struct
 {
     const motor_t *measure;
 
-    float accel;
-    float v;
-    float v_set;
+    float accel; /* accelerated speed */
+    float v;     /* velocity */
+    float v_set; /* velocity set-point */
 
-    int16_t i_current;
+    int16_t i_current; /* current value */
 } chassis_motor_t;
 
 typedef struct
 {
     /* the point to remote control */
     const ctrl_rc_t *data_rc;
-    ctrl_pc_t *      data_pc;
+    /* the point to pc */
+    ctrl_pc_t *data_pc;
 
     /* the point to the euler angle of gyro sensor */
     const float *angle_ins;

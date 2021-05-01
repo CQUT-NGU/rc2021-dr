@@ -19,6 +19,7 @@
 #include "bsp_can.h"
 #include "bsp_delay.h"
 #include "bsp_flash.h"
+#include "bsp_gpio.h"
 #include "bsp_i2c.h"
 #include "bsp_imu_pwm.h"
 #include "bsp_led.h"

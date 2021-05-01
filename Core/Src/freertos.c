@@ -85,12 +85,12 @@ const osThreadAttr_t ins_attributes = {
   .cb_size = sizeof(insControlBlock),
   .priority = (osPriority_t) osPriorityHigh,
 };
-/* Definitions for test */
-osThreadId_t testHandle;
+/* Definitions for step */
+osThreadId_t stepHandle;
 uint32_t testBuffer[ 256 ];
 osStaticThreadDef_t testControlBlock;
-const osThreadAttr_t test_attributes = {
-  .name = "test",
+const osThreadAttr_t step_attributes = {
+  .name = "step",
   .stack_mem = &testBuffer[0],
   .stack_size = sizeof(testBuffer),
   .cb_mem = &testControlBlock,
@@ -106,7 +106,7 @@ const osThreadAttr_t test_attributes = {
 void task_led(void *argument);
 extern void task_chassis(void *argument);
 extern void task_ins(void *argument);
-extern void task_test(void *argument);
+extern void task_step(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -146,8 +146,8 @@ void MX_FREERTOS_Init(void) {
   /* creation of ins */
   insHandle = osThreadNew(task_ins, NULL, &ins_attributes);
 
-  /* creation of test */
-  testHandle = osThreadNew(task_test, NULL, &test_attributes);
+  /* creation of step */
+  stepHandle = osThreadNew(task_step, NULL, &step_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */

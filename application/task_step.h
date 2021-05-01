@@ -1,34 +1,32 @@
 /**
  * *****************************************************************************
- * @file         task_test.c/h
- * @brief        test task
- * @author       tqfx
- * @date         20210427
- * @version      0.01
- * @copyright    Copyright (c) 2020-2021
+ * @file         task_step.c/h
+ * @brief        stepping motor control task
+ * @author       ngu
+ * @date         20210501
+ * @version      1
+ * @copyright    Copyright (C) 2021
+ * @code         utf-8                                                  @endcode
  * *****************************************************************************
- */
+*/
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-
-#ifndef __TASK_TEST_H__
-#define __TASK_TEST_H__
+#ifndef __TASK_STEP_H__
+#define __TASK_STEP_H__
 
 /* Includes ------------------------------------------------------------------*/
 /* Private includes ----------------------------------------------------------*/
-
-#include <stdint.h>
-
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
-
 #undef __BEGIN_DECLS
 #undef __END_DECLS
+
 #if defined(__cplusplus)
 #define __BEGIN_DECLS \
     extern "C"        \
     {
-#define __END_DECLS }
+#define __END_DECLS \
+    }
 #else
 #define __BEGIN_DECLS
 #define __END_DECLS
@@ -39,12 +37,11 @@
 
 __BEGIN_DECLS
 
-extern void task_test(void *pvParameters);
-
 __END_DECLS
 
 /* Private defines -----------------------------------------------------------*/
 
-#endif /* __TASK_TEST_H__ */
+/* Terminate definition to prevent recursive inclusion -----------------------*/
+#endif /* __TASK_STEP_H__ */
 
-/************************ (C) COPYRIGHT tqfx *******************END OF FILE****/
+/************************ (C) COPYRIGHT NGU ********************END OF FILE****/
