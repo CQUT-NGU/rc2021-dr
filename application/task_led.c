@@ -65,8 +65,6 @@ void task_led(void *pvParameters)
             osDelay(1U);
         }
     }
-
-    osThreadExit();
 }
 
 /************************ (C) COPYRIGHT ngu ********************END OF FILE****/

@@ -620,8 +620,6 @@ void task_chassis(void *pvParameters)
 
         osDelay(CHASSIS_CONTROL_TIME_MS);
     }
-
-    osThreadExit();
 }
 
 /************************ (C) COPYRIGHT ngu ********************END OF FILE****/
