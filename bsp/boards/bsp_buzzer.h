@@ -21,7 +21,7 @@
 
 /* Exported constants --------------------------------------------------------*/
 
-#define BUZZER_PWM_MAX   21000U
+#define BUZZER_PWM_MAX   ((168000000U >> 1U) / 4000U)
 #define BUZZER_PWM_DIV1  (BUZZER_PWM_MAX >> 0U)
 #define BUZZER_PWM_DIV2  (BUZZER_PWM_MAX >> 1U)
 #define BUZZER_PWM_DIV4  (BUZZER_PWM_MAX >> 2U)

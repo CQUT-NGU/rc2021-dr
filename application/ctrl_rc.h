@@ -31,11 +31,11 @@
 #define RC_SW_R 0U /* switch right */
 #define RC_SW_L 1U /* switch left  */
 
-#define RC_CH_RH 0U /* rigth horizontal */
-#define RC_CH_RV 1U /* right vertical   */
-#define RC_CH_LH 2U /* left horizontal  */
-#define RC_CH_LV 3U /* left vertical    */
-#define RC_CH_S  4U /* rotation         */
+#define RC_CH_RH 0U /* channel rigth horizontal */
+#define RC_CH_RV 1U /* channel right vertical   */
+#define RC_CH_LH 2U /* channel left horizontal  */
+#define RC_CH_LV 3U /* channel left vertical    */
+#define RC_CH_S  4U /* channel rotation         */
 
 #define RC_SW_UP          ((uint16_t)1U)
 #define RC_SW_MID         ((uint16_t)3U)

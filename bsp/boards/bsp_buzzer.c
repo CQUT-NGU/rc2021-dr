@@ -53,9 +53,9 @@ void buzzer_set(uint16_t psc,
                 uint16_t pwm)
 {
     /*!< Set the TIM Prescaler on runtime */
-    __HAL_TIM_SET_PRESCALER(&htim, 0xFFFU & psc);
+    __HAL_TIM_SET_PRESCALER(&htim, psc & 0xFFFU);
     /*!< Set the TIM Capture Compare Register value on runtime */
-    __HAL_TIM_SetCompare(&htim, BUZZER_CHANNEL, 0x4FFFU & pwm);
+    __HAL_TIM_SetCompare(&htim, BUZZER_CHANNEL, pwm);
 }
 
 /************************ (C) COPYRIGHT ngu ********************END OF FILE****/

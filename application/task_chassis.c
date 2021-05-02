@@ -514,6 +514,7 @@ static void chassis_loop_set(chassis_move_t *move)
 
         move->vx_slow.out = 0.0F;
         move->vy_slow.out = 0.0F;
+        move->wz_slow.out = 0.0F;
     }
 }
 
