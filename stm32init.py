@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
+import glob
 
 # Target configuration directory
 vscjson = "vscjson"
@@ -17,28 +18,21 @@ mcu_old = "STM32MCU"
 makefile_user = "Makefile_user.txt"
 
 # Gets the current path
-cwd = os.getcwd()
-# Remove the last delimiter
-if cwd[-1] == "\\" or cwd[-1] == "/":
-    cwd = cwd[:-1:]
+cwd = os.getcwd().replace('\\', '/')
 
-# Get the execution file name
-binpwd = sys.argv[0].split("\\")[-1].split("/")[-1]
 # Gets the path to the execution file
-pwd = sys.argv[0].replace(binpwd, "").replace("\\", "/")
-del binpwd
+pwd, filename = os.path.split(os.path.abspath(sys.argv[0]).replace('\\', '/'))
+del filename
 
-iocname = ""  # The .ioc filename
-# Gets the .ioc file for the current path
-ioclist = os.listdir(cwd)
-for iocline in ioclist:
-    if ".ioc" in iocline:
-        iocname = iocline
-        break
-del ioclist
-with open(iocname, "r", encoding="utf-8") as f:
+ioclist = glob.glob("{}/*.ioc".format(cwd))
+try:
+    f = open(ioclist[0], "r", encoding="utf-8")
     txtlist = f.read().split("\n")
-del iocname
+    f.close()
+except IndexError:
+    print("Unfound *.ioc")
+    exit()
+del ioclist
 
 elfname = ""  # The .elf filename
 # Get project name
@@ -50,47 +44,47 @@ del txtlist
 
 config = oldconfig
 # Gets the configuration file for the directory where the execution file resides
-cfglist = os.listdir(pwd)
-for cfgline in cfglist:
-    if ".cfg" in cfgline:
-        config = cfgline
-        break
-del cfglist
+try:
+    cfg_list = glob.glob("{}/*.cfg".format(pwd))
+    config = cfg_list[0].replace('\\', '/')
+    del cfg_list
+except IndexError:
+    print("Unfound *.cfg")
+    exit()
 
 
-def dealpwd(pwd):
+def dealdir(dirname):
     """
     Add delimiter
 
     Args:
-        pwd: The path to process
+        dirname: The path to process
     Returns:
         The path after being processed
     """
-    if "/" != pwd[-1] and "\\" != pwd[-1]:
-        pwd += "/"
-    return pwd
+    if "/" != dirname[-1] and "\\" != dirname[-1]:
+        dirname += "/"
+    return dirname
 
 
 # Add delimiter
-pwd = dealpwd(pwd)
-cwd = dealpwd(cwd)
-vsc = dealpwd(vsc)
-vscjson = dealpwd(vscjson)
+pwd = dealdir(pwd)
+cwd = dealdir(cwd)
+vsc = dealdir(vsc)
+vscjson = dealdir(vscjson)
 
 
-def launch():
+def launch(filename="launch.json"):
     """
     Set launch.json
     """
-    filename = "launch.json"
 
     with open(pwd + vscjson + filename, "r", encoding="utf-8") as f:
         txt = f.read()
 
     # Set .elf name
     txt = txt.replace(oldelfname, elfname)
-    txt = txt.replace("./" + oldconfig, pwd + config)
+    txt = txt.replace("./" + oldconfig, config)
 
     with open(cwd + vsc + filename, "w", encoding="utf-8") as f:
         f.write(txt)
@@ -98,11 +92,10 @@ def launch():
     return
 
 
-def task():
+def task(filename="tasks.json"):
     """
     Set tasks.json
     """
-    filename = "tasks.json"
 
     with open(pwd + vscjson + filename, "r", encoding="utf-8") as f:
         txt = f.read()
@@ -113,24 +106,24 @@ def task():
     return
 
 
-def c_cpp():
+def c_cpp(filename="c_cpp_properties.json"):
     """
     Set c_cpp_properties.json
     """
-    filename = "c_cpp_properties.json"
 
     with open(pwd + vscjson + filename, "r", encoding="utf-8") as f:
         txt = f.read()
 
     # Set STM32 MCU macro
-    file_list = os.listdir(cwd)
-    for s in file_list:
-        if ".s" in s and "startup" in s:
-            mcu_new = (s.split(".")[0]).split("_")[-1]
-            mcu_new = mcu_new.upper().replace("XX", "xx")
-            txt = txt.replace(mcu_old, mcu_new)
-            break
-    del file_list
+    try:
+        asm_list = glob.glob("{}/startup*.s".format(cwd))
+        dirname, s = os.path.split(asm_list[0])
+        mcu_new = (s.split(".")[0]).split("_")[-1]
+        mcu_new = mcu_new.upper().replace("XX", "xx")
+        txt = txt.replace(mcu_old, mcu_new)
+    except IndexError:
+        print("Unfound startup*.s")
+        exit()
 
     with open(cwd + vsc + filename, "w", encoding="utf-8") as f:
         f.write(txt)
@@ -138,20 +131,18 @@ def c_cpp():
     return
 
 
-def makefile(pwd):
+def makefile(pwd, filename="Makefile"):
     """
     Set Makefile
     """
-    filename = "Makefile"
 
     openocd = "\topenocd -f " + pwd + "openocd.cfg -c init -c halt -c "
     cmd = (
         "flash:\n"
         + openocd
-        + '"program $(BUILD_DIR)/$(TARGET).hex verify reset exit"\n'
+        + '"program $(BUILD_DIR)/$(TARGET).elf verify reset exit"\n'
     )
     cmd += "reset:\n" + openocd + "reset -c shutdown\n"
-    del openocd
 
     if makefile_user not in os.listdir("."):
         with open(makefile_user, "w", encoding="utf-8") as f:
@@ -165,23 +156,14 @@ def makefile(pwd):
     tmp = "# compile"
     if txt_inc not in txt:
         txt = txt.replace(tmp, "{}\n{}".format(txt_inc, tmp))
-    del tmp
-    del txt_inc
 
     # Deal with the end
     end = "EOF"
     txtlist = txt.split(end)
-    del txt
-
     txt = txtlist[0] + end
-    del end
-
     if " ***" in txtlist[-1]:
         txt += " ***"
-    del txtlist
-
     txt += "\n" + cmd
-    del cmd
 
     with open(filename, "w", encoding="utf-8") as f:
         f.write(txt)
