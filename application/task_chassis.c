@@ -3,7 +3,7 @@
  * @file         task_chassis.c/h
  * @brief        task chassis
  * @author       ngu
- * @date         20210427
+ * @date         20210509
  * @version      1
  * @copyright    Copyright (c) 2021
  * @code         utf-8                                                  @endcode
@@ -38,18 +38,16 @@ extern float ins_angle[3]; /* euler angle, unit rad */
 /* in some mode, can use remote control to control rotation speed */
 #define CHASSIS_WZ_CHANNEL 2
 
-/* the channel of choosing chassis mode */
-#define CHASSIS_MODE_CHANNEL 0
 /* rocker value (max 660) change to horizontal speed (m/s) */
 #define CHASSIS_VX_RC_SEN 0.005F
 /* rocker value (max 660) change to vertial speed (m/s) */
 #define CHASSIS_VY_RC_SEN 0.005F
-/* vertial speed slowly */
-#define CHASSIS_RC_SLOW_SEN 0.1F
 /* in following yaw angle mode, rocker value add to angle */
 #define CHASSIS_ANGLE_Z_RC_SEN 0.000002F
 /* in not following yaw angle mode, rocker value change to rotation speed */
 #define CHASSIS_WZ_RC_SEN 0.01F
+/* vertial speed slowly (dm/s) */
+#define CHASSIS_RC_SLOW_SEN 0.1F
 
 #define CHASSIS_ACCEL_X_NUM 0.1F
 #define CHASSIS_ACCEL_Y_NUM 0.1F
@@ -303,12 +301,6 @@ static void chassis_rc(float *         vx_set,
     float vx_set_channel = vx_channel * CHASSIS_VX_RC_SEN;
     float vy_set_channel = vy_channel * CHASSIS_VY_RC_SEN;
 
-    if (move->mode == CHASSIS_VECTOR_SLOW)
-    {
-        vx_set_channel *= CHASSIS_RC_SLOW_SEN;
-        vy_set_channel *= CHASSIS_RC_SLOW_SEN;
-    }
-
     /* keyboard set speed set-point */
     if (move->data_rc->key.v & CHASSIS_RIGHT_KEY)
     {
@@ -328,30 +320,21 @@ static void chassis_rc(float *         vx_set,
         vy_set_channel = move->vy_min;
     }
 
-    /**
-     * first order low-pass replace ramp function,
-     * calculate chassis speed set-point to improve control performance
-    */
-
-    ca_lpf_f32(&move->vx_slow, vx_set_channel);
-    ca_lpf_f32(&move->vy_slow, vy_set_channel);
-
-    /* stop command, need not slow change, set zero derectly */
-#if 0
-    if (vx_set_channel < CHASSIS_RC_DEADLINE * CHASSIS_VX_RC_SEN &&
-        vx_set_channel > -CHASSIS_RC_DEADLINE * CHASSIS_VX_RC_SEN)
+    if (move->mode == CHASSIS_VECTOR_SLOW)
     {
-        move->vx_slow.out = 0.0F;
+        /* in slow mode, the speed will decrease */
+        *vx_set = vx_set_channel * CHASSIS_RC_SLOW_SEN;
+        *vy_set = vy_set_channel * CHASSIS_RC_SLOW_SEN;
     }
-    if (vy_set_channel < CHASSIS_RC_DEADLINE * CHASSIS_VY_RC_SEN &&
-        vy_set_channel > -CHASSIS_RC_DEADLINE * CHASSIS_VY_RC_SEN)
+    else
     {
-        move->vy_slow.out = 0.0F;
+        /**
+         * first order low-pass replace ramp function,
+         * calculate chassis speed set-point to improve control performance
+        */
+        *vx_set = ca_lpf_f32(&move->vx_slow, vx_set_channel);
+        *vy_set = ca_lpf_f32(&move->vy_slow, vy_set_channel);
     }
-#endif
-
-    *vx_set = move->vx_slow.out;
-    *vy_set = move->vy_slow.out;
 }
 
 /**
@@ -360,21 +343,24 @@ static void chassis_rc(float *         vx_set,
 */
 static void chassis_mode_set(chassis_move_t *move)
 {
-    if (move->data_rc->rc.s[RC_SW_L] != RC_SW_MID)
+    if (!switch_is_mid(move->data_rc->rc.s[RC_SW_L]))
     {
         move->mode = CHASSIS_VECTOR_STOP;
         return;
     }
 
-    if (move->data_rc->rc.s[RC_SW_R] == RC_SW_UP)
+    /* middle, up */
+    if (switch_is_up(move->data_rc->rc.s[RC_SW_R]))
     {
         move->mode = CHASSIS_VECTOR_FOLLOW_CHASSIS_YAW;
     }
-    else if (move->data_rc->rc.s[RC_SW_R] == RC_SW_MID)
+    /* middle, middle */
+    else if (switch_is_mid(move->data_rc->rc.s[RC_SW_R]))
     {
         move->mode = CHASSIS_VECTOR_NO_FOLLOW_YAW;
     }
-    else if (move->data_rc->rc.s[RC_SW_R] == RC_SW_DOWN)
+    /* middle, down */
+    else if (switch_is_down(move->data_rc->rc.s[RC_SW_R]))
     {
         move->mode = CHASSIS_VECTOR_SLOW;
     }
@@ -396,6 +382,15 @@ static void chassis_mode_ctrl(float *         vx_set,
 {
     switch (move->mode)
     {
+    case CHASSIS_VECTOR_STOP:
+    {
+        *vx_set = 0;
+        *vy_set = 0;
+        *wz_set = 0;
+
+        break;
+    }
+
     case CHASSIS_VECTOR_SLOW:
     case CHASSIS_VECTOR_NO_FOLLOW_YAW:
     {
@@ -404,21 +399,17 @@ static void chassis_mode_ctrl(float *         vx_set,
         int16_t wz_channel = LIMIT_RC(move->data_rc->rc.ch[CHASSIS_WZ_CHANNEL],
                                       CHASSIS_RC_DEADLINE);
 
-        float wz_set_channel = wz_channel * CHASSIS_WZ_RC_SEN;
+        float wz_set_channel = -wz_channel * CHASSIS_WZ_RC_SEN;
 
         if (move->mode == CHASSIS_VECTOR_SLOW)
         {
-            wz_set_channel *= CHASSIS_RC_SLOW_SEN;
+            /* in slow mode, the speed will decrease */
+            *wz_set = wz_set_channel * CHASSIS_RC_SLOW_SEN;
         }
-
-        ca_lpf_f32(&move->wz_slow, wz_set_channel);
-#if 0
-        if (wz_channel < CHASSIS_RC_DEADLINE && wz_channel > -CHASSIS_RC_DEADLINE)
+        else
         {
-            move->wz_slow.out = 0;
+            *wz_set = ca_lpf_f32(&move->wz_slow, wz_set_channel);
         }
-#endif
-        *wz_set = -move->wz_slow.out;
 
         switch (move->data_pc->c)
         {
@@ -444,22 +435,6 @@ static void chassis_mode_ctrl(float *         vx_set,
         *wz_set = restrict_rad_f32(move->yaw_set -
                                    move->data_rc->rc.ch[CHASSIS_WZ_CHANNEL] *
                                        CHASSIS_ANGLE_Z_RC_SEN);
-
-        switch (move->data_pc->c)
-        {
-        default:
-            break;
-        }
-
-        break;
-    }
-
-    case CHASSIS_VECTOR_STOP:
-    {
-        *vx_set = 0;
-        *vy_set = 0;
-        *wz_set = 0;
-
         break;
     }
 
@@ -474,15 +449,25 @@ static void chassis_mode_ctrl(float *         vx_set,
 */
 static void chassis_loop_set(chassis_move_t *move)
 {
-    float vx_set = 0.0F;
-    float vy_set = 0.0F;
+    float vx_set = 0;
+    float vy_set = 0;
 
-    float angle_set = 0.0F;
+    float angle_set = 0;
 
     /* get three control set-point*/
     chassis_mode_ctrl(&vx_set, &vy_set, &angle_set, move);
 
-    if (move->mode == CHASSIS_VECTOR_FOLLOW_CHASSIS_YAW)
+    if (move->mode == CHASSIS_VECTOR_STOP)
+    {
+        move->vx_set = vx_set;
+        move->vy_set = vy_set;
+        move->wz_set = angle_set;
+
+        ca_lpf_reset(&move->vx_slow);
+        ca_lpf_reset(&move->vy_slow);
+        ca_lpf_reset(&move->wz_slow);
+    }
+    else if (move->mode == CHASSIS_VECTOR_FOLLOW_CHASSIS_YAW)
     {
         float delat_angle;
 
@@ -506,16 +491,6 @@ static void chassis_loop_set(chassis_move_t *move)
         move->vx_set = LIMIT(vx_set, move->vx_min, move->vx_max);
         move->vy_set = LIMIT(vy_set, move->vy_min, move->vy_max);
     }
-    else if (move->mode == CHASSIS_VECTOR_STOP)
-    {
-        move->vx_set = vx_set;
-        move->vy_set = vy_set;
-        move->wz_set = angle_set;
-
-        move->vx_slow.out = 0.0F;
-        move->vy_slow.out = 0.0F;
-        move->wz_slow.out = 0.0F;
-    }
 }
 
 /**
@@ -530,13 +505,10 @@ static void chassis_mecanum(const float vx_set,
                             const float wz_set,
                             float       wheel_speed[4])
 {
-    wheel_speed[0] = +vx_set - vy_set - MOTOR_DISTANCE_TO_CENTER * wz_set;
-
-    wheel_speed[1] = +vx_set + vy_set - MOTOR_DISTANCE_TO_CENTER * wz_set;
-
-    wheel_speed[2] = -vx_set + vy_set - MOTOR_DISTANCE_TO_CENTER * wz_set;
-
-    wheel_speed[3] = -vx_set - vy_set - MOTOR_DISTANCE_TO_CENTER * wz_set;
+    wheel_speed[0] = +vx_set - vy_set - wz_set * MOTOR_DISTANCE_TO_CENTER;
+    wheel_speed[1] = +vx_set + vy_set - wz_set * MOTOR_DISTANCE_TO_CENTER;
+    wheel_speed[2] = -vx_set + vy_set - wz_set * MOTOR_DISTANCE_TO_CENTER;
+    wheel_speed[3] = -vx_set - vy_set - wz_set * MOTOR_DISTANCE_TO_CENTER;
 }
 
 /**
@@ -546,11 +518,7 @@ static void chassis_mecanum(const float vx_set,
 */
 static void chassis_loop(chassis_move_t *move)
 {
-    float vector_max = 0.0F;
-    float vector     = 0.0F;
-    float temp       = 0.0F;
-
-    float wheel_speed[4] = {0.0F, 0.0F, 0.0F, 0.0F};
+    float wheel_speed[4] = {0, 0, 0, 0};
 
     /* mecanum wheel speed calculation */
     chassis_mecanum(move->vx_set,
@@ -559,11 +527,12 @@ static void chassis_loop(chassis_move_t *move)
                     wheel_speed);
 
     /* calculate the max speed in four wheels, limit the max speed */
+    float vector_max = 0;
     for (uint8_t i = 0U; i != 4U; ++i)
     {
         move->motor[i].v_set = wheel_speed[i];
 
-        temp = ABS(move->motor[i].v_set);
+        float temp = ABS(move->motor[i].v_set);
 
         if (vector_max < temp)
         {
@@ -573,7 +542,7 @@ static void chassis_loop(chassis_move_t *move)
 
     if (vector_max > MAX_WHEEL_SPEED)
     {
-        vector = MAX_WHEEL_SPEED / vector_max;
+        float vector = MAX_WHEEL_SPEED / vector_max;
 
         for (uint8_t i = 0U; i != 4U; ++i)
         {
