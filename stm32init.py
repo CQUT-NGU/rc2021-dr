@@ -45,12 +45,17 @@ del txtlist
 config = oldconfig
 # Gets the configuration file for the directory where the execution file resides
 try:
-    cfg_list = glob.glob("{}/*.cfg".format(pwd))
+    cfg_list = glob.glob("{}/*.cfg".format(cwd))
     config = cfg_list[0].replace('\\', '/')
     del cfg_list
 except IndexError:
-    print("Unfound *.cfg")
-    exit()
+    try:
+        cfg_list = glob.glob("{}/*.cfg".format(pwd))
+        config = cfg_list[0].replace('\\', '/')
+        del cfg_list
+    except IndexError:
+        print("Unfound *.cfg")
+        exit()
 
 
 def dealdir(dirname):
