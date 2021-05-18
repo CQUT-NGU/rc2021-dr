@@ -1,0 +1,46 @@
+name: doxygen
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Config
+        run: |
+          git config --global user.name  "github-actions[bot]"
+          git config --global user.email "73828441+uqbn@users.noreply.github.com"
+          git config --global core.autocrlf input
+          git config --global core.quotepath false
+          git config --global core.filemode false
+          git config --global core.ignorecase false
+
+      - name: Build
+        run: |
+          sudo apt install -y doxygen graphviz
+          doxygen Doxyfile
+
+      - name: Push
+        run: |
+          bash -c 'for i in `ls -A`; do \
+          if [ "$i" == ".git" ]; then continue; fi;\
+          if [ "$i" == "html" ]; then continue; fi;\
+          rm -rf $i; echo "rm -rf $i"; done'
+          bash -c 'for i in `ls -A html`; do \
+          mv -t . html/$i; echo "mv -t . html/$i"; done'
+          rmdir html
+          git checkout -q --orphan html
+          git add -A
+          git commit -s -q -m $(git rev-parse origin/master)
+          git push -f origin html
+          git checkout -
+          git branch -D html
