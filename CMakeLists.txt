@@ -2,7 +2,7 @@ include (cmake-arm-none-eabi.cmake)
 
 cmake_minimum_required (VERSION 3.10)
 
-project (rc2021_stm32_tr)
+project (rc2021_stm32_dr)
 
 if (NOT CMAKE_BUILD_TYPE)
 set (CMAKE_BUILD_TYPE "Debug")
