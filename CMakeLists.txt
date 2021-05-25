@@ -1,4 +1,4 @@
-include(cmake-arm-none-eabi.cmake)
+include(cmake/cmake-arm-none-eabi.cmake)
 
 cmake_minimum_required(VERSION 3.10)
 
@@ -12,7 +12,18 @@ endif(NOT CMAKE_BUILD_TYPE)
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Og -ggdb -gdwarf-2")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Og -ggdb -gdwarf-2")
 
-include(cmake-flags.cmake)
+include(cmake/cmake-flags.cmake)
+add_compile_definitions(
+    USE_HAL_DRIVER STM32F407xx
+)
+add_compile_options(
+    -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard
+    -fdata-sections -ffunction-sections
+)
+add_link_options(
+    -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard
+    -fdata-sections -ffunction-sections
+)
 
 include_directories("Drivers/CMSIS/Include")
 include_directories("Drivers/CMSIS/Device/ST/STM32F4xx/Include")
