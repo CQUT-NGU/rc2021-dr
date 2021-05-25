@@ -161,22 +161,22 @@ static void chassis_loop(chassis_move_t *move);
 static void chassis_init(chassis_move_t *move)
 {
     /* chassis motor speed PID */
-    const static float kpid_v[3] = {
+    const float kpid_v[3] = {
         M3505_MOTOR_SPEED_PID_KP,
         M3505_MOTOR_SPEED_PID_KI,
         M3505_MOTOR_SPEED_PID_KD,
     };
 
     /* chassis angle PID */
-    const static float kpid_yaw[3] = {
+    const float kpid_yaw[3] = {
         CHASSIS_FOLLOW_GIMBAL_PID_KP,
         CHASSIS_FOLLOW_GIMBAL_PID_KI,
         CHASSIS_FOLLOW_GIMBAL_PID_KD,
     };
 
-    const static float lpf_x = {CHASSIS_ACCEL_X_NUM};
-    const static float lpf_y = {CHASSIS_ACCEL_Y_NUM};
-    const static float lpf_z = {CHASSIS_ACCEL_Z_NUM};
+    const float lpf_x = {CHASSIS_ACCEL_X_NUM};
+    const float lpf_y = {CHASSIS_ACCEL_Y_NUM};
+    const float lpf_z = {CHASSIS_ACCEL_Z_NUM};
 
     /* in beginning， chassis mode is stop */
     move->mode = CHASSIS_VECTOR_STOP;
@@ -463,9 +463,9 @@ static void chassis_loop_set(chassis_move_t *move)
         move->vy_set = vy_set;
         move->wz_set = angle_set;
 
-        ca_lpf_reset(&move->vx_slow);
-        ca_lpf_reset(&move->vy_slow);
-        ca_lpf_reset(&move->wz_slow);
+        ca_lpf_f32_reset(&move->vx_slow);
+        ca_lpf_f32_reset(&move->vy_slow);
+        ca_lpf_f32_reset(&move->wz_slow);
     }
     else if (move->mode == CHASSIS_VECTOR_FOLLOW_CHASSIS_YAW)
     {
@@ -561,6 +561,8 @@ static void chassis_loop(chassis_move_t *move)
 
 void task_chassis(void *pvParameters)
 {
+    (void)pvParameters;
+
     osDelay(CHASSIS_TASK_INIT_TIME);
 
     chassis_init(&move);

@@ -59,13 +59,15 @@ include_directories("application")
 aux_source_directory("application" SOURCE_application)
 list(APPEND SOURCE ${SOURCE_application})
 
-include_directories("ca")
-list(APPEND SOURCE ca/ca.c)
+add_subdirectory(ca)
 
 file(GLOB STARTUP *.s)
 add_executable(${CMAKE_PROJECT_NAME}.elf ${STARTUP} ${SOURCE})
 
-target_link_libraries(${CMAKE_PROJECT_NAME}.elf c m nosys)
+target_link_libraries(${CMAKE_PROJECT_NAME}.elf
+    ca
+    c m nosys
+)
 
 file(GLOB LINKER_SCRIPT  *.ld)
 target_link_options(${CMAKE_PROJECT_NAME}.elf PUBLIC

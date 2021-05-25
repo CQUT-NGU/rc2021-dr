@@ -34,6 +34,8 @@
 
 void task_led(void *pvParameters)
 {
+    (void)pvParameters;
+
     buzzer_start();
     buzzer_set(0, BUZZER_PWM_DIV2);
     osDelay(1000);

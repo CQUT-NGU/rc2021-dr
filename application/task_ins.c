@@ -522,9 +522,9 @@ static float ht_get(void)
  * @param[in]    hx: x axis direction of Earth's magnetic field
  * @param[in]    hy: y axis direction of Earth's magnetic field
 */
-void quat_init(float   q[4],
-               int16_t hx,
-               int16_t hy)
+void quat_init(float q[4],
+               float hx,
+               float hy)
 {
 #ifdef BOARD_IS_DOWN
     if (hx < 0 && hy < 0)
@@ -680,6 +680,8 @@ void quat_init(float   q[4],
 */
 void task_ins(void const *pvParameters)
 {
+    (void)pvParameters;
+
     /* wait a time */
     osDelay(INS_TASK_INIT_TIME);
 

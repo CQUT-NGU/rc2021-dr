@@ -180,6 +180,8 @@ static void nip_update(const ctrl_rc_t *rc)
 
 void task_step(void *pvParameters)
 {
+    (void)pvParameters;
+
     const ctrl_rc_t *rc = ctrl_rc_point();
 
     step_init();
