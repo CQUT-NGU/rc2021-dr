@@ -460,6 +460,8 @@ void ins_cali_gyro(float     scale[3],
 */
 void ins_cali_gyro_set(float scale[3], float offset[3])
 {
+    (void)scale;
+
     offset_cali_gyro[INS_GYRO_X] = offset[INS_GYRO_X];
     offset_cali_gyro[INS_GYRO_Y] = offset[INS_GYRO_Y];
     offset_cali_gyro[INS_GYRO_Z] = offset[INS_GYRO_Z];
@@ -816,7 +818,14 @@ void task_ins(void const *pvParameters)
         os_printf("\r\n");
 #elif 0
         os_justfloat(4, ins_angle[0], ins_angle[1], ins_angle[2], bmi.temp);
+#elif 1
+        dma_printf("%i,%i,%i,%i\r\n",
+                   (int)(ins_angle[0] * 1000),
+                   (int)(ins_angle[1] * 1000),
+                   (int)(ins_angle[2] * 1000),
+                   (int)(bmi.temp * 1000));
 #endif
+        osDelay(2);
     }
 }
 

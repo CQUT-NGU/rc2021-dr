@@ -22,7 +22,7 @@ TARGET = rc2021_stm32_dr
 # debug build?
 DEBUG = 1
 # optimization
-OPT = -Og -Wextra -pedantic
+OPT = -Og -Wextra -Wpedantic
 
 
 #######################################

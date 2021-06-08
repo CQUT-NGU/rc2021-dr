@@ -129,6 +129,8 @@ void usart_dma_tx_init(UART_HandleTypeDef *huart)
 
     /* Enable UART */
     __HAL_UART_ENABLE(huart);
+    /* Enable transmission complete interrupt */
+    __HAL_UART_ENABLE_IT(huart, UART_IT_TC);
 
     do
     {
@@ -199,6 +201,33 @@ void usart_dma_tx(UART_HandleTypeDef *huart,
     __HAL_DMA_ENABLE(huart->hdmatx);
 }
 
+unsigned char dma_print_buf[256] = {0};
+
+unsigned char *dma_print_pn = dma_print_buf;
+
+void dma_printf(const char *fmt, ...)
+{
+    va_start(ap, fmt);
+    *dma_print_pn = vsprintf((char *)dma_print_pn + 1, fmt, ap);
+    va_end(ap);
+
+    if (*dma_print_pn)
+    {
+        unsigned char *p = dma_print_pn + 1;
+
+        if (dma_print_pn == dma_print_buf)
+        {
+            usart_dma_tx(&huart_os, p, *dma_print_pn);
+        }
+
+        dma_print_pn = p + *dma_print_pn;
+        if (dma_print_pn - dma_print_buf > 255)
+        {
+            dma_print_pn = dma_print_buf;
+        }
+    }
+}
+
 void os_printf(const char *format, ...)
 {
     va_start(ap, format);
@@ -237,7 +266,7 @@ void os_justfloat(uint8_t n, ...)
     va_start(ap, n);
     while (cnt_32 != n)
     {
-        buf_32[cnt_32++] = va_arg(ap, double);
+        buf_32[cnt_32++] = (float)va_arg(ap, double);
     }
     buf_32[cnt_32++] = (*(float *)tail);
     va_end(ap);

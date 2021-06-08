@@ -83,6 +83,9 @@ ctrl_pc_t *ctrl_pc_point(void)
     return &pc;
 }
 
+extern unsigned char  dma_print_buf[256];
+extern unsigned char *dma_print_pn;
+
 /**
  * @brief This function handles USART global interrupt.
 */
@@ -91,6 +94,27 @@ void PC_IRQHandler(void)
     if (hpc.Instance->SR & UART_FLAG_RXNE) /*!< USART Status register*/
     {
         __HAL_UART_CLEAR_PEFLAG(&hpc); /* Clears the UART PE pending flag */
+    }
+    else if (hpc.Instance->SR & UART_FLAG_TC)
+    {
+        __HAL_UART_CLEAR_FLAG(&hpc, UART_FLAG_TC);
+
+        static unsigned char *dma_print_pin = dma_print_buf;
+
+        unsigned char *p = dma_print_pin + 1 + *dma_print_pin;
+
+        *dma_print_pin = 0;
+        if (p < dma_print_pn)
+        {
+            dma_print_pin = p;
+            usart_dma_tx(&huart_os, p + 1, *p);
+        }
+        else
+        {
+            dma_print_pin = dma_print_pn = dma_print_buf;
+
+            *dma_print_buf = 0;
+        }
     }
     else if (hpc.Instance->SR & UART_FLAG_IDLE)
     {
