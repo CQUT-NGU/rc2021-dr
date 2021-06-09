@@ -158,7 +158,7 @@ def makefile(pwd, filename="Makefile"):
 
     # Set inlcude user' Makefile
     txt_inc = "-include {}\n".format(makefile_user)
-    tmp = "# compile"
+    tmp = "# default"
     if txt_inc not in txt:
         txt = txt.replace(tmp, "{}\n{}".format(txt_inc, tmp))
 
