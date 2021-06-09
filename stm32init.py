@@ -146,7 +146,7 @@ def c_cpp(filename="c_cpp_properties.json"):
         asm_list = glob.glob("{}/startup*.s".format(cwd))
         dirname, s = os.path.split(asm_list[0])
         mcu_new = (s.split(".")[0]).split("_")[-1]
-        mcu_new = mcu_new.upper().replace("XX", "xx")
+        mcu_new = mcu_new.upper().replace("X", "x")
         txt = txt.replace(mcu_old, mcu_new)
     except IndexError:
         print("Unfound startup*.s")
