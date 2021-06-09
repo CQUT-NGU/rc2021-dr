@@ -3,6 +3,7 @@
 import os
 import sys
 import glob
+import subprocess
 
 # Target configuration directory
 vscjson = "vscjson"
@@ -56,6 +57,22 @@ except IndexError:
     except IndexError:
         print("Unfound *.cfg")
         exit()
+
+
+def findtool(tool):
+    if type(tool) != type(''):
+        raise TypeError.__str__
+    if 'win' in sys.platform:
+        find = "where"
+    elif 'linux' in sys.platform:
+        find = "which"
+    else:
+        raise SystemError
+    subp = subprocess.Popen(
+        [find, tool], stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding="utf-8"
+    )
+    subp.wait()
+    return subp.stdout.read().split()
 
 
 def dealdir(dirname):
@@ -118,6 +135,11 @@ def c_cpp(filename="c_cpp_properties.json"):
 
     with open(pwd + vscjson + filename, "r", encoding="utf-8") as f:
         txt = f.read()
+
+    tools = findtool("arm-none-eabi-gcc")
+    if len(tools):
+        tool = tools[0].replace('\\', '/')
+        txt = txt.replace("arm-none-eabi-gcc", tool)
 
     # Set STM32 MCU macro
     try:
