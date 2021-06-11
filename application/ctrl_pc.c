@@ -56,7 +56,7 @@ extern UART_HandleTypeDef hpc;
     }                                        \
     buff[j] = 0;                             \
                                              \
-    x = atoff((char *)buff);
+    x = atof((char *)buff);
 
 /* Private variables ---------------------------------------------------------*/
 

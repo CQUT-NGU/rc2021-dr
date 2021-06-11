@@ -57,3 +57,7 @@ build
 # VSCode
 .vscode
 
+# Keil
+MDK-ARM/DebugConfig
+MDK-ARM/rc2021_stm32_dr
+MDK-ARM/rc2021_stm32_dr.uvguix.*
