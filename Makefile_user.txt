@@ -33,3 +33,5 @@ C_INCLUDES += -I bsp/boards/
 C_INCLUDES += -I bsp/devices/
 C_INCLUDES += -I ca/
 C_INCLUDES += -I application/
+
+LDFLAGS += -u _printf_float
