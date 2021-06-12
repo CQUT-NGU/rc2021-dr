@@ -2,112 +2,50 @@
 Language:        Cpp
 BasedOnStyle:    LLVM
 
-AccessModifierOffset:  -2
-AlignAfterOpenBracket: Align
+AlignConsecutiveMacros: true
+AlignConsecutiveBitFields: true
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
 
-AlignConsecutiveAssignments:  true #AcrossComments
-AlignConsecutiveBitFields:    true #AcrossComments
-AlignConsecutiveDeclarations: true #AcrossComments
-AlignConsecutiveMacros:       true #AcrossComments
+AlignEscapedNewlines: Left
+AlignOperands: AlignAfterOperator
 
-AlignEscapedNewlines:  Right
-AlignOperands:         Align
-AlignTrailingComments: true
-
-AllowAllArgumentsOnNextLine:               false
+AllowAllArgumentsOnNextLine: false
 AllowAllConstructorInitializersOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
 
-AllowShortBlocksOnASingleLine:       Never
-AllowShortCaseLabelsOnASingleLine:   false
-AllowShortEnumsOnASingleLine:        false
-AllowShortFunctionsOnASingleLine:    None
-AllowShortIfStatementsOnASingleLine: Never
-AllowShortLambdasOnASingleLine:      None
-AllowShortLoopsOnASingleLine:        false
+AllowShortEnumsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: None
+AllowShortLambdasOnASingleLine: None
 
-AlwaysBreakAfterReturnType:           None
-AlwaysBreakBeforeMultilineStrings:    false
-AlwaysBreakTemplateDeclarations:      Yes
+AlwaysBreakTemplateDeclarations: Yes
 
 BinPackArguments: false
 BinPackParameters: false
 
-BreakBeforeBinaryOperators:      None
-BreakBeforeBraces:               Allman
-# BreakBeforeConceptDeclarations:  true
-BreakBeforeTernaryOperators:     true
-BreakConstructorInitializers:    AfterColon
-BreakInheritanceList:            AfterColon
-#BreakAfterJavaFieldAnnotations: false
-BreakStringLiterals:             true
-ColumnLimit:                     0
+BreakBeforeBraces: Allman
+BreakInheritanceList: AfterColon
+BreakConstructorInitializers: AfterColon
 
-CompactNamespaces:                              false
-ConstructorInitializerAllOnOneLineOrOnePerLine: false
-ConstructorInitializerIndentWidth:              4
-ContinuationIndentWidth:                        4
-Cpp11BracedListStyle:                           true
-DeriveLineEnding:                               true
-DerivePointerAlignment:                         true
-DisableFormat:                                  false
-# EmptyLineBeforeAccessModifier:                  Always
-# ExperimentalAutoDetectBinPacking:               false
-FixNamespaceComments:                           true
-IncludeBlocks:                                  Regroup
+ColumnLimit:     0
+FixNamespaceComments: false
 
-IndentCaseLabels:           false
-IndentCaseBlocks:           false
-IndentCaseLabels:           false
-IndentGotoLabels:           true
-IndentExternBlock:          NoIndent
-IndentPPDirectives:         None
-# IndentRequires:             false
-IndentWidth:                4
-IndentWrappedFunctionNames: false
+IndentExternBlock: NoIndent
+IndentWidth:     4
 
-InsertTrailingCommas:             Wrapped
-JavaScriptQuotes:                 Leave
-JavaScriptWrapImports:            true
 KeepEmptyLinesAtTheStartOfBlocks: false
-MaxEmptyLinesToKeep:              1
-NamespaceIndentation:             All
 
-ObjCBinPackProtocolList:         Auto
-ObjCBlockIndentWidth:            4
-ObjCBreakBeforeNestedBlockParam: true
-ObjCSpaceAfterProperty:          false
-ObjCSpaceBeforeProtocolList:     false
+NamespaceIndentation: All
 
-PointerAlignment:      Right
-ReflowComments:        false
-SortIncludes:          true #CaseSensitive
-SortUsingDeclarations: true
+ObjCBlockIndentWidth: 4
 
-SpaceAfterCStyleCast:              false
-SpaceAfterLogicalNot:              false
-SpaceAfterTemplateKeyword:         true
-# SpaceAroundPointerQualifiers:      Both
-SpaceBeforeAssignmentOperators:    true
-SpaceBeforeCpp11BracedList:        true
-SpaceBeforeCtorInitializerColon:   false
-SpaceBeforeInheritanceColon:       false
-SpaceBeforeParens:                 ControlStatements
-SpaceBeforeRangeBasedForLoopColon: true
-SpaceBeforeSquareBrackets:         false
-SpaceInEmptyBlock:                 false
-SpaceInEmptyParentheses:           false
-SpacesBeforeTrailingComments:      2
-SpacesInAngles:                    false
-SpacesInConditionalStatement:      false
-SpacesInContainerLiterals:         false
-SpacesInCStyleCastParentheses:     false
-SpacesInParentheses:               false
-SpacesInSquareBrackets:            false
+ReflowComments:  false
 
-Standard:        Latest
+SpaceBeforeCpp11BracedList: true
+SpaceBeforeCtorInitializerColon: false
+SpaceBeforeInheritanceColon: false
+SpacesBeforeTrailingComments: 2
+SpacesInContainerLiterals: false
+
 TabWidth:        4
-UseCRLF:         false
-UseTab:          Never
 ...
-
