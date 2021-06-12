@@ -13,16 +13,18 @@ set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Og -ggdb -gdwarf-2")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Og -ggdb -gdwarf-2")
 
 include(cmake/cmake-flags.cmake)
+include(cmake-flags.cmake)
 add_compile_definitions(
     USE_HAL_DRIVER STM32F407xx
 )
 add_compile_options(
-    -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard
+    -mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard
     -fdata-sections -ffunction-sections
 )
 add_link_options(
-    -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard
+    -mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard
     -fdata-sections -ffunction-sections
+    -u _printf_float
 )
 
 include_directories("Drivers/CMSIS/Include")
