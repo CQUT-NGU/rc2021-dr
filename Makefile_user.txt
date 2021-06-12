@@ -1,4 +1,22 @@
+CFLAGS += -Wextra
+CFLAGS += -Wpedantic
+CFLAGS += -Wunused
+CFLAGS += -Wundef
+CFLAGS += -Winline
+CFLAGS += -Wshadow
+CFLAGS += -Wconversion
+CFLAGS += -Wfloat-equal
+CFLAGS += -Wswitch-enum
+CFLAGS += -Wswitch-default
+CFLAGS += -Wdouble-promotion
+C_INCLUDES += -I .
 C_SOURCES += $(wildcard *.c)
+LDFLAGS += -u _printf_float
+
+C_INCLUDES += -I bsp/boards
+C_INCLUDES += -I bsp/devices
+C_INCLUDES += -I ca
+C_INCLUDES += -I application
 
 C_SOURCES += bsp/boards/bsp_delay.c
 C_SOURCES += bsp/boards/bsp_flash.c
@@ -26,12 +44,3 @@ C_SOURCES += application/task_led.c
 C_SOURCES += application/task_chassis.c
 C_SOURCES += application/task_step.c
 C_SOURCES += application/task_ins.c
-
-C_INCLUDES += -I .
-
-C_INCLUDES += -I bsp/boards/
-C_INCLUDES += -I bsp/devices/
-C_INCLUDES += -I ca/
-C_INCLUDES += -I application/
-
-LDFLAGS += -u _printf_float
