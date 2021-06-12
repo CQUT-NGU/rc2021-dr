@@ -171,9 +171,25 @@ def makefile(pwd, filename="Makefile"):
     )
     cmd += "reset:\n" + openocd + "reset -c shutdown\n"
 
+    makefile_user_txt = '''CFLAGS += -Wextra
+CFLAGS += -Wpedantic
+CFLAGS += -Wunused
+CFLAGS += -Wundef
+CFLAGS += -Winline
+CFLAGS += -Wshadow
+CFLAGS += -Wconversion
+CFLAGS += -Wfloat-equal
+CFLAGS += -Wswitch-enum
+CFLAGS += -Wswitch-default
+CFLAGS += -Wdouble-promotion
+C_INCLUDES += -I .
+C_SOURCES += $(wildcard *.c)
+LDFLAGS += -u _printf_float
+'''
+
     if makefile_user not in os.listdir("."):
         with open(makefile_user, "w", encoding="utf-8") as f:
-            f.write("C_SOURCES += \\\n$(wildcard *.c)\nC_INCLUDES += \\\n-I .\n")
+            f.write(makefile_user_txt)
 
     with open(filename, "r", encoding="utf-8") as f:
         txt = f.read()
