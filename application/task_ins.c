@@ -493,7 +493,7 @@ static void imu_temp_control(float temp)
             {
                 temp_first = 1;
 
-                pid_temp.x[2] = MPU6500_TEMP_PWM_MAX / 2.0f;
+                pid_temp.y = MPU6500_TEMP_PWM_MAX / 2.0f;
             }
         }
 
