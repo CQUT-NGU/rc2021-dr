@@ -55,10 +55,10 @@ uint32_t ledBuffer[ 128 ];
 osStaticThreadDef_t ledControlBlock;
 const osThreadAttr_t led_attributes = {
   .name = "led",
-  .stack_mem = &ledBuffer[0],
-  .stack_size = sizeof(ledBuffer),
   .cb_mem = &ledControlBlock,
   .cb_size = sizeof(ledControlBlock),
+  .stack_mem = &ledBuffer[0],
+  .stack_size = sizeof(ledBuffer),
   .priority = (osPriority_t) osPriorityLow,
 };
 /* Definitions for chassis */
@@ -67,10 +67,10 @@ uint32_t chssisBuffer[ 512 ];
 osStaticThreadDef_t chssisControlBlock;
 const osThreadAttr_t chassis_attributes = {
   .name = "chassis",
-  .stack_mem = &chssisBuffer[0],
-  .stack_size = sizeof(chssisBuffer),
   .cb_mem = &chssisControlBlock,
   .cb_size = sizeof(chssisControlBlock),
+  .stack_mem = &chssisBuffer[0],
+  .stack_size = sizeof(chssisBuffer),
   .priority = (osPriority_t) osPriorityHigh,
 };
 /* Definitions for ins */
@@ -79,10 +79,10 @@ uint32_t insBuffer[ 512 ];
 osStaticThreadDef_t insControlBlock;
 const osThreadAttr_t ins_attributes = {
   .name = "ins",
-  .stack_mem = &insBuffer[0],
-  .stack_size = sizeof(insBuffer),
   .cb_mem = &insControlBlock,
   .cb_size = sizeof(insControlBlock),
+  .stack_mem = &insBuffer[0],
+  .stack_size = sizeof(insBuffer),
   .priority = (osPriority_t) osPriorityHigh,
 };
 /* Definitions for step */
@@ -91,10 +91,10 @@ uint32_t testBuffer[ 256 ];
 osStaticThreadDef_t testControlBlock;
 const osThreadAttr_t step_attributes = {
   .name = "step",
-  .stack_mem = &testBuffer[0],
-  .stack_size = sizeof(testBuffer),
   .cb_mem = &testControlBlock,
   .cb_size = sizeof(testControlBlock),
+  .stack_mem = &testBuffer[0],
+  .stack_size = sizeof(testBuffer),
   .priority = (osPriority_t) osPriorityLow,
 };
 
