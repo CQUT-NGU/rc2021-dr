@@ -818,7 +818,7 @@ void task_ins(void const *pvParameters)
         os_printf("\r\n");
 #elif 0
         os_justfloat(4, ins_angle[0], ins_angle[1], ins_angle[2], bmi.temp);
-#elif 1
+#elif 0
         dma_printf("%i,%i,%i,%i\r\n",
                    (int)(ins_angle[0] * 1000),
                    (int)(ins_angle[1] * 1000),

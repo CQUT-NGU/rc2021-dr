@@ -32,6 +32,9 @@
 /* Private function prototypes -----------------------------------------------*/
 /* Private user code ---------------------------------------------------------*/
 
+#include "task_chassis.h"
+extern chassis_move_t move;
+
 void task_led(void *pvParameters)
 {
     (void)pvParameters;
@@ -44,6 +47,7 @@ void task_led(void *pvParameters)
 
     led_pwm_start();
 
+    uint8_t  t = 0;
     uint16_t count;
 
     for (;;)
@@ -66,6 +70,35 @@ void task_led(void *pvParameters)
             led_pwm_set(LED_G, LED_PWM_MAX - count);
             osDelay(1U);
         }
+
+#if 0
+        if (t == 1)
+        {
+            move.data_pc->c = 'p';
+            move.data_pc->x = 0;
+            move.data_pc->y = 1;
+        }
+        else if (t == 2)
+        {
+            move.data_pc->c = 'p';
+            move.data_pc->x = 1;
+            move.data_pc->y = 1;
+        }
+        else if (t == 3)
+        {
+            move.data_pc->c = 'p';
+            move.data_pc->x = 1;
+            move.data_pc->y = 0;
+        }
+        else if (t == 4)
+        {
+            move.data_pc->c = 'p';
+            move.data_pc->x = 0;
+            move.data_pc->y = 0;
+            t               = 0;
+        }
+#endif
+        ++t;
     }
 }
 

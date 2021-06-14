@@ -75,8 +75,14 @@ typedef struct
     chassis_mode_e  mode;     /* state machine */
     chassis_motor_t motor[4]; /* chassis motor data */
 
-    ca_pid_f32_t pid_speed[4]; /* motor speed PID */
-    ca_pid_f32_t pid_angle;    /* follow angle PID */
+    ca_pid_f32_t pid_offset[2]; /* offset PID */
+    ca_pid_f32_t pid_speed[4];  /* motor speed PID */
+    ca_pid_f32_t pid_angle;     /* follow angle PID */
+
+    /* chassis horizontal offset, positive means letf,unit m/s */
+    float x;
+    /* chassis vertical offset, positive means forward,unit m/s */
+    float y;
 
     /* use first order filter to slow set-point */
     ca_lpf_f32_t vx_slow;
@@ -85,16 +91,16 @@ typedef struct
     /* use first order filter to slow set-point */
     ca_lpf_f32_t wz_slow;
 
-    /* chassis vertical speed, positive means forward,unit m/s */
-    float vx;
     /* chassis horizontal speed, positive means letf,unit m/s */
+    float vx;
+    /* chassis vertical speed, positive means forward,unit m/s */
     float vy;
     /* chassis rotation speed, positive means counterclockwise,unit rad/s */
     float wz;
 
-    /* chassis set vertical speed, positive means forward,unit m/s */
-    float vx_set;
     /* chassis set horizontal speed, positive means left,unit m/s */
+    float vx_set;
+    /* chassis set vertical speed, positive means forward,unit m/s */
     float vy_set;
     /* chassis set rotation speed, positive means counterclockwise,unit rad/s */
     float wz_set;
