@@ -1,6 +1,6 @@
 [submodule "ca"]
 	path = ca
-	url = https://hub.fastgit.org/tqfx/ca.git
+	url = git@github.com:tqfx/ca.git
 [submodule "cmake"]
 	path = cmake
-	url = https://hub.fastgit.org/tqfx/cmake.git
+	url = git@github.com:tqfx/cmake.git
