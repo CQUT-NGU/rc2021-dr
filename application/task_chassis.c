@@ -89,6 +89,14 @@ extern float ins_angle[3]; /* euler angle, unit rad */
 #define NORMAL_MAX_CHASSIS_SPEED_X 2.0F
 /* chassis forward or back max speed */
 #define NORMAL_MAX_CHASSIS_SPEED_Y 2.0F
+/* chassis left or right max accelerated speed */
+#define NORMAL_MAX_CHASSIS_ACC_X 0.5F
+/* chassis forward or back max accelerated speed */
+#define NORMAL_MAX_CHASSIS_ACC_Y 0.5F
+/* chassis left or right max speed increment */
+#define NORMAL_MAX_CHASSIS_SPEED_DELTA_X (NORMAL_MAX_CHASSIS_ACC_X * CHASSIS_CONTROL_TIME)
+/* chassis forward or back max speed increment */
+#define NORMAL_MAX_CHASSIS_SPEED_DELTA_Y (NORMAL_MAX_CHASSIS_ACC_Y * CHASSIS_CONTROL_TIME)
 
 #define CHASSIS_WZ_SET_SCALE 0.1F
 
@@ -108,7 +116,7 @@ extern float ins_angle[3]; /* euler angle, unit rad */
 #define CHASSIS_FOLLOW_GIMBAL_PID_KP       10.0F
 #define CHASSIS_FOLLOW_GIMBAL_PID_KI       0.0F
 #define CHASSIS_FOLLOW_GIMBAL_PID_KD       0.0F
-#define CHASSIS_FOLLOW_GIMBAL_PID_MAX_OUT  M_PI
+#define CHASSIS_FOLLOW_GIMBAL_PID_MAX_OUT  (float)M_PI
 #define CHASSIS_FOLLOW_GIMBAL_PID_MAX_IOUT 0.1F
 
 /* Private macro -------------------------------------------------------------*/
@@ -447,18 +455,16 @@ static void chassis_mode_ctrl(float *         vx_set,
 
         case 'p':
         {
-            float tmp     = move->data_pc->x - move->x;
-            float tmp_abs = ABS(tmp);
-            if (tmp_abs > 0.001F)
+            float tmp = move->data_pc->x - move->x;
+            if (ABS(tmp) > 0.001F)
             {
                 *vx_set = ca_pid_f32(move->pid_offset,
                                      move->x,
                                      move->data_pc->x);
             }
 
-            tmp     = move->data_pc->y - move->y;
-            tmp_abs = ABS(tmp);
-            if (tmp_abs > 0.001F)
+            tmp = move->data_pc->y - move->y;
+            if (ABS(tmp) > 0.001F)
             {
                 *vy_set = ca_pid_f32(move->pid_offset + 1,
                                      move->y,
@@ -533,8 +539,30 @@ static void chassis_loop_set(chassis_move_t *move)
              move->mode == CHASSIS_VECTOR_SLOW)
     {
         /* "angle_set" is rotation speed set-point */
-
         move->wz_set = angle_set;
+
+        /* left or right accelerated speed limit */
+        float delta = vx_set - move->vx_set;
+        if (delta > NORMAL_MAX_CHASSIS_SPEED_DELTA_X)
+        {
+            vx_set = move->vx_set + NORMAL_MAX_CHASSIS_SPEED_DELTA_X;
+        }
+        else if (delta < -NORMAL_MAX_CHASSIS_SPEED_DELTA_X)
+        {
+            vx_set = move->vx_set - NORMAL_MAX_CHASSIS_SPEED_DELTA_X;
+        }
+        /* forward accelerated speed limit */
+        delta = vy_set - move->vy_set;
+        if (delta > NORMAL_MAX_CHASSIS_SPEED_DELTA_Y)
+        {
+            vy_set = move->vy_set + NORMAL_MAX_CHASSIS_SPEED_DELTA_Y;
+        }
+        else if (delta < -NORMAL_MAX_CHASSIS_SPEED_DELTA_Y)
+        {
+            vy_set = move->vy_set - NORMAL_MAX_CHASSIS_SPEED_DELTA_Y;
+        }
+
+        /* speed limit */
         move->vx_set = LIMIT(vx_set, move->vx_min, move->vx_max);
         move->vy_set = LIMIT(vy_set, move->vy_min, move->vy_max);
     }
