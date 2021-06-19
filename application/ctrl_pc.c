@@ -1,33 +1,25 @@
 /**
  * *****************************************************************************
- * @file         ctrl_pc.c/h
+ * @file         ctrl_pc.c
  * @brief        control by usart
- * @author       ngu
- * @date         20210427
+ * @author       NGU
+ * @date         20210619
  * @version      1
- * @copyright    Copyright (c) 2021
- * @code         utf-8                                                  @endcode
+ * @copyright    Copyright (c) 2021 NGU
  * *****************************************************************************
 */
 
-/* Includes ------------------------------------------------------------------*/
 #include "ctrl_pc.h"
 
-/* Private includes ----------------------------------------------------------*/
 #include "bsp_usart.h"
 #include "main.h"
 
 #include <stdlib.h>
 
-/* Private typedef -----------------------------------------------------------*/
-/* Private define ------------------------------------------------------------*/
 #undef hpc
 #define hpc huart_os
 
-/* Private includes ----------------------------------------------------------*/
 extern UART_HandleTypeDef hpc;
-
-/* Private macro -------------------------------------------------------------*/
 
 #undef PC_IS_FLOAT
 #define PC_IS_FLOAT(x) \
@@ -55,18 +47,12 @@ extern UART_HandleTypeDef hpc;
     buff[j] = 0;                             \
     x       = (float)atof((char *)buff);
 
-/* Private variables ---------------------------------------------------------*/
-
 static ctrl_pc_t pc; /* pc control data */
 
 static uint8_t pc_rx_buf[2][PC_RX_BUFSIZ];
 
-/* Private function prototypes -----------------------------------------------*/
-
 static void ctrl_pc(volatile const uint8_t *buf,
                     uint16_t                len);
-
-/* Private user code ---------------------------------------------------------*/
 
 void ctrl_pc_init(void)
 {
@@ -210,4 +196,4 @@ static void ctrl_pc(volatile const uint8_t *buf,
     pc.c = 0;
 }
 
-/************************ (C) COPYRIGHT ngu ********************END OF FILE****/
+/************************ (C) COPYRIGHT NGU ********************END OF FILE****/

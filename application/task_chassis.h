@@ -1,27 +1,22 @@
 /**
  * *****************************************************************************
- * @file         task_chassis.c/h
+ * @file         task_chassis.h
  * @brief        task chassis
- * @author       ngu
- * @date         20210427
+ * @author       NGU
+ * @date         20210619
  * @version      1
- * @copyright    Copyright (c) 2021
- * @code         utf-8                                                  @endcode
+ * @copyright    Copyright (c) 2021 NGU
  * *****************************************************************************
 */
 
-/* Define to prevent recursive inclusion -------------------------------------*/
+/* Define to prevent recursive inclusion */
 #ifndef __TASK_CHASSIS_H__
 #define __TASK_CHASSIS_H__
 
-/* Includes ------------------------------------------------------------------*/
 #include "ca.h"
 #include "ctrl.h"
 #include "task_ins.h"
 
-/* Private includes ----------------------------------------------------------*/
-/* Exported constants --------------------------------------------------------*/
-/* Exported macro ------------------------------------------------------------*/
 #undef __BEGIN_DECLS
 #undef __END_DECLS
 
@@ -35,8 +30,6 @@
 #define __BEGIN_DECLS
 #define __END_DECLS
 #endif /* __cplusplus */
-
-/* Exported types ------------------------------------------------------------*/
 
 typedef enum
 {
@@ -125,17 +118,13 @@ typedef struct
     float yaw;
 } chassis_move_t;
 
-/* Exported functions prototypes ---------------------------------------------*/
-
 __BEGIN_DECLS
 
 extern void task_chassis(void *pvParameters);
 
 __END_DECLS
 
-/* Private defines -----------------------------------------------------------*/
-
-/* __TASK_CHASSIS_H__ --------------------------------------------------------*/
+/* Enddef to prevent recursive inclusion */
 #endif /* __TASK_CHASSIS_H__ */
 
-/************************ (C) COPYRIGHT ngu ********************END OF FILE****/
+/************************ (C) COPYRIGHT NGU ********************END OF FILE****/

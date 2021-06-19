@@ -1,27 +1,22 @@
 /**
  * *****************************************************************************
- * @file         ctrl_pc.c/h
+ * @file         ctrl_pc.h
  * @brief        control by usart
- * @author       ngu
- * @date         20210427
+ * @author       NGU
+ * @date         20210619
  * @version      1
- * @copyright    Copyright (c) 2021
- * @code         utf-8                                                  @endcode
+ * @copyright    Copyright (c) 2021 NGU
  * *****************************************************************************
 */
 
-/* Define to prevent recursive inclusion -------------------------------------*/
+/* Define to prevent recursive inclusion */
 #ifndef __CTRL_PC_H__
 #define __CTRL_PC_H__
 
-/* Includes ------------------------------------------------------------------*/
-/* Private includes ----------------------------------------------------------*/
 #include <stdint.h>
 
-/* Exported constants --------------------------------------------------------*/
 #define PC_RX_BUFSIZ 64U
 
-/* Exported macro ------------------------------------------------------------*/
 #undef __BEGIN_DECLS
 #undef __END_DECLS
 
@@ -38,8 +33,6 @@
 #undef __packed
 #define __packed __attribute__((__packed__))
 
-/* Exported types ------------------------------------------------------------*/
-
 typedef struct
 {
     float x;
@@ -48,8 +41,6 @@ typedef struct
 
     uint8_t c;
 } ctrl_pc_t;
-
-/* Exported functions prototypes ---------------------------------------------*/
 
 __BEGIN_DECLS
 
@@ -66,9 +57,7 @@ extern ctrl_pc_t *ctrl_pc_point(void);
 
 __BEGIN_DECLS
 
-/* Private defines -----------------------------------------------------------*/
-
-/* __CTRL_PC_H__ -------------------------------------------------------------*/
+/* Enddef to prevent recursive inclusion */
 #endif /* __CTRL_PC_H__ */
 
-/************************ (C) COPYRIGHT ngu ********************END OF FILE****/
+/************************ (C) COPYRIGHT NGU ********************END OF FILE****/
