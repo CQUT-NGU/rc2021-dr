@@ -31,7 +31,6 @@ extern UART_HandleTypeDef hpc;
 
 #undef PC_IS_FLOAT
 #define PC_IS_FLOAT(x) \
-                       \
     ((x >= '0' &&      \
       x <= '9') ||     \
      x == '+' ||       \
@@ -40,7 +39,6 @@ extern UART_HandleTypeDef hpc;
 
 #undef PC_DEAL_BUF
 #define PC_DEAL_BUF(x)                       \
-                                             \
     while (i != len && !PC_IS_FLOAT(buf[i])) \
     {                                        \
         i++;                                 \
@@ -55,8 +53,7 @@ extern UART_HandleTypeDef hpc;
         buff[j++] = buf[i++];                \
     }                                        \
     buff[j] = 0;                             \
-                                             \
-    x = atof((char *)buff);
+    x       = atof((char *)buff);
 
 /* Private variables ---------------------------------------------------------*/
 
