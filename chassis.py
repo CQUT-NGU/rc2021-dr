@@ -8,17 +8,29 @@ class chassis:
 
     Speed control can be achieved now, and position control will be implemented in the future
 
-    Args: string
+    Args:
+        port: the port will be opend
 
     Returns: boot
 
     Attributes:
         speed: Speed control
         position: Position control
+        shoot: shoot control
+        release: release control
     '''
 
-    def __init__(self, com) -> bool:
-        self.com = serial.Serial(com, 115200)
+    def __init__(self, port) -> bool:
+        self.port = port
+        self.rate = 115200
+
+    def _send(self, data):
+        with serial.Serial(self.port, self.rate) as s:
+            count = s.write(data)
+        if count == 14:
+            return True
+        else:
+            return False
 
     def speed(self, vx, vy, wz):
         '''Speed control
@@ -31,10 +43,7 @@ class chassis:
             bool
         '''
         data = bytes('V:'.encode()) + struct.pack('fff', vx, vy, wz)
-        if self.com.write(data) == 14:
-            return True
-        else:
-            return False
+        return self._send(data)
 
     def position(self, x, y, z):
         '''Position control
@@ -47,10 +56,7 @@ class chassis:
             bool
         '''
         data = bytes('P:'.encode()) + struct.pack('fff', x, y, z)
-        if self.com.write(data) == 14:
-            return True
-        else:
-            return False
+        return self._send(data)
 
     def shoot(self, x):
         '''Shoot control
@@ -61,19 +67,12 @@ class chassis:
             bool
         '''
         data = bytes('A:'.encode()) + struct.pack('fff', x, 0, 0)
-        if self.com.write(data) == 14:
-            return True
-        else:
-            return False
+        return self._send(data)
 
     def release(self):
         '''Release control'''
         data = bytes('0:'.encode()) + struct.pack('fff', 0, 0, 0)
-        self.com.write(data)
-        return self.com.close()
-
-    def close(self):
-        return self.com.close()
+        return self._send(data)
 
 
 if __name__ == '__main__':
@@ -81,4 +80,6 @@ if __name__ == '__main__':
 
     ch = chassis(sys.argv[1])
     ch.speed(float(sys.argv[2]), float(sys.argv[3]), float(sys.argv[4]))
-    ch.close()
+    while True:
+        inlist = input(':').split()
+        print(ch.speed(float(inlist[0]), float(inlist[1]), float(inlist[2])))
