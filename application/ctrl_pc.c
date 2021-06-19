@@ -114,7 +114,7 @@ void PC_IRQHandler(void)
             __HAL_DMA_DISABLE(hpc.hdmarx);
 
             /* Receive data length, length = set_data_length - remain_length */
-            len_rx = (uint8_t)(PC_RX_BUFSIZ - hpc.hdmarx->Instance->NDTR);
+            len_rx = (uint16_t)(PC_RX_BUFSIZ - hpc.hdmarx->Instance->NDTR);
             buf_rx = pc_rx_buf[0];
 
             /* Reset set_data_lenght */
@@ -134,7 +134,7 @@ void PC_IRQHandler(void)
             __HAL_DMA_DISABLE(hpc.hdmarx);
 
             /* Receive data length, length = set_data_length - remain_length */
-            len_rx = (uint8_t)(PC_RX_BUFSIZ - hpc.hdmarx->Instance->NDTR);
+            len_rx = (uint16_t)(PC_RX_BUFSIZ - hpc.hdmarx->Instance->NDTR);
             buf_rx = pc_rx_buf[1];
 
             /* Reset set_data_lenght */
@@ -160,20 +160,9 @@ static void ctrl_pc(volatile const uint8_t *buf,
     if ('A' <= *buf && *buf <= 'Z')
     {
         pc.c = *buf;
-        buf += 2;
-
-        float buf32[3];
-
-        uint8_t *pi = (uint8_t *)buf32;
-        uint8_t *pd = (uint8_t *)buf32 + 12;
-        while (pi != pd)
-        {
-            *pi++ = *buf++;
-        }
-
-        pc.x = buf32[0];
-        pc.y = buf32[1];
-        pc.z = buf32[2];
+        pc.x = *(float *)(buf + 2);
+        pc.y = *(float *)(buf + 2 + 4);
+        pc.z = *(float *)(buf + 2 + 4 + 4);
         return;
     }
     else if ('a' <= *buf && *buf <= 'z')
