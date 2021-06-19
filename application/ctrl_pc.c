@@ -53,7 +53,7 @@ extern UART_HandleTypeDef hpc;
         buff[j++] = buf[i++];                \
     }                                        \
     buff[j] = 0;                             \
-    x       = atof((char *)buff);
+    x       = (float)atof((char *)buff);
 
 /* Private variables ---------------------------------------------------------*/
 
@@ -64,8 +64,7 @@ static uint8_t pc_rx_buf[2][PC_RX_BUFSIZ];
 /* Private function prototypes -----------------------------------------------*/
 
 static void ctrl_pc(volatile const uint8_t *buf,
-                    uint16_t                len,
-                    ctrl_pc_t *             p);
+                    uint16_t                len);
 
 /* Private user code ---------------------------------------------------------*/
 
@@ -116,6 +115,7 @@ void PC_IRQHandler(void)
     else if (hpc.Instance->SR & UART_FLAG_IDLE)
     {
         static uint16_t len_rx = 0;
+        static uint8_t *buf_rx = 0;
 
         __HAL_UART_CLEAR_PEFLAG(&hpc); /* Clears the UART PE pending flag */
 
@@ -128,7 +128,8 @@ void PC_IRQHandler(void)
             __HAL_DMA_DISABLE(hpc.hdmarx);
 
             /* Receive data length, length = set_data_length - remain_length */
-            len_rx = PC_RX_BUFSIZ - hpc.hdmarx->Instance->NDTR;
+            len_rx = (uint8_t)(PC_RX_BUFSIZ - hpc.hdmarx->Instance->NDTR);
+            buf_rx = pc_rx_buf[0];
 
             /* Reset set_data_lenght */
             hpc.hdmarx->Instance->NDTR = PC_RX_BUFSIZ;
@@ -138,11 +139,6 @@ void PC_IRQHandler(void)
 
             /* Enable the specified DMA Stream */
             __HAL_DMA_ENABLE(hpc.hdmarx);
-
-            if (len_rx > 1U && pc_rx_buf[0U][1U] == ':')
-            {
-                ctrl_pc(pc_rx_buf[0], len_rx, &pc);
-            }
         }
         else
         {
@@ -152,7 +148,8 @@ void PC_IRQHandler(void)
             __HAL_DMA_DISABLE(hpc.hdmarx);
 
             /* Receive data length, length = set_data_length - remain_length */
-            len_rx = PC_RX_BUFSIZ - hpc.hdmarx->Instance->NDTR;
+            len_rx = (uint8_t)(PC_RX_BUFSIZ - hpc.hdmarx->Instance->NDTR);
+            buf_rx = pc_rx_buf[1];
 
             /* Reset set_data_lenght */
             hpc.hdmarx->Instance->NDTR = PC_RX_BUFSIZ;
@@ -162,35 +159,55 @@ void PC_IRQHandler(void)
 
             /* Enable the specified DMA Stream */
             __HAL_DMA_ENABLE(hpc.hdmarx);
+        }
 
-            if (len_rx > 1U && pc_rx_buf[1U][1U] == ':')
-            {
-                ctrl_pc(pc_rx_buf[1], len_rx, &pc);
-            }
+        if (len_rx > 1 && buf_rx[1] == ':')
+        {
+            ctrl_pc(buf_rx, len_rx);
         }
     }
 }
 
 static void ctrl_pc(volatile const uint8_t *buf,
-                    uint16_t                len,
-                    ctrl_pc_t *             pc)
+                    uint16_t                len)
 {
-    uint8_t buff[32] = {0};
-
-    uint16_t i = 2U;
-    uint8_t  j = 0U;
-
-    do
+    if ('A' <= *buf && *buf <= 'Z')
     {
-        PC_DEAL_BUF(pc->x);
-        PC_DEAL_BUF(pc->y);
-        PC_DEAL_BUF(pc->z);
+        pc.c = *buf;
+        buf += 2;
 
-        pc->c = buf[0];
+        float buf32[3];
+
+        uint8_t *pi = (uint8_t *)buf32;
+        uint8_t *pd = (uint8_t *)buf32 + 12;
+        while (pi != pd)
+        {
+            *pi++ = *buf++;
+        }
+
+        pc.x = buf32[0];
+        pc.y = buf32[1];
+        pc.z = buf32[2];
         return;
-    } while (0);
+    }
+    else if ('a' <= *buf && *buf <= 'z')
+    {
+        do
+        {
+            uint8_t  buff[32] = {0};
+            uint16_t i        = 2U;
+            uint8_t  j        = 0U;
 
-    pc->c = 0;
+            PC_DEAL_BUF(pc.x);
+            PC_DEAL_BUF(pc.y);
+            PC_DEAL_BUF(pc.z);
+
+            pc.c = buf[0];
+            return;
+        } while (0);
+    }
+
+    pc.c = 0;
 }
 
 /************************ (C) COPYRIGHT ngu ********************END OF FILE****/

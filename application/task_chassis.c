@@ -444,6 +444,7 @@ static void chassis_mode_ctrl(float *         vx_set,
 
         switch (move->data_pc->c)
         {
+        case 'V':
         case 'v':
         {
             *vx_set = move->data_pc->x;
@@ -464,7 +465,7 @@ static void chassis_mode_ctrl(float *         vx_set,
     {
         chassis_rc(vx_set, vy_set, move);
 
-        if (move->data_pc->c == 'p')
+        if (move.data_pc->c == 'p' || move.data_pc->c == 'P')
         {
             float tmp = move->data_pc->x - move->x;
             if (ABS(tmp) > 0.001F)
