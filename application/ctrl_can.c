@@ -41,18 +41,13 @@ extern CAN_HandleTypeDef hcan2;
         (ptr)->temperate = (data)[6];                               \
     } while (0)
 
-/* Private typedef -----------------------------------------------------------*/
-/* Private types -------------------------------------------------------------*/
-/* Private variables ---------------------------------------------------------*/
-
-static motor_t motor_chassis[4];
+static motor_t motor_chassis[5];
 
 static CAN_TxHeaderTypeDef chassis_tx_message;
 
 static uint8_t chassis_tx_can_data[8];
 
-/* Private function prototypes -----------------------------------------------*/
-/* Private user code ---------------------------------------------------------*/
+extern void shoot_angle_update(motor_t *mo);
 
 /**
  * @brief        hal CAN fifo call back, receive motor data
@@ -71,9 +66,13 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
     case CAN_ID_3508_M2:
     case CAN_ID_3508_M3:
     case CAN_ID_3508_M4:
+    case CAN_ID_3508_SHOOT:
     {
-        MOTOR_MEASURE(&motor_chassis[(header_rx.StdId - CAN_ID_3508_M1)],
-                      data_rx); /*!< Get motor id */
+        MOTOR_MEASURE(&motor_chassis[(header_rx.StdId - CAN_ID_3508_M1)], data_rx);
+        if (header_rx.StdId == CAN_ID_3508_SHOOT)
+        {
+            shoot_angle_update(motor_chassis + 4);
+        }
         break;
     }
 
@@ -100,14 +99,46 @@ void chassis_ctrl(int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4
     /*!< Specifies the length of the frame that will be transmitted */
     chassis_tx_message.DLC = 0x08U;
 
-    chassis_tx_can_data[0] = (motor1 >> 8);
-    chassis_tx_can_data[1] = (motor1 & 0xFFU);
-    chassis_tx_can_data[2] = (motor2 >> 8);
-    chassis_tx_can_data[3] = (motor2 & 0xFFU);
-    chassis_tx_can_data[4] = (motor3 >> 8);
-    chassis_tx_can_data[5] = (motor3 & 0xFFU);
-    chassis_tx_can_data[6] = (motor4 >> 8);
-    chassis_tx_can_data[7] = (motor4 & 0xFFU);
+    chassis_tx_can_data[0] = (uint8_t)(motor1 >> 8);
+    chassis_tx_can_data[1] = (uint8_t)(motor1);
+    chassis_tx_can_data[2] = (uint8_t)(motor2 >> 8);
+    chassis_tx_can_data[3] = (uint8_t)(motor2);
+    chassis_tx_can_data[4] = (uint8_t)(motor3 >> 8);
+    chassis_tx_can_data[5] = (uint8_t)(motor3);
+    chassis_tx_can_data[6] = (uint8_t)(motor4 >> 8);
+    chassis_tx_can_data[7] = (uint8_t)(motor4);
+
+    /**
+     * Add a message to the first free Tx mailbox and
+     * activate the corresponding transmission request 
+    */
+    (void)HAL_CAN_AddTxMessage(&CHASSIS_CAN,
+                               &chassis_tx_message,
+                               chassis_tx_can_data,
+                               &send_mail_box);
+}
+
+void other_ctrl(int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4)
+{
+    /*!< the TxMailbox used to store the Tx message */
+    uint32_t send_mail_box;
+    /*!< Specifies the type of identifier for the message */
+    chassis_tx_message.IDE = CAN_ID_STD;
+    /*!< Specifies the type of frame for the message */
+    chassis_tx_message.RTR = CAN_RTR_DATA;
+    /*!< Specifies the standard identifier */
+    chassis_tx_message.StdId = CAN_ID_OTHER_ALL;
+    /*!< Specifies the length of the frame that will be transmitted */
+    chassis_tx_message.DLC = 0x08U;
+
+    chassis_tx_can_data[0] = (uint8_t)(motor1 >> 8);
+    chassis_tx_can_data[1] = (uint8_t)(motor1);
+    chassis_tx_can_data[2] = (uint8_t)(motor2 >> 8);
+    chassis_tx_can_data[3] = (uint8_t)(motor2);
+    chassis_tx_can_data[4] = (uint8_t)(motor3 >> 8);
+    chassis_tx_can_data[5] = (uint8_t)(motor3);
+    chassis_tx_can_data[6] = (uint8_t)(motor4 >> 8);
+    chassis_tx_can_data[7] = (uint8_t)(motor4);
 
     /**
      * Add a message to the first free Tx mailbox and

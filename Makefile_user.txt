@@ -44,3 +44,4 @@ C_SOURCES += application/task_led.c
 C_SOURCES += application/task_chassis.c
 C_SOURCES += application/task_step.c
 C_SOURCES += application/task_ins.c
+C_SOURCES += application/task_shoot.c
