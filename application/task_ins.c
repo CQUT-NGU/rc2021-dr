@@ -372,7 +372,7 @@ void DMA2_Stream2_IRQHandler(void)
 }
 
 /**
- * @brief          rotate the gyro, accel and mag, and calculate the zero drift, 
+ * @brief          rotate the gyro, accel and mag, and calculate the zero drift,
  *                 because sensors have different install derection.
  * @param[out]     gyro:  after plus zero drift and rotate
  * @param[out]     accel: after plus zero drift and rotate
@@ -429,7 +429,7 @@ void offset_gyro_calc(float     offset[3],
  * @brief          calculate gyro zero drift
  * @param[out]     scale:  scale, default 1.0
  * @param[out]     offset: zero drift, collect the gyro ouput when in still
- * @param[out]     count:  time, when call offset_gyro_calc 
+ * @param[out]     count:  time, when call offset_gyro_calc
 */
 void ins_cali_gyro(float     scale[3],
                    float     offset[3],
@@ -456,7 +456,7 @@ void ins_cali_gyro(float     scale[3],
 /**
  * @brief          get gyro zero drift from flash
  * @param[in]      scale:  scale, default 1.0
- * @param[in]      offset: zero drift, 
+ * @param[in]      offset: zero drift,
 */
 void ins_cali_gyro_set(float scale[3], float offset[3])
 {
@@ -503,7 +503,7 @@ static void imu_temp_control(float temp)
 
 /**
  * @brief        Get the half of sampling period
- * @return       float 
+ * @return       float
 */
 static float ht_get(void)
 {

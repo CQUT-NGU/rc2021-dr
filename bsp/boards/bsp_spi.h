@@ -7,7 +7,7 @@
  * @version      1
  * @copyright    Copyright (c) 2021
  * @code         utf-8                                                  @endcode
- * @details      
+ * @details
  *               SPI1_SCK  ------> PB3
  *               SPI1_MOSI ------> PA7
  *               SPI1_MISO ------> PB4

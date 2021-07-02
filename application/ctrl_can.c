@@ -7,7 +7,7 @@
  * @version      1
  * @copyright    Copyright (c) 2021
  * @code         utf-8                                                  @endcode
- * @details      there is CAN interrupt function to receive motor data, and CAN 
+ * @details      there is CAN interrupt function to receive motor data, and CAN
  *               send function to send motor current to control motor.
  * *****************************************************************************
 */
@@ -28,7 +28,7 @@ extern CAN_HandleTypeDef hcan2;
 /* Private macro -------------------------------------------------------------*/
 
 /**
- * @brief motor data read 
+ * @brief motor data read
 */
 #define MOTOR_MEASURE(ptr, data)                                    \
                                                                     \
@@ -110,7 +110,7 @@ void chassis_ctrl(int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4
 
     /**
      * Add a message to the first free Tx mailbox and
-     * activate the corresponding transmission request 
+     * activate the corresponding transmission request
     */
     (void)HAL_CAN_AddTxMessage(&CHASSIS_CAN,
                                &chassis_tx_message,
@@ -142,7 +142,7 @@ void other_ctrl(int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4)
 
     /**
      * Add a message to the first free Tx mailbox and
-     * activate the corresponding transmission request 
+     * activate the corresponding transmission request
     */
     (void)HAL_CAN_AddTxMessage(&CHASSIS_CAN,
                                &chassis_tx_message,
@@ -174,7 +174,7 @@ void chassis_reset(void)
 
     /**
      * Add a message to the first free Tx mailbox and
-     * activate the corresponding transmission request 
+     * activate the corresponding transmission request
     */
     (void)HAL_CAN_AddTxMessage(&CHASSIS_CAN,
                                &chassis_tx_message,

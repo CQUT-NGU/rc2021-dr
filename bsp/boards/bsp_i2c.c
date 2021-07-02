@@ -7,7 +7,7 @@
  * @version      1
  * @copyright    Copyright (c) 2021
  * @code         utf-8                                                  @endcode
- * @details      
+ * @details
  * *****************************************************************************
 */
 

@@ -7,7 +7,7 @@
  * @version      1
  * @copyright    Copyright (c) 2021
  * @code         utf-8                                                  @endcode
- * @details      there is CAN interrupt function to receive motor data, and CAN 
+ * @details      there is CAN interrupt function to receive motor data, and CAN
  *               send function to send motor current to control motor.
  * *****************************************************************************
 */
@@ -43,7 +43,7 @@
 
 /**
  * @enum         can_msg_id_enum
- * @brief        CAN send and receive ID 
+ * @brief        CAN send and receive ID
 */
 typedef enum
 {
