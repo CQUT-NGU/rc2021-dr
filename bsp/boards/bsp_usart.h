@@ -29,11 +29,14 @@
 #define RC_IRQHandler USART3_IRQHandler
 
 #define huart_os huart1 /* usart, connect to the upper computer */
-#undef PC_IRQHandler
-#define PC_IRQHandler USART1_IRQHandler
+#undef OS_IRQHandler
+#define OS_IRQHandler USART1_IRQHandler
 
 extern UART_HandleTypeDef huart_rc;
 extern UART_HandleTypeDef huart_os;
+
+#define BUFSIZ_OS 256U
+extern uint8_t *os_buf;
 
 #undef __BEGIN_DECLS
 #undef __END_DECLS
@@ -104,8 +107,8 @@ extern void usart_dma_init(UART_HandleTypeDef *huart);
  * @param[in]    len:   DMA stream x number of data register
 */
 extern void usart_dma_rx(UART_HandleTypeDef *huart,
-                         uint8_t *buf1,
-                         uint8_t *buf2,
+                         void *buf1,
+                         void *buf2,
                          uint16_t len);
 
 /**
@@ -115,7 +118,7 @@ extern void usart_dma_rx(UART_HandleTypeDef *huart,
  * @param[in]    len:   the length of data
 */
 extern void usart_dma_tx(UART_HandleTypeDef *huart,
-                         uint8_t *data,
+                         void *data,
                          uint16_t len);
 
 /**
@@ -137,24 +140,7 @@ extern void os_printf(const char *format, ...);
 */
 extern void os_justfloat(uint8_t n, ...);
 
-/**
- * @brief        push float data to buffer by little-endian mode
- * @param[in]    f: float data
-*/
-extern void os_pushf(float f);
-
-/**
- * @brief        print float and tail data to USART by little-endian mode
-*/
-extern void os_tail(void);
-
-/**
- * @brief        print float to USART
- * @param[in]    x: float number
- * @param[in]    l: float number
-*/
-extern void os_putf(float x,
-                    uint8_t l);
+extern void os_dma_init(void);
 
 __END_DECLS
 

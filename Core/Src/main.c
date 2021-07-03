@@ -110,7 +110,7 @@ int main(void)
     delay_init();
     usart_init();
     ctrl_rc_init();
-    ctrl_pc_init();
+    os_dma_init();
     can_filter_init();
     spi_dma_init(&hspi1);
     //i2c_dma_tx_init(&hi2c3);

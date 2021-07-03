@@ -15,8 +15,6 @@
 
 #include <stdint.h>
 
-#define PC_RX_BUFSIZ 64U
-
 #undef __BEGIN_DECLS
 #undef __END_DECLS
 
@@ -43,11 +41,6 @@ typedef struct
 } ctrl_pc_t;
 
 __BEGIN_DECLS
-
-/**
- * @brief          Initializes the PC control function
-*/
-extern void ctrl_pc_init(void);
 
 /**
  * @brief        Get pc control data point
