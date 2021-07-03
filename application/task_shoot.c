@@ -20,6 +20,8 @@
 
 /* chassis 3508 max motor control current */
 #define MAX_MOTOR_CAN_CURRENT 0x4000
+/* chassis 3508 max motor calibration control current */
+#define MAX_MOTOR_CLI_CURRENT 2000
 
 /* M3508 rmp change to speed */
 /* x * 2 * PI / 60 / 19 */
@@ -68,11 +70,11 @@ static void shoot_cli(shoot_t *pdata)
 {
     static float angle = 0;
 
-    uint16_t count = 100;
+    uint16_t count = 200;
 
     do
     {
-        other_ctrl(800, 0, 0, 0);
+        other_ctrl(1000, 0, 0, 0);
 
         osDelay(50);
 
@@ -83,6 +85,9 @@ static void shoot_cli(shoot_t *pdata)
         }
         angle = pdata->angle;
     } while (--count);
+
+    pdata->out = 0;
+    other_ctrl(0, 0, 0, 0);
 }
 
 void task_shoot(void *pvParameters)
@@ -97,14 +102,14 @@ void task_shoot(void *pvParameters)
         shoot.motor = chassis_point(4);
         /* Speed pid */
         const float kpidv[3] = {
-            3000,
-            10,
+            1000,
+            1,
             0,
         };
         /* Angle pid */
         const float kpida[3] = {
-            1000,
-            1,
+            500,
+            2,
             0,
         };
         /* Speed pid initialization */
@@ -112,18 +117,18 @@ void task_shoot(void *pvParameters)
                             kpidv,
                             -MAX_MOTOR_CAN_CURRENT,
                             MAX_MOTOR_CAN_CURRENT,
-                            2000);
+                            MAX_MOTOR_CLI_CURRENT);
         /* Angle pid initialization */
         ca_pid_f32_position(&shoot.pida,
                             kpida,
-                            -MAX_MOTOR_CAN_CURRENT,
-                            MAX_MOTOR_CAN_CURRENT,
-                            2000);
+                            -MAX_MOTOR_CLI_CURRENT,
+                            MAX_MOTOR_CLI_CURRENT,
+                            MAX_MOTOR_CLI_CURRENT);
         /* Set the limit of the angle */
         shoot.angle_min = 0;
         shoot.angle_max = (float)M_PI;
         /* Start to calibrate the zero point */
-        //shoot_cli(&shoot);
+        shoot_cli(&shoot);
     }
 
     /* The data address of the host computer */
@@ -166,31 +171,44 @@ void task_shoot(void *pvParameters)
 
             if (shoot.stats == SHOOT_STATS_STOP)
             {
-                if (shoot.v_set > 0.01F)
+                if (-0.01F < shoot.v && shoot.v < 0.01F)
                 {
-                    shoot.v_set -= 0.01F;
+                    shoot.stats = SHOOT_STATS_RESET;
+                    ca_pid_f32_reset(&shoot.pidv);
+                    float angle = shoot.angle;
+                    do
+                    {
+                        shoot.out = (int16_t)ca_pid_f32(&shoot.pida,
+                                                        shoot.angle_min,
+                                                        shoot.angle);
+                        other_ctrl(shoot.out, 0, 0, 0);
+
+                        osDelay(10);
+
+                        if (*(int32_t *)&angle == *(int32_t *)&shoot.angle)
+                        {
+                            shoot.out = 0;
+                            shoot.angle = 0;
+                            break;
+                        }
+                        angle = shoot.angle;
+                    } while (1);
                 }
                 else
                 {
-                    shoot.v_set = 0;
+                    if (shoot.v_set > 0.01F)
+                    {
+                        shoot.v_set -= 0.01F;
+                    }
+                    else
+                    {
+                        shoot.v_set = 0;
+                    }
+
+                    shoot.out = (int16_t)ca_pid_f32(&shoot.pidv,
+                                                    shoot.v,
+                                                    shoot.v_set);
                 }
-
-                shoot.out = (int16_t)ca_pid_f32(&shoot.pidv,
-                                                shoot.v,
-                                                shoot.v_set);
-
-                if (-0.01F < shoot.acc && shoot.acc < 0.01F)
-                {
-                    shoot.stats = SHOOT_STATS_RESET;
-                    //shoot_cli(&shoot);
-                }
-            }
-
-            if (shoot.stats == SHOOT_STATS_RESET)
-            {
-                shoot.out = (int16_t)ca_pid_f32(&shoot.pida,
-                                                0,
-                                                shoot.angle);
             }
         }
 
