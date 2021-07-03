@@ -2,21 +2,16 @@
  * *****************************************************************************
  * @file         ist8310reg.h
  * @brief        ist8310 of divices
- * @author       ngu
+ * @author       NGU
  * @date         20210427
  * @version      1
- * @copyright    Copyright (c) 2021
- * @code         utf-8                                                  @endcode
+ * @copyright    Copyright (C) 2021 NGU
  * *****************************************************************************
 */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __IST8310REG_H__
 #define __IST8310REG_H__
-
-/* Includes ------------------------------------------------------------------*/
-/* Private includes ----------------------------------------------------------*/
-/* Exported constants --------------------------------------------------------*/
 
 /* IST8310 internal reg addr */
 #define IST8310_ADDRESS     0x0E
@@ -41,7 +36,6 @@
 /* sigle measure mode */
 #define IST8310_ODR_MODE 0x01
 
-/* Exported macro ------------------------------------------------------------*/
 #undef __BEGIN_DECLS
 #undef __END_DECLS
 
@@ -55,11 +49,7 @@
 #define __END_DECLS
 #endif /* __cplusplus */
 
-/* Exported types ------------------------------------------------------------*/
-/* Exported functions prototypes ---------------------------------------------*/
-/* Private defines -----------------------------------------------------------*/
-
-/* __IST8310REG_H__ ----------------------------------------------------------*/
+/* Enddef to prevent recursive inclusion ------------------------------------ */
 #endif /* __IST8310REG_H__ */
 
-/************************ (C) COPYRIGHT ngu ********************END OF FILE****/
+/************************ (C) COPYRIGHT NGU ********************END OF FILE****/

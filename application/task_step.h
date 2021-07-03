@@ -1,12 +1,11 @@
 /**
  * *****************************************************************************
- * @file         task_step.c/h
+ * @file         task_step.h
  * @brief        stepping motor control task
- * @author       ngu
+ * @author       NGU
  * @date         20210501
  * @version      1
- * @copyright    Copyright (C) 2021
- * @code         utf-8                                                  @endcode
+ * @copyright    Copyright (C) 2021 NGU
  * *****************************************************************************
 */
 
@@ -14,10 +13,6 @@
 #ifndef __TASK_STEP_H__
 #define __TASK_STEP_H__
 
-/* Includes ------------------------------------------------------------------*/
-/* Private includes ----------------------------------------------------------*/
-/* Exported constants --------------------------------------------------------*/
-/* Exported macro ------------------------------------------------------------*/
 #undef __BEGIN_DECLS
 #undef __END_DECLS
 
@@ -32,16 +27,11 @@
 #define __END_DECLS
 #endif /* __cplusplus */
 
-/* Exported types ------------------------------------------------------------*/
-/* Exported functions prototypes ---------------------------------------------*/
-
 __BEGIN_DECLS
 
 __END_DECLS
 
-/* Private defines -----------------------------------------------------------*/
-
-/* Terminate definition to prevent recursive inclusion -----------------------*/
+/* Enddef to prevent recursive inclusion ------------------------------------ */
 #endif /* __TASK_STEP_H__ */
 
 /************************ (C) COPYRIGHT NGU ********************END OF FILE****/

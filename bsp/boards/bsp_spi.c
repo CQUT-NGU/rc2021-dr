@@ -1,28 +1,17 @@
 /**
  * *****************************************************************************
- * @file         bsp_spi.c/h
+ * @file         bsp_spi.c
  * @brief        spi of boards
- * @author       tqfx
+ * @author       NGU
  * @date         20210427
  * @version      1
- * @copyright    Copyright (c) 2021
- * @code         utf-8                                                  @endcode
+ * @copyright    Copyright (C) 2021 NGU
  * *****************************************************************************
 */
 
-/* Includes ------------------------------------------------------------------*/
 #include "bsp_spi.h"
 
-/* Private includes ----------------------------------------------------------*/
 #include "main.h"
-
-/* Private define ------------------------------------------------------------*/
-/* Private macro -------------------------------------------------------------*/
-/* Private typedef -----------------------------------------------------------*/
-/* Private types -------------------------------------------------------------*/
-/* Private variables ---------------------------------------------------------*/
-/* Private function prototypes -----------------------------------------------*/
-/* Private user code ---------------------------------------------------------*/
 
 void spi_dma_init(SPI_HandleTypeDef *hspi)
 {
@@ -61,9 +50,9 @@ void spi_dma_init(SPI_HandleTypeDef *hspi)
 }
 
 void spi_dma_start(SPI_HandleTypeDef *hspi,
-                   uint32_t           buf_tx,
-                   uint32_t           buf_rx,
-                   uint16_t           len)
+                   uint32_t buf_tx,
+                   uint32_t buf_rx,
+                   uint16_t len)
 {
     do
     {
@@ -97,4 +86,4 @@ void spi_dma_start(SPI_HandleTypeDef *hspi,
     __HAL_DMA_ENABLE(hspi->hdmatx);
 }
 
-/************************ (C) COPYRIGHT tqfx *******************END OF FILE****/
+/************************ (C) COPYRIGHT NGU ********************END OF FILE****/

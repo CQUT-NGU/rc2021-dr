@@ -1,27 +1,16 @@
 /**
  * *****************************************************************************
- * @file         bsp_i2c.c/h
+ * @file         bsp_i2c.c
  * @brief        i2c of boards
- * @author       ngu
+ * @author       NGU
  * @date         20210427
  * @version      1
- * @copyright    Copyright (c) 2021
- * @code         utf-8                                                  @endcode
+ * @copyright    Copyright (C) 2021 NGU
  * @details
  * *****************************************************************************
 */
 
-/* Includes ------------------------------------------------------------------*/
 #include "bsp_i2c.h"
-
-/* Private includes ----------------------------------------------------------*/
-/* Private define ------------------------------------------------------------*/
-/* Private macro -------------------------------------------------------------*/
-/* Private typedef -----------------------------------------------------------*/
-/* Private types -------------------------------------------------------------*/
-/* Private variables ---------------------------------------------------------*/
-/* Private function prototypes -----------------------------------------------*/
-/* Private user code ---------------------------------------------------------*/
 
 void i2c_reset(I2C_HandleTypeDef *hi2c)
 {
@@ -36,15 +25,15 @@ void i2c_reset(I2C_HandleTypeDef *hi2c)
 }
 
 void i2c_master_transmit(I2C_HandleTypeDef *hi2c,
-                         uint16_t           addr,
-                         uint8_t *          data,
-                         uint16_t           len)
+                         uint16_t addr,
+                         uint8_t *data,
+                         uint16_t len)
 {
     HAL_I2C_Master_Transmit(hi2c, addr, data, len, 100U);
 }
 
 uint8_t i2c_check_ack(I2C_HandleTypeDef *hi2c,
-                      uint16_t           addr)
+                      uint16_t addr)
 {
     if ((hi2c->Instance->CR2 & I2C_CR2_DMAEN) &&
         ((hi2c->hdmatx != NULL && hi2c->hdmatx->Instance->NDTR != 0) ||
@@ -143,8 +132,8 @@ void i2c_dma_tx_init(I2C_HandleTypeDef *hi2c)
 }
 
 void i2c_dma_tx(I2C_HandleTypeDef *hi2c,
-                uint32_t           addr,
-                uint16_t           ndtr)
+                uint32_t addr,
+                uint16_t ndtr)
 {
     do
     {
@@ -165,7 +154,7 @@ void i2c_dma_tx(I2C_HandleTypeDef *hi2c,
 }
 
 HAL_StatusTypeDef i2c_dma_tx_start(I2C_HandleTypeDef *hi2c,
-                                   uint16_t           DevAddress)
+                                   uint16_t DevAddress)
 {
     uint16_t timeout = 0;
 
@@ -238,9 +227,9 @@ HAL_StatusTypeDef i2c_dma_tx_start(I2C_HandleTypeDef *hi2c,
 }
 
 void i2c_dma_transmit(I2C_HandleTypeDef *hi2c,
-                      uint16_t           DevAddress,
-                      uint8_t *          pData,
-                      uint16_t           Size)
+                      uint16_t DevAddress,
+                      uint8_t *pData,
+                      uint16_t Size)
 {
     if (i2c_dma_tx_start(hi2c, DevAddress) == HAL_OK)
     {
@@ -248,4 +237,4 @@ void i2c_dma_transmit(I2C_HandleTypeDef *hi2c,
     }
 }
 
-/************************ (C) COPYRIGHT ngu ********************END OF FILE****/
+/************************ (C) COPYRIGHT NGU ********************END OF FILE****/

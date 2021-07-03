@@ -1,12 +1,11 @@
 /**
  * *****************************************************************************
- * @file         bsp_uart.c/h
+ * @file         bsp_uart.h
  * @brief        uart of boards
- * @author       ngu
+ * @author       NGU
  * @date         20210417
  * @version      1
- * @copyright    Copyright (c) 2021
- * @code         utf-8                                                  @endcode
+ * @copyright    Copyright (C) 2021 NGU
  * @details
  *               UART7_TX ------> PE8
  *               UART7_RX ------> PE7
@@ -19,15 +18,11 @@
 #ifndef __BSP_UART_H__
 #define __BSP_UART_H__
 
-/* Includes ------------------------------------------------------------------*/
 #include "bsp_dma.h"
 #include "main.h"
 
-/* Private includes ----------------------------------------------------------*/
 #include <stdint.h>
 
-/* Exported constants --------------------------------------------------------*/
-/* Exported macro ------------------------------------------------------------*/
 #undef __BEGIN_DECLS
 #undef __END_DECLS
 
@@ -41,16 +36,11 @@
 #define __END_DECLS
 #endif /* __cplusplus */
 
-/* Exported types ------------------------------------------------------------*/
-/* Exported functions prototypes ---------------------------------------------*/
-
 __BEGIN_DECLS
 
 __END_DECLS
 
-/* Private defines -----------------------------------------------------------*/
-
-/* __BSP_UART_H__ ------------------------------------------------------------*/
+/* Enddef to prevent recursive inclusion ------------------------------------ */
 #endif /* __BSP_UART_H__ */
 
-/************************ (C) COPYRIGHT ngu ********************END OF FILE****/
+/************************ (C) COPYRIGHT NGU ********************END OF FILE****/

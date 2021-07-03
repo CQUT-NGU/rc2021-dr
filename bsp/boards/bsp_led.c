@@ -1,12 +1,11 @@
 /**
  * *****************************************************************************
- * @file         bsp_led.c/h
+ * @file         bsp_led.c
  * @brief        led of boards
- * @author       ngu
+ * @author       NGU
  * @date         20210501
  * @version      1
- * @copyright    Copyright (c) 2021
- * @code         utf-8                                                  @endcode
+ * @copyright    Copyright (C) 2021 NGU
  * @details      GPIO PIN
  *               LED_R ------> PH12
  *               LED_G ------> PH11
@@ -14,13 +13,9 @@
  * *****************************************************************************
 */
 
-/* Includes ------------------------------------------------------------------*/
 #include "bsp_led.h"
 
-/* Private includes ----------------------------------------------------------*/
 #include "main.h"
-
-/* Private define ------------------------------------------------------------*/
 
 #undef htim
 #define htim htim5
@@ -32,10 +27,7 @@
 #undef LED_CHANNEL_B
 #define LED_CHANNEL_B TIM_CHANNEL_1
 
-/* Private includes ----------------------------------------------------------*/
 extern TIM_HandleTypeDef htim;
-
-/* Private macro -------------------------------------------------------------*/
 
 #undef LED_W
 #define LED_W(GPIOx, PIN, STATE)                \
@@ -79,13 +71,7 @@ extern TIM_HandleTypeDef htim;
         }                                       \
     } while (0)
 
-/* Private typedef -----------------------------------------------------------*/
-/* Private types -------------------------------------------------------------*/
-/* Private variables ---------------------------------------------------------*/
-/* Private function prototypes -----------------------------------------------*/
-/* Private user code ---------------------------------------------------------*/
-
-void led_write(led_e       pin,
+void led_write(led_e pin,
                led_state_e state)
 {
     switch (pin)
@@ -160,7 +146,7 @@ void led_pwm_stop(void)
     HAL_TIM_PWM_Stop(&htim, LED_CHANNEL_B);
 }
 
-void led_pwm_set(led_e    pin,
+void led_pwm_set(led_e pin,
                  uint16_t value)
 {
     /*!< Set the TIM Capture Compare Register value on runtime */
@@ -186,4 +172,4 @@ void led_pwm_set(led_e    pin,
     }
 }
 
-/************************ (C) COPYRIGHT ngu ********************END OF FILE****/
+/************************ (C) COPYRIGHT NGU ********************END OF FILE****/

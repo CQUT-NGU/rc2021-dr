@@ -5,8 +5,7 @@
  * @author       NGU
  * @date         20210509
  * @version      1
- * @copyright    Copyright (c) 2021
- * @code         utf-8                                                  @endcode
+ * @copyright    Copyright (C) 2021 NGU
  * *****************************************************************************
 */
 
@@ -123,7 +122,7 @@ chassis_move_t move;
 static void chassis_mecanum(const float vx_set,
                             const float vy_set,
                             const float wz_set,
-                            float       wheel_speed[4]);
+                            float wheel_speed[4]);
 
 static void chassis_init(void);
 static void chassis_update(void);
@@ -525,7 +524,7 @@ static void chassis_loop_set(void)
 
         /* set chassis yaw angle set-point */
         move.yaw_set = restrict_rad_f32(angle_set);
-        delat_angle  = restrict_rad_f32(move.yaw_set - move.yaw);
+        delat_angle = restrict_rad_f32(move.yaw_set - move.yaw);
 
         /* calculate rotation speed */
         move.wz_set = ca_pid_f32(&move.pid_angle, 0, delat_angle);
@@ -556,7 +555,7 @@ static void chassis_loop_set(void)
 static void chassis_mecanum(const float vx_set,
                             const float vy_set,
                             const float wz_set,
-                            float       wheel_speed[4])
+                            float wheel_speed[4])
 {
     wheel_speed[0] = +vx_set - vy_set - wz_set * MOTOR_DISTANCE_TO_CENTER;
     wheel_speed[1] = +vx_set + vy_set - wz_set * MOTOR_DISTANCE_TO_CENTER;

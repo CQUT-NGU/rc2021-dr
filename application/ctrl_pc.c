@@ -5,7 +5,7 @@
  * @author       NGU
  * @date         20210619
  * @version      1
- * @copyright    Copyright (c) 2021 NGU
+ * @copyright    Copyright (C) 2021 NGU
  * *****************************************************************************
 */
 
@@ -45,14 +45,14 @@ extern UART_HandleTypeDef hpc;
         buff[j++] = buf[i++];                \
     }                                        \
     buff[j] = 0;                             \
-    x       = (float)atof((char *)buff);
+    x = (float)atof((char *)buff);
 
 static ctrl_pc_t pc; /* pc control data */
 
 static uint8_t pc_rx_buf[2][PC_RX_BUFSIZ];
 
 static void ctrl_pc(volatile const uint8_t *buf,
-                    uint16_t                len);
+                    uint16_t len);
 
 void ctrl_pc_init(void)
 {
@@ -65,7 +65,7 @@ ctrl_pc_t *ctrl_pc_point(void)
     return &pc;
 }
 
-extern unsigned char  dma_print_buf[256];
+extern unsigned char dma_print_buf[256];
 extern unsigned char *dma_print_pn;
 
 /**
@@ -155,7 +155,7 @@ void PC_IRQHandler(void)
 }
 
 static void ctrl_pc(volatile const uint8_t *buf,
-                    uint16_t                len)
+                    uint16_t len)
 {
     if ('A' <= *buf && *buf <= 'Z')
     {
@@ -169,9 +169,9 @@ static void ctrl_pc(volatile const uint8_t *buf,
     {
         do
         {
-            uint8_t  buff[32] = {0};
-            uint16_t i        = 2U;
-            uint8_t  j        = 0U;
+            uint8_t buff[32] = {0};
+            uint16_t i = 2U;
+            uint8_t j = 0U;
 
             PC_DEAL_BUF(pc.x);
             PC_DEAL_BUF(pc.y);

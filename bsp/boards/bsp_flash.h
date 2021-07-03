@@ -1,12 +1,11 @@
 /**
  * *****************************************************************************
- * @file         bsp_flash.c/h
+ * @file         bsp_flash.h
  * @brief        flash of boards
- * @author       ngu
+ * @author       NGU
  * @date         2021027
  * @version      1
- * @copyright    Copyright (c) 2020-2021
- * @code         utf-8                                                  @endcode
+ * @copyright    Copyright (C) 2020-2021
  * *****************************************************************************
 */
 
@@ -14,13 +13,9 @@
 #ifndef __BSP_FLASH_H__
 #define __BSP_FLASH_H__
 
-/* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
-/* Private includes ----------------------------------------------------------*/
 #include <stdint.h>
-
-/* Exported constants --------------------------------------------------------*/
 
 /* Base address of the Flash sectors */
 
@@ -244,7 +239,6 @@
 #define ADDR_FLASH_END ((uint32_t)0x08200000)
 #endif /* ADDR_FLASH_END */
 
-/* Exported macro ------------------------------------------------------------*/
 #undef __BEGIN_DECLS
 #undef __END_DECLS
 
@@ -257,9 +251,6 @@
 #define __BEGIN_DECLS
 #define __END_DECLS
 #endif /* __cplusplus */
-
-/* Exported types ------------------------------------------------------------*/
-/* Exported functions prototypes ---------------------------------------------*/
 
 __BEGIN_DECLS
 
@@ -291,9 +282,9 @@ extern void flash_erase(uint32_t addr,
  * @param[out]   buf:  data point
  * @param[in]    len:  data num
 */
-extern void flash_read(uint32_t  addr,
+extern void flash_read(uint32_t addr,
                        uint32_t *buf,
-                       uint32_t  len);
+                       uint32_t len);
 
 /**
  * @brief        write data to one page of flash
@@ -302,9 +293,9 @@ extern void flash_read(uint32_t  addr,
  * @param[in]    len:  data num
  * @return       int8_t success 0, failure -1
 */
-extern int8_t flash_write(uint32_t  addr,
+extern int8_t flash_write(uint32_t addr,
                           uint32_t *buf,
-                          uint32_t  len);
+                          uint32_t len);
 
 /**
  * @brief        write data to some pages of flash
@@ -314,16 +305,14 @@ extern int8_t flash_write(uint32_t  addr,
  * @param[in]    len:      data num
  * @return       int8_t success 0, failure -1
 */
-extern int8_t flash_writen(uint32_t  addr,
-                           uint32_t  addr_end,
+extern int8_t flash_writen(uint32_t addr,
+                           uint32_t addr_end,
                            uint32_t *buf,
-                           uint32_t  len);
+                           uint32_t len);
 
 __END_DECLS
 
-/* Private defines -----------------------------------------------------------*/
-
-/* __BSP_FLASH_H__ -----------------------------------------------------------*/
+/* Enddef to prevent recursive inclusion ------------------------------------ */
 #endif /* __BSP_FLASH_H__ */
 
-/************************ (C) COPYRIGHT ngu ********************END OF FILE****/
+/************************ (C) COPYRIGHT NGU ********************END OF FILE****/

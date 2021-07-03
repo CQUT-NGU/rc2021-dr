@@ -1,12 +1,11 @@
 /**
  * *****************************************************************************
- * @file         ctrl.c/h
+ * @file         ctrl.h
  * @brief        control
- * @author       ngu
+ * @author       NGU
  * @date         20210427
  * @version      1
- * @copyright    Copyright (c) 2021
- * @code         utf-8                                                  @endcode
+ * @copyright    Copyright (C) 2021 NGU
  * *****************************************************************************
 */
 
@@ -14,14 +13,10 @@
 #ifndef __CTRL_H__
 #define __CTRL_H__
 
-/* Includes ------------------------------------------------------------------*/
 #include "ctrl_can.h"
 #include "ctrl_pc.h"
 #include "ctrl_rc.h"
 
-/* Private includes ----------------------------------------------------------*/
-/* Exported constants --------------------------------------------------------*/
-/* Exported macro ------------------------------------------------------------*/
 #undef __BEGIN_DECLS
 #undef __END_DECLS
 
@@ -35,16 +30,11 @@
 #define __END_DECLS
 #endif /* __cplusplus */
 
-/* Exported types ------------------------------------------------------------*/
-/* Exported functions prototypes ---------------------------------------------*/
-
 __BEGIN_DECLS
 
 __END_DECLS
 
-/* Private defines -----------------------------------------------------------*/
-
-/* __CTRL_H__ ----------------------------------------------------------------*/
+/* Enddef to prevent recursive inclusion ------------------------------------ */
 #endif /* __CTRL_H__ */
 
-/************************ (C) COPYRIGHT ngu ********************END OF FILE****/
+/************************ (C) COPYRIGHT NGU ********************END OF FILE****/

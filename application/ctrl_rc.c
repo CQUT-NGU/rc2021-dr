@@ -1,40 +1,28 @@
 /**
  * *****************************************************************************
- * @file         ctrl_rc.c/h
+ * @file         ctrl_rc.c
  * @brief        control by remote
- * @author       ngu
+ * @author       NGU
  * @date         20210427
  * @version      1
- * @copyright    Copyright (c) 2021
- * @code         utf-8                                                  @endcode
+ * @copyright    Copyright (C) 2021 NGU
  * *****************************************************************************
 */
 
-/* Includes ------------------------------------------------------------------*/
 #include "ctrl_rc.h"
 
-/* Private includes ----------------------------------------------------------*/
 #include "bsp_usart.h"
 #include "main.h"
 
-/* Private define ------------------------------------------------------------*/
 #undef hrc
 #define hrc huart_rc
 
-/* Private includes ----------------------------------------------------------*/
 extern UART_HandleTypeDef hrc;
-
-/* Private macro -------------------------------------------------------------*/
-/* Private typedef -----------------------------------------------------------*/
-/* Private types -------------------------------------------------------------*/
-/* Private variables ---------------------------------------------------------*/
 
 static ctrl_rc_t rc; /* remote control data */
 
 /* receive data, 18 bytes one frame, but set 36 bytes */
 static uint8_t sbus_rx_buf[2][SBUS_RX_BUF_NUM];
-
-/* Private function prototypes -----------------------------------------------*/
 
 /**
  * @brief        Remote control protocol resolution
@@ -42,9 +30,7 @@ static uint8_t sbus_rx_buf[2][SBUS_RX_BUF_NUM];
  * @param[out]   rc:  remote control data struct point
 */
 static void sbus_to_rc(volatile const uint8_t *buf,
-                       ctrl_rc_t *             rc);
-
-/* Private user code ---------------------------------------------------------*/
+                       ctrl_rc_t *rc);
 
 void ctrl_rc_init(void)
 {
@@ -160,4 +146,4 @@ static void sbus_to_rc(volatile const uint8_t *buf, ctrl_rc_t *rc)
     rc->rc.ch[4] -= RC_CH_VALUE_OFFSET;
 }
 
-/************************ (C) COPYRIGHT ngu ********************END OF FILE****/
+/************************ (C) COPYRIGHT NGU ********************END OF FILE****/

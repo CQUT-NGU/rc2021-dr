@@ -1,21 +1,18 @@
 /**
  * *****************************************************************************
- * @file         ctrl_can.c/h
+ * @file         ctrl_can.c
  * @brief        can control
- * @author       ngu
+ * @author       NGU
  * @date         20210427
  * @version      1
- * @copyright    Copyright (c) 2021
- * @code         utf-8                                                  @endcode
+ * @copyright    Copyright (C) 2021 NGU
  * @details      there is CAN interrupt function to receive motor data, and CAN
  *               send function to send motor current to control motor.
  * *****************************************************************************
 */
 
-/* Includes ------------------------------------------------------------------*/
 #include "ctrl_can.h"
 
-/* Private includes ----------------------------------------------------------*/
 #include "bsp.h"
 #include "main.h"
 
@@ -24,21 +21,18 @@ extern CAN_HandleTypeDef hcan1;
 extern CAN_HandleTypeDef hcan2;
 #endif /* CAN2_IS_ENABLE */
 
-/* Private define ------------------------------------------------------------*/
-/* Private macro -------------------------------------------------------------*/
-
 /**
  * @brief motor data read
 */
-#define MOTOR_MEASURE(ptr, data)                                    \
-                                                                    \
-    do                                                              \
-    {                                                               \
-        (ptr)->ecd_last  = (ptr)->ecd;                              \
-        (ptr)->ecd       = (uint16_t)((data)[0] << 8U | (data)[1]); \
-        (ptr)->v_rpm     = (int16_t)((data)[2] << 8U | (data)[3]);  \
-        (ptr)->i_current = (int16_t)((data)[4] << 8U | (data)[5]);  \
-        (ptr)->temperate = (data)[6];                               \
+#define MOTOR_MEASURE(ptr, data)                                   \
+                                                                   \
+    do                                                             \
+    {                                                              \
+        (ptr)->ecd_last = (ptr)->ecd;                              \
+        (ptr)->ecd = (uint16_t)((data)[0] << 8U | (data)[1]);      \
+        (ptr)->v_rpm = (int16_t)((data)[2] << 8U | (data)[3]);     \
+        (ptr)->i_current = (int16_t)((data)[4] << 8U | (data)[5]); \
+        (ptr)->temperate = (data)[6];                              \
     } while (0)
 
 static motor_t motor_chassis[5];
@@ -55,8 +49,8 @@ extern void shoot_angle_update(motor_t *mo);
 */
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
-    CAN_RxHeaderTypeDef header_rx  = {0};
-    static uint8_t      data_rx[8] = {0};
+    CAN_RxHeaderTypeDef header_rx = {0};
+    static uint8_t data_rx[8] = {0};
 
     (void)HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &header_rx, data_rx);
 
@@ -182,4 +176,4 @@ void chassis_reset(void)
                                &send_mail_box);
 }
 
-/************************ (C) COPYRIGHT ngu ********************END OF FILE****/
+/************************ (C) COPYRIGHT NGU ********************END OF FILE****/

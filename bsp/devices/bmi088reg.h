@@ -2,19 +2,16 @@
  * *****************************************************************************
  * @file         bmi088reg.h
  * @brief        The register address of bmi088
- * @author       ngu
+ * @author       NGU
  * @date         20210427
  * @version      1
- * @copyright    Copyright (C) 2021
- * @code         utf-8                                                  @endcode
+ * @copyright    Copyright (C) 2021 NGU
  * *****************************************************************************
 */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __BMI088REG_H__
 #define __BMI088REG_H__
-
-/* Exported constants --------------------------------------------------------*/
 
 #define BMI088_ACC_CHIP_ID       0x00 /*!< the register is  " Who am I " */
 #define BMI088_ACC_CHIP_ID_VALUE 0x1E
@@ -192,7 +189,6 @@
 #define BMI088_GYRO_TRIG_BIST_SHFITS 0x0
 #define BMI088_GYRO_TRIG_BIST        (0x1 << BMI088_GYRO_TRIG_BIST_SHFITS)
 
-/* Exported macro ------------------------------------------------------------*/
 #undef __BEGIN_DECLS
 #undef __END_DECLS
 
@@ -206,7 +202,7 @@
 #define __END_DECLS
 #endif /* __cplusplus */
 
-/* __BMI088REG_H__ -----------------------------------------------------------*/
+/* Enddef to prevent recursive inclusion ------------------------------------ */
 #endif /* __BMI088REG_H__ */
 
-/************************ (C) COPYRIGHT ngu ********************END OF FILE****/
+/************************ (C) COPYRIGHT NGU ********************END OF FILE****/

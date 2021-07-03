@@ -1,12 +1,11 @@
 /**
  * *****************************************************************************
- * @file         bsp_can.c/h
+ * @file         bsp_can.h
  * @brief        can of boards
- * @author       ngu
+ * @author       NGU
  * @date         20210427
  * @version      1
- * @copyright    Copyright (c) 2021
- * @code         utf-8                                                  @endcode
+ * @copyright    Copyright (C) 2021 NGU
  * @details
  *               CAN1_RX ------> PD0
  *               CAN1_TX ------> PD1
@@ -19,12 +18,8 @@
 #ifndef __BSP_CAN_H__
 #define __BSP_CAN_H__
 
-/* Includes ------------------------------------------------------------------*/
-/* Private includes ----------------------------------------------------------*/
 #include <stdint.h>
 
-/* Exported constants --------------------------------------------------------*/
-/* Exported macro ------------------------------------------------------------*/
 #undef __BEGIN_DECLS
 #undef __END_DECLS
 
@@ -42,9 +37,6 @@
 #define CAN2_IS_ENABLE 1
 #endif /* CAN2_IS_ENABLE */
 
-/* Exported types ------------------------------------------------------------*/
-/* Exported functions prototypes ---------------------------------------------*/
-
 __BEGIN_DECLS
 
 /**
@@ -54,9 +46,7 @@ void can_filter_init(void);
 
 __END_DECLS
 
-/* Private defines -----------------------------------------------------------*/
-
-/* __BSP_LED_H__ -------------------------------------------------------------*/
+/* Enddef to prevent recursive inclusion ------------------------------------ */
 #endif /* __BSP_CAN_H__ */
 
-/************************ (C) COPYRIGHT ngu ********************END OF FILE****/
+/************************ (C) COPYRIGHT NGU ********************END OF FILE****/

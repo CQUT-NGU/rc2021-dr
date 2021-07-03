@@ -5,11 +5,11 @@
  * @author       NGU
  * @date         20210619
  * @version      1
- * @copyright    Copyright (c) 2021 NGU
+ * @copyright    Copyright (C) 2021 NGU
  * *****************************************************************************
 */
 
-/* Define to prevent recursive inclusion */
+/* Define to prevent recursive inclusion ------------------------------------ */
 #ifndef __CTRL_PC_H__
 #define __CTRL_PC_H__
 
@@ -57,7 +57,7 @@ extern ctrl_pc_t *ctrl_pc_point(void);
 
 __BEGIN_DECLS
 
-/* Enddef to prevent recursive inclusion */
+/* Enddef to prevent recursive inclusion ------------------------------------ */
 #endif /* __CTRL_PC_H__ */
 
 /************************ (C) COPYRIGHT NGU ********************END OF FILE****/

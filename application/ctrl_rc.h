@@ -1,12 +1,11 @@
 /**
  * *****************************************************************************
- * @file         ctrl_rc.c/h
+ * @file         ctrl_rc.h
  * @brief        control by remote
- * @author       ngu
+ * @author       NGU
  * @date         20210427
  * @version      1
- * @copyright    Copyright (c) 2021
- * @code         utf-8                                                  @endcode
+ * @copyright    Copyright (C) 2021 NGU
  * *****************************************************************************
 */
 
@@ -14,11 +13,7 @@
 #ifndef __CTRL_RC_H__
 #define __CTRL_RC_H__
 
-/* Includes ------------------------------------------------------------------*/
-/* Private includes ----------------------------------------------------------*/
 #include <stdint.h>
-
-/* Exported constants --------------------------------------------------------*/
 
 #define SBUS_RX_BUF_NUM 36U
 #define RC_FRAME_LENGTH 18U
@@ -62,7 +57,6 @@
 #define KEY_PRESSED_OFFSET_V     ((uint16_t)1U << 14)
 #define KEY_PRESSED_OFFSET_B     ((uint16_t)1U << 15)
 
-/* Exported macro ------------------------------------------------------------*/
 #undef __BEGIN_DECLS
 #undef __END_DECLS
 
@@ -80,8 +74,6 @@
 #undef __packed
 #define __packed __attribute__((__packed__))
 
-/* Exported types ------------------------------------------------------------*/
-
 /**
  * @struct       ctrl_rc_t
  * @brief        remote control data
@@ -91,7 +83,7 @@ typedef struct
     struct
     {
         int16_t ch[5];
-        char    s[2];
+        char s[2];
     } __packed rc;
 
     struct
@@ -110,8 +102,6 @@ typedef struct
 
 } __packed ctrl_rc_t;
 
-/* Exported functions prototypes ---------------------------------------------*/
-
 __BEGIN_DECLS
 
 /**
@@ -127,9 +117,7 @@ extern const ctrl_rc_t *ctrl_rc_point(void);
 
 __END_DECLS
 
-/* Private defines -----------------------------------------------------------*/
-
-/* __CTRL_RC_H__ -------------------------------------------------------------*/
+/* Enddef to prevent recursive inclusion ------------------------------------ */
 #endif /* __CTRL_RC_H__ */
 
-/************************ (C) COPYRIGHT ngu ********************END OF FILE****/
+/************************ (C) COPYRIGHT NGU ********************END OF FILE****/

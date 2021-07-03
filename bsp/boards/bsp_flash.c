@@ -1,30 +1,19 @@
 /**
  * *****************************************************************************
- * @file         bsp_flash.c/h
+ * @file         bsp_flash.c
  * @brief        flash of boards
- * @author       ngu
+ * @author       NGU
  * @date         20210427
  * @version      1
- * @copyright    Copyright (c) 2020-2021
- * @code         utf-8                                                  @endcode
+ * @copyright    Copyright (C) 2020-2021
  * *****************************************************************************
 */
 
-/* Includes ------------------------------------------------------------------*/
 #include "bsp_flash.h"
 
-/* Private includes ----------------------------------------------------------*/
 #include "main.h"
 
 #include <string.h>
-
-/* Private define ------------------------------------------------------------*/
-/* Private macro -------------------------------------------------------------*/
-/* Private typedef -----------------------------------------------------------*/
-/* Private types -------------------------------------------------------------*/
-/* Private variables ---------------------------------------------------------*/
-/* Private function prototypes -----------------------------------------------*/
-/* Private user code ---------------------------------------------------------*/
 
 uint32_t flash_sector(uint32_t addr)
 {
@@ -354,9 +343,9 @@ void flash_erase(uint32_t addr,
     (void)HAL_FLASH_Lock();
 }
 
-void flash_read(uint32_t  addr,
+void flash_read(uint32_t addr,
                 uint32_t *buf,
-                uint32_t  len)
+                uint32_t len)
 {
     (void)memcpy(buf, (void *)addr, len * sizeof(len));
 }
@@ -398,10 +387,10 @@ int8_t flash_write(uint32_t addr, uint32_t *buf, uint32_t len)
     return ret;
 }
 
-int8_t flash_writen(uint32_t  addr,
-                    uint32_t  addr_end,
+int8_t flash_writen(uint32_t addr,
+                    uint32_t addr_end,
                     uint32_t *buf,
-                    uint32_t  len)
+                    uint32_t len)
 {
     int8_t ret = 0;
 
@@ -438,4 +427,4 @@ int8_t flash_writen(uint32_t  addr,
     return ret;
 }
 
-/************************ (C) COPYRIGHT ngu ********************END OF FILE****/
+/************************ (C) COPYRIGHT NGU ********************END OF FILE****/

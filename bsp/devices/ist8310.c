@@ -1,27 +1,22 @@
 /**
  * *****************************************************************************
- * @file         ist8310.c/h
+ * @file         ist8310.c
  * @brief        ist8310 driver
- * @author       ngu
+ * @author       NGU
  * @date         20210427
  * @version      1
- * @copyright    Copyright (c) 2021
- * @code         utf-8                                                  @endcode
+ * @copyright    Copyright (C) 2021 NGU
  * *****************************************************************************
 */
 
-/* Includes ------------------------------------------------------------------*/
 #include "ist8310.h"
 
-/* Private includes ----------------------------------------------------------*/
 #include "bsp.h"
 #include "main.h"
 
 #if USED_OS
 #include "cmsis_os.h"
 #endif /* USED_OS */
-
-/* Private define ------------------------------------------------------------*/
 
 #undef hi2c
 #define hi2c hi2c3
@@ -38,17 +33,10 @@
 
 #define IST8310_WRITE_REG_NUM 4
 
-/* Private includes ----------------------------------------------------------*/
 extern I2C_HandleTypeDef hi2c;
-
-/* Private macro -------------------------------------------------------------*/
 
 #define ist_delay_ms(ms) osDelay(ms)
 #define ist_delay_us(us) delay_us(us)
-
-/* Private typedef -----------------------------------------------------------*/
-/* Private types -------------------------------------------------------------*/
-/* Private variables ---------------------------------------------------------*/
 
 static const uint8_t ist8310_error[IST8310_WRITE_REG_NUM][3] = {
     {0x0B, 0x08, 0x01},
@@ -56,9 +44,6 @@ static const uint8_t ist8310_error[IST8310_WRITE_REG_NUM][3] = {
     {0x42, 0xC0, 0x03},
     {0x0A, 0x0B, 0x04},
 };
-
-/* Private function prototypes -----------------------------------------------*/
-/* Private user code ---------------------------------------------------------*/
 
 uint8_t ist_reg_r(uint8_t reg)
 {
@@ -84,9 +69,9 @@ void ist_reg_w(uint8_t reg, uint8_t data)
                       100);
 }
 
-void ist_reg_muli_r(uint8_t  reg,
+void ist_reg_muli_r(uint8_t reg,
                     uint8_t *buf,
-                    uint8_t  len)
+                    uint8_t len)
 {
     HAL_I2C_Mem_Read(&hi2c,
                      IST8310_IIC_ADDRESS,
@@ -97,9 +82,9 @@ void ist_reg_muli_r(uint8_t  reg,
                      100);
 }
 
-void ist_reg_muli_w(uint8_t  reg,
+void ist_reg_muli_w(uint8_t reg,
                     uint8_t *data,
-                    uint8_t  len)
+                    uint8_t len)
 {
     HAL_I2C_Mem_Write(&hi2c,
                       IST8310_IIC_ADDRESS,
@@ -112,7 +97,7 @@ void ist_reg_muli_w(uint8_t  reg,
 
 uint8_t ist8310_init(void)
 {
-    static const uint8_t wait_time  = 1;
+    static const uint8_t wait_time = 1;
     static const uint8_t sleep_time = 50;
 
     uint8_t res = 0;
@@ -148,18 +133,18 @@ uint8_t ist8310_init(void)
 }
 
 void ist8310_read_over(uint8_t *buf,
-                       ist_t *  ist)
+                       ist_t *ist)
 {
     if (buf[0] & 0x01)
     {
         int16_t temp = 0;
         ist->status |= (1 << IST8310_DATA_READY_BIT);
 
-        temp        = (int16_t)((buf[2] << 8) | buf[1]);
+        temp = (int16_t)((buf[2] << 8) | buf[1]);
         ist->mag[0] = MAG_SEN * temp;
-        temp        = (int16_t)((buf[4] << 8) | buf[3]);
+        temp = (int16_t)((buf[4] << 8) | buf[3]);
         ist->mag[1] = MAG_SEN * temp;
-        temp        = (int16_t)((buf[6] << 8) | buf[5]);
+        temp = (int16_t)((buf[6] << 8) | buf[5]);
         ist->mag[2] = MAG_SEN * temp;
     }
     else
@@ -175,12 +160,12 @@ void ist8310_read(float mag[3])
 
     ist_reg_muli_r(0x03, buf, 6);
 
-    temp   = (int16_t)((buf[1] << 8) | buf[0]);
+    temp = (int16_t)((buf[1] << 8) | buf[0]);
     mag[0] = MAG_SEN * temp;
-    temp   = (int16_t)((buf[3] << 8) | buf[2]);
+    temp = (int16_t)((buf[3] << 8) | buf[2]);
     mag[1] = MAG_SEN * temp;
-    temp   = (int16_t)((buf[5] << 8) | buf[4]);
+    temp = (int16_t)((buf[5] << 8) | buf[4]);
     mag[2] = MAG_SEN * temp;
 }
 
-/************************ (C) COPYRIGHT ngu ********************END OF FILE****/
+/************************ (C) COPYRIGHT NGU ********************END OF FILE****/

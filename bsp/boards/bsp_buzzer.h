@@ -1,12 +1,11 @@
 /**
  * *****************************************************************************
- * @file         bsp_buzzer.c/h
+ * @file         bsp_buzzer.h
  * @brief        buzzer of boards
- * @author       ngu
+ * @author       NGU
  * @date         20210501
  * @version      1
- * @copyright    Copyright (c) 2021
- * @code         utf-8                                                  @endcode
+ * @copyright    Copyright (C) 2021 NGU
  * @details      TIM4_CH3(PD14) 4000Hz
  * *****************************************************************************
 */
@@ -15,11 +14,7 @@
 #ifndef __BSP_BUZZER_H__
 #define __BSP_BUZZER_H__
 
-/* Includes ------------------------------------------------------------------*/
-/* Private includes ----------------------------------------------------------*/
 #include <stdint.h>
-
-/* Exported constants --------------------------------------------------------*/
 
 #define BUZZER_PWM_MAX   ((168000000U >> 1U) / 4000U)
 #define BUZZER_PWM_DIV1  (BUZZER_PWM_MAX >> 0U)
@@ -30,7 +25,6 @@
 #define BUZZER_PWM_DIV32 (BUZZER_PWM_MAX >> 5U)
 #define BUZZER_PWM_DIV64 (BUZZER_PWM_MAX >> 6U)
 
-/* Exported macro ------------------------------------------------------------*/
 #undef __BEGIN_DECLS
 #undef __END_DECLS
 
@@ -43,9 +37,6 @@
 #define __BEGIN_DECLS
 #define __END_DECLS
 #endif /* __cplusplus */
-
-/* Exported types ------------------------------------------------------------*/
-/* Exported functions prototypes ---------------------------------------------*/
 
 __BEGIN_DECLS
 
@@ -69,9 +60,7 @@ extern void buzzer_set(uint16_t psc,
 
 __END_DECLS
 
-/* Private defines -----------------------------------------------------------*/
-
-/* __BSP_BUZZER_H__ ----------------------------------------------------------*/
+/* Enddef to prevent recursive inclusion ------------------------------------ */
 #endif /* __BSP_BUZZER_H__ */
 
-/************************ (C) COPYRIGHT ngu ********************END OF FILE****/
+/************************ (C) COPYRIGHT NGU ********************END OF FILE****/

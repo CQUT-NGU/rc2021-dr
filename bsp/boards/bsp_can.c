@@ -1,33 +1,22 @@
 /**
  * *****************************************************************************
- * @file         bsp_can.c/h
+ * @file         bsp_can.c
  * @brief        can of boards
- * @author       ngu
+ * @author       NGU
  * @date         20210427
  * @version      1
- * @copyright    Copyright (c) 2021
- * @code         utf-8                                                  @endcode
+ * @copyright    Copyright (C) 2021 NGU
  * *****************************************************************************
 */
 
-/* Includes ------------------------------------------------------------------*/
 #include "bsp_can.h"
 
-/* Private includes ----------------------------------------------------------*/
 #include "main.h"
 
 extern CAN_HandleTypeDef hcan1;
 #if CAN2_IS_ENABLE
 extern CAN_HandleTypeDef hcan2;
 #endif /* CAN2_IS_ENABLE */
-
-/* Private define ------------------------------------------------------------*/
-/* Private macro -------------------------------------------------------------*/
-/* Private typedef -----------------------------------------------------------*/
-/* Private types -------------------------------------------------------------*/
-/* Private variables ---------------------------------------------------------*/
-/* Private function prototypes -----------------------------------------------*/
-/* Private user code ---------------------------------------------------------*/
 
 void can_filter_init(void)
 {
@@ -69,4 +58,4 @@ void can_filter_init(void)
 #endif /* CAN2_IS_ENABLE */
 }
 
-/************************ (C) COPYRIGHT ngu ********************END OF FILE****/
+/************************ (C) COPYRIGHT NGU ********************END OF FILE****/

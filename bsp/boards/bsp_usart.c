@@ -1,43 +1,30 @@
 /**
  * *****************************************************************************
- * @file         bsp_usart.c/h
+ * @file         bsp_usart.c
  * @brief        usart of boards
- * @author       tqfx
+ * @author       NGU
  * @date         20210426
  * @version      1
- * @copyright    Copyright (c) 2021
- * @code         utf-8                                                  @endcode
+ * @copyright    Copyright (C) 2021 NGU
  * *****************************************************************************
 */
 
-/* Includes ------------------------------------------------------------------*/
 #include "bsp_usart.h"
 
-/* Private includes ----------------------------------------------------------*/
 #include "main.h"
 
 #include <stdarg.h>
 #include <stdio.h>
 
-/* Private define ------------------------------------------------------------*/
-
 #define BUFSIZ8  256
 #define BUFSIZ32 16
-
-/* Private macro -------------------------------------------------------------*/
-/* Private typedef -----------------------------------------------------------*/
-/* Private types -------------------------------------------------------------*/
-/* Private variables ---------------------------------------------------------*/
 
 static va_list ap;
 static uint8_t cnt_8 = 0U;
 static uint8_t buf_8[BUFSIZ8];
 static uint8_t cnt_32 = 0U;
-static float   buf_32[BUFSIZ32];
+static float buf_32[BUFSIZ32];
 static uint8_t tail[sizeof(float)] = {0x00U, 0x00U, 0x80U, 0x7FU};
-
-/* Private function prototypes -----------------------------------------------*/
-/* Private user code ---------------------------------------------------------*/
 
 void usart_disable(UART_HandleTypeDef *huart)
 {
@@ -52,7 +39,7 @@ void usart_enable(UART_HandleTypeDef *huart)
 }
 
 void usart_dma_rerx(UART_HandleTypeDef *huart,
-                    uint16_t            len)
+                    uint16_t len)
 {
     /* Disable UART */
     __HAL_UART_DISABLE(huart);
@@ -76,7 +63,7 @@ void usart_dma_rerx(UART_HandleTypeDef *huart,
 }
 
 void usart_dma_retx(UART_HandleTypeDef *huart,
-                    uint16_t            len)
+                    uint16_t len)
 {
     /* Disable UART */
     __HAL_UART_DISABLE(huart);
@@ -153,9 +140,9 @@ void usart_dma_init(UART_HandleTypeDef *huart)
 }
 
 void usart_dma_rx(UART_HandleTypeDef *huart,
-                  uint8_t *           buf1,
-                  uint8_t *           buf2,
-                  uint16_t            len)
+                  uint8_t *buf1,
+                  uint8_t *buf2,
+                  uint16_t len)
 {
     do
     {
@@ -180,8 +167,8 @@ void usart_dma_rx(UART_HandleTypeDef *huart,
 }
 
 void usart_dma_tx(UART_HandleTypeDef *huart,
-                  uint8_t *           data,
-                  uint16_t            len)
+                  uint8_t *data,
+                  uint16_t len)
 {
     do
     {
@@ -308,4 +295,4 @@ void os_putf(float x, uint8_t l)
     BSP_DMA_WAIT_TC(huart_os.hdmatx);
 }
 
-/************************ (C) COPYRIGHT tqfx *******************END OF FILE****/
+/************************ (C) COPYRIGHT NGU ********************END OF FILE****/

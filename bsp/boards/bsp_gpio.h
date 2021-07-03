@@ -1,12 +1,11 @@
 /**
  * *****************************************************************************
- * @file         bsp_gpio.c/h
+ * @file         bsp_gpio.h
  * @brief        gpio of boards
- * @author       tqfx
+ * @author       NGU
  * @date         20210101
  * @version      1
- * @copyright    Copyright (C) 2021
- * @code         utf-8                                                  @endcode
+ * @copyright    Copyright (C) 2021 NGU
  * *****************************************************************************
 */
 
@@ -14,14 +13,10 @@
 #ifndef __BSP_GPIO_H__
 #define __BSP_GPIO_H__
 
-/* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
-/* Private includes ----------------------------------------------------------*/
 #include <stdint.h>
 
-/* Exported constants --------------------------------------------------------*/
-/* Exported macro ------------------------------------------------------------*/
 #undef __BEGIN_DECLS
 #undef __END_DECLS
 
@@ -35,18 +30,13 @@
 #define __END_DECLS
 #endif /* __cplusplus */
 
-/* Exported types ------------------------------------------------------------*/
-/* Exported functions prototypes ---------------------------------------------*/
-
 __BEGIN_DECLS
 
 __END_DECLS
 
-/* Private defines -----------------------------------------------------------*/
-
 static inline void gpio_pin_write(GPIO_TypeDef *gpio,
-                                  uint16_t      pin,
-                                  FlagStatus    state)
+                                  uint16_t pin,
+                                  FlagStatus state)
 {
     if (state == SET)
     {
@@ -59,19 +49,19 @@ static inline void gpio_pin_write(GPIO_TypeDef *gpio,
 }
 
 static inline void gpio_pin_set(GPIO_TypeDef *gpio,
-                                uint16_t      pin)
+                                uint16_t pin)
 {
     gpio->BSRR = pin;
 }
 
 static inline void gpio_pin_reset(GPIO_TypeDef *gpio,
-                                  uint16_t      pin)
+                                  uint16_t pin)
 {
     gpio->BSRR = (uint32_t)pin << 16U;
 }
 
 static inline FlagStatus gpio_pin_read(GPIO_TypeDef *gpio,
-                                       uint16_t      pin)
+                                       uint16_t pin)
 {
     if (gpio->IDR & pin)
     {
@@ -84,7 +74,7 @@ static inline FlagStatus gpio_pin_read(GPIO_TypeDef *gpio,
 }
 
 static inline void gpio_pin_toggle(GPIO_TypeDef *gpio,
-                                   uint16_t      pin)
+                                   uint16_t pin)
 {
     if ((gpio->ODR & pin) == pin)
     {
@@ -97,7 +87,7 @@ static inline void gpio_pin_toggle(GPIO_TypeDef *gpio,
 }
 
 static inline void gpio_pin_lock(GPIO_TypeDef *gpio,
-                                 uint16_t      pin)
+                                 uint16_t pin)
 {
     /* Apply lock key write sequence */
     __IO uint32_t tmp = GPIO_LCKR_LCKK | pin;
@@ -111,7 +101,7 @@ static inline void gpio_pin_lock(GPIO_TypeDef *gpio,
     tmp = gpio->LCKR;
 }
 
-/* __BSP_GPIO_H__ ------------------------------------------------------------*/
+/* Enddef to prevent recursive inclusion ------------------------------------ */
 #endif /* __BSP_GPIO_H__ */
 
-/************************ (C) COPYRIGHT tqfx *******************END OF FILE****/
+/************************ (C) COPYRIGHT NGU ********************END OF FILE****/

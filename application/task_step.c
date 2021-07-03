@@ -1,19 +1,16 @@
 /**
  * *****************************************************************************
- * @file         task_step.c/h
+ * @file         task_step.c
  * @brief        stepping motor control task
- * @author       ngu
+ * @author       NGU
  * @date         20210101
  * @version      1
- * @copyright    Copyright (C) 2021
- * @code         utf-8                                                  @endcode
+ * @copyright    Copyright (C) 2021 NGU
  * *****************************************************************************
 */
 
-/* Includes ------------------------------------------------------------------*/
 #include "task_step.h"
 
-/* Private includes ----------------------------------------------------------*/
 #include "bsp.h"
 #include "ca.h"
 #include "ctrl.h"
@@ -26,8 +23,6 @@
 
 extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim8;
-
-/* Private define ------------------------------------------------------------*/
 
 #define PICK_TIM htim1
 #define NIP_TIM  htim8
@@ -43,15 +38,7 @@ extern TIM_HandleTypeDef htim8;
 #define FLAG_RUN_PICK_R (1U << 1U)
 #define FLAG_RUN_NIP    (1U << 2U)
 
-/* Private macro -------------------------------------------------------------*/
-/* Private typedef -----------------------------------------------------------*/
-/* Private types -------------------------------------------------------------*/
-/* Private variables ---------------------------------------------------------*/
-
 static uint8_t step_flag_run = 0x00U;
-
-/* Private function prototypes -----------------------------------------------*/
-/* Private user code ---------------------------------------------------------*/
 
 static void pick_set(uint32_t ch, uint32_t hz)
 {

@@ -2,11 +2,10 @@
  * *****************************************************************************
  * @file         bsp.h
  * @brief        Header file of bsp
- * @author       ngu
+ * @author       NGU
  * @date         20210427
  * @version      1
- * @copyright    Copyright (c) 2021
- * @code         utf-8                                                  @endcode
+ * @copyright    Copyright (C) 2021 NGU
  * *****************************************************************************
 */
 
@@ -14,7 +13,6 @@
 #ifndef __BSP_H__
 #define __BSP_H__
 
-/* Includes ------------------------------------------------------------------*/
 #include "bsp_buzzer.h"
 #include "bsp_can.h"
 #include "bsp_delay.h"
@@ -34,14 +32,7 @@
 #include "cmsis_os.h"
 #endif /* USED_OS */
 
-/* Exported constants --------------------------------------------------------*/
-
-/* Exported macro ------------------------------------------------------------*/
-/* Exported types ------------------------------------------------------------*/
-/* Exported functions prototypes ---------------------------------------------*/
-/* Private defines -----------------------------------------------------------*/
-
-/* __BSP_H__ -----------------------------------------------------------------*/
+/* Enddef to prevent recursive inclusion ------------------------------------ */
 #endif /* __BSP_H__ */
 
-/************************ (C) COPYRIGHT ngu ********************END OF FILE****/
+/************************ (C) COPYRIGHT NGU ********************END OF FILE****/

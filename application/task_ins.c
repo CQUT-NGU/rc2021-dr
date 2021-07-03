@@ -1,21 +1,18 @@
 /**
  * *****************************************************************************
- * @file         task_ins.c/h
+ * @file         task_ins.c
  * @brief        use bmi088 to calculate the euler angle. no use ist8310, so only
  *               enable data ready pin to save cpu time.enalbe bmi088 data ready
  *               enable spi DMA to save the time spi transmit
- * @author       ngu
+ * @author       NGU
  * @date         20210101
  * @version      1
- * @copyright    Copyright (C) 2021
- * @code         utf-8                                                  @endcode
+ * @copyright    Copyright (C) 2021 NGU
  * *****************************************************************************
 */
 
-/* Includes ------------------------------------------------------------------*/
 #include "task_ins.h"
 
-/* Private includes ----------------------------------------------------------*/
 #include "bsp.h"
 #include "ca.h"
 #include "main.h"
@@ -31,8 +28,6 @@
 #endif /* USED_OS */
 
 #include <math.h>
-
-/* Private define ------------------------------------------------------------*/
 
 #define SPI_DMA_LENGHT_GYRO  8
 #define SPI_DMA_LENGHT_ACCEL 9
@@ -91,11 +86,6 @@
             {0.0f, 0.0f, 1.0f},           \
     }
 
-/* Private macro -------------------------------------------------------------*/
-/* Private typedef -----------------------------------------------------------*/
-/* Private types -------------------------------------------------------------*/
-/* Private variables ---------------------------------------------------------*/
-
 static TaskHandle_t ins_task_local_handler;
 
 static uint8_t dma_rx_buf_gyro[SPI_DMA_LENGHT_GYRO];
@@ -131,10 +121,10 @@ static uint8_t dma_tx_buf_temp[SPI_DMA_LENGHT_TEMP] = {
     0xFF,
 };
 
-volatile uint8_t flag_update_gyro  = 0; /* flag which update gyroscope */
+volatile uint8_t flag_update_gyro = 0;  /* flag which update gyroscope */
 volatile uint8_t flag_update_accel = 0; /* flag which update accelerometer */
-volatile uint8_t flag_update_temp  = 0; /* flag which update temperature */
-volatile uint8_t flag_update_mag   = 0; /* flag which update magnetometer */
+volatile uint8_t flag_update_temp = 0;  /* flag which update temperature */
+volatile uint8_t flag_update_mag = 0;   /* flag which update magnetometer */
 
 volatile uint8_t flag_imu_dma = 0; /* flag which can dma tx */
 
@@ -204,9 +194,6 @@ static float ins_quat[4] = {1.0f, 0.0f, 0.0f, 0.0f};
 
 /* euler angle, unit rad */
 float ins_angle[3] = {0.0f, 0.0f, 0.0f};
-
-/* Private function prototypes -----------------------------------------------*/
-/* Private user code ---------------------------------------------------------*/
 
 /**
  * @brief        open the SPI DMA accord to the value of flag_update_imu
@@ -380,9 +367,9 @@ void DMA2_Stream2_IRQHandler(void)
  * @param[in]      bmi:   gyro and accel data
  * @param[in]      ist:   mag data
 */
-static void imu_cali_slove(float  gyro[3],
-                           float  accel[3],
-                           float  mag[3],
+static void imu_cali_slove(float gyro[3],
+                           float accel[3],
+                           float mag[3],
                            bmi_t *bmi,
                            ist_t *ist)
 {
@@ -414,8 +401,8 @@ static void imu_cali_slove(float  gyro[3],
  * @param[in]      gyro:   gyro data
  * @param[out]     count:  +1 auto
 */
-void offset_gyro_calc(float     offset[3],
-                      float     gyro[3],
+void offset_gyro_calc(float offset[3],
+                      float gyro[3],
                       uint16_t *count)
 {
     offset[INS_GYRO_X] -= 0.0003f * gyro[INS_GYRO_X];
@@ -431,8 +418,8 @@ void offset_gyro_calc(float     offset[3],
  * @param[out]     offset: zero drift, collect the gyro ouput when in still
  * @param[out]     count:  time, when call offset_gyro_calc
 */
-void ins_cali_gyro(float     scale[3],
-                   float     offset[3],
+void ins_cali_gyro(float scale[3],
+                   float offset[3],
                    uint16_t *count)
 {
     if (*count == 0)
@@ -829,4 +816,4 @@ void task_ins(void const *pvParameters)
     }
 }
 
-/************************ (C) COPYRIGHT ngu ********************END OF FILE****/
+/************************ (C) COPYRIGHT NGU ********************END OF FILE****/

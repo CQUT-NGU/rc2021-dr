@@ -1,12 +1,11 @@
 /**
  * *****************************************************************************
- * @file         bmi088.c/h
+ * @file         bmi088.c
  * @brief        The driver of bmi088
- * @author       ngu
+ * @author       NGU
  * @date         20210427
  * @version      1
- * @copyright    Copyright (C) 2021
- * @code         utf-8                                                  @endcode
+ * @copyright    Copyright (C) 2021 NGU
  * @details      CS1_ACCEL      PA4
  *               CS1_GYRO       PB0
  *               INT1_ACCEL     PC4
@@ -14,14 +13,10 @@
  * *****************************************************************************
 */
 
-/* Includes ------------------------------------------------------------------*/
 #include "bmi088.h"
 
-/* Private includes ----------------------------------------------------------*/
 #include "bsp.h"
 #include "main.h"
-
-/* Private define ------------------------------------------------------------*/
 
 #undef hspi
 #define hspi hspi1
@@ -69,10 +64,7 @@
 #define BMI088_USE_SPI
 #undef BMI088_USE_IIC
 
-/* Private includes ----------------------------------------------------------*/
 extern SPI_HandleTypeDef hspi;
-
-/* Private macro -------------------------------------------------------------*/
 
 #define bmi_accel_w(reg, data)   \
     do                           \
@@ -138,10 +130,6 @@ extern SPI_HandleTypeDef hspi;
         bmi_reg_muli_r((reg), (data), (len)); \
         BMI088_GYRO_NS_H;                     \
     }
-
-/* Private typedef -----------------------------------------------------------*/
-/* Private types -------------------------------------------------------------*/
-/* Private variables ---------------------------------------------------------*/
 
 static const uint8_t bmi088_accel_error[BMI088_WRITE_ACCEL_REG_NUM][3] = {
     {
@@ -214,9 +202,6 @@ static const uint8_t bmi088_gyro_error[BMI088_WRITE_GYRO_REG_NUM][3] = {
         BMI088_GYRO_INT3_INT4_IO_MAP_ERROR,
     },
 };
-
-/* Private function prototypes -----------------------------------------------*/
-/* Private user code ---------------------------------------------------------*/
 
 static uint8_t bmi_byte_rw(uint8_t data)
 {
@@ -375,29 +360,29 @@ void bmi088_read_over_temp(uint8_t *buf, float *temperate)
 
 void bmi088_read_over_accel(uint8_t *buf, float accel[3], float *time)
 {
-    int16_t  temp;
+    int16_t temp;
     uint32_t sensor;
 
-    temp     = (int16_t)((buf[1]) << 8) | buf[0];
+    temp = (int16_t)((buf[1]) << 8) | buf[0];
     accel[0] = BMI088_ACCEL_SEN * temp;
-    temp     = (int16_t)((buf[3]) << 8) | buf[2];
+    temp = (int16_t)((buf[3]) << 8) | buf[2];
     accel[1] = BMI088_ACCEL_SEN * temp;
-    temp     = (int16_t)((buf[5]) << 8) | buf[4];
+    temp = (int16_t)((buf[5]) << 8) | buf[4];
     accel[2] = BMI088_ACCEL_SEN * temp;
 
     sensor = (uint32_t)((buf[8] << 16) | (buf[7] << 8) | buf[6]);
-    *time  = sensor * 39.0625f;
+    *time = sensor * 39.0625f;
 }
 
 void bmi088_read_over_gyro(uint8_t *buf, float gyro[3])
 {
     int16_t temp;
 
-    temp    = (int16_t)((buf[1]) << 8) | buf[0];
+    temp = (int16_t)((buf[1]) << 8) | buf[0];
     gyro[0] = BMI088_GYRO_SEN * temp;
-    temp    = (int16_t)((buf[3]) << 8) | buf[2];
+    temp = (int16_t)((buf[3]) << 8) | buf[2];
     gyro[1] = BMI088_GYRO_SEN * temp;
-    temp    = (int16_t)((buf[5]) << 8) | buf[4];
+    temp = (int16_t)((buf[5]) << 8) | buf[4];
     gyro[2] = BMI088_GYRO_SEN * temp;
 }
 
@@ -408,22 +393,22 @@ void bmi088_read(float gyro[3], float accel[3], float *temperate)
 
     bmi_accel_muli_r(BMI088_ACCEL_XOUT_L, buf, 6);
 
-    temp     = (int16_t)((buf[1]) << 8) | buf[0];
+    temp = (int16_t)((buf[1]) << 8) | buf[0];
     accel[0] = BMI088_ACCEL_SEN * temp;
-    temp     = (int16_t)((buf[3]) << 8) | buf[2];
+    temp = (int16_t)((buf[3]) << 8) | buf[2];
     accel[1] = BMI088_ACCEL_SEN * temp;
-    temp     = (int16_t)((buf[5]) << 8) | buf[4];
+    temp = (int16_t)((buf[5]) << 8) | buf[4];
     accel[2] = BMI088_ACCEL_SEN * temp;
 
     bmi_gyro_muli_r(BMI088_GYRO_CHIP_ID, buf, 8);
 
     if (buf[0] == BMI088_GYRO_CHIP_ID_VALUE)
     {
-        temp    = (int16_t)((buf[3]) << 8) | buf[2];
+        temp = (int16_t)((buf[3]) << 8) | buf[2];
         gyro[0] = BMI088_GYRO_SEN * temp;
-        temp    = (int16_t)((buf[5]) << 8) | buf[4];
+        temp = (int16_t)((buf[5]) << 8) | buf[4];
         gyro[1] = BMI088_GYRO_SEN * temp;
-        temp    = (int16_t)((buf[7]) << 8) | buf[6];
+        temp = (int16_t)((buf[7]) << 8) | buf[6];
         gyro[2] = BMI088_GYRO_SEN * temp;
     }
 
@@ -472,11 +457,11 @@ void bmi088_gyro(float gyro[3])
 
     bmi_gyro_muli_r(BMI088_GYRO_X_L, buf, 6);
 
-    temp    = (int16_t)((buf[1]) << 8) | buf[0];
+    temp = (int16_t)((buf[1]) << 8) | buf[0];
     gyro[0] = BMI088_GYRO_SEN * temp;
-    temp    = (int16_t)((buf[3]) << 8) | buf[2];
+    temp = (int16_t)((buf[3]) << 8) | buf[2];
     gyro[1] = BMI088_GYRO_SEN * temp;
-    temp    = (int16_t)((buf[5]) << 8) | buf[4];
+    temp = (int16_t)((buf[5]) << 8) | buf[4];
     gyro[2] = BMI088_GYRO_SEN * temp;
 }
 
@@ -487,12 +472,12 @@ void bmi088_accel(float accel[3])
 
     bmi_accel_muli_r(BMI088_ACCEL_XOUT_L, buf, 6);
 
-    temp     = (int16_t)((buf[1]) << 8) | buf[0];
+    temp = (int16_t)((buf[1]) << 8) | buf[0];
     accel[0] = BMI088_ACCEL_SEN * temp;
-    temp     = (int16_t)((buf[3]) << 8) | buf[2];
+    temp = (int16_t)((buf[3]) << 8) | buf[2];
     accel[1] = BMI088_ACCEL_SEN * temp;
-    temp     = (int16_t)((buf[5]) << 8) | buf[4];
+    temp = (int16_t)((buf[5]) << 8) | buf[4];
     accel[2] = BMI088_ACCEL_SEN * temp;
 }
 
-/************************ (C) COPYRIGHT ngu ********************END OF FILE****/
+/************************ (C) COPYRIGHT NGU ********************END OF FILE****/

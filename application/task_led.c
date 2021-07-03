@@ -1,19 +1,16 @@
 /**
  * *****************************************************************************
- * @file         task_led.c/h
+ * @file         task_led.c
  * @brief        led task
- * @author       ngu
+ * @author       NGU
  * @date         20210407
  * @version      1
- * @copyright    Copyright (c) 2021
- * @code         utf-8                                                  @endcode
+ * @copyright    Copyright (C) 2021 NGU
  * *****************************************************************************
 */
 
-/* Includes ------------------------------------------------------------------*/
 #include "task_led.h"
 
-/* Private includes ----------------------------------------------------------*/
 #include "bsp.h"
 #include "bsp_delay.h"
 #include "bsp_led.h"
@@ -23,14 +20,6 @@
 #endif /* USED_OS */
 
 #include <stdint.h>
-
-/* Private define ------------------------------------------------------------*/
-/* Private macro -------------------------------------------------------------*/
-/* Private typedef -----------------------------------------------------------*/
-/* Private types -------------------------------------------------------------*/
-/* Private variables ---------------------------------------------------------*/
-/* Private function prototypes -----------------------------------------------*/
-/* Private user code ---------------------------------------------------------*/
 
 #include "task_chassis.h"
 extern chassis_move_t move;
@@ -47,7 +36,7 @@ void task_led(void *pvParameters)
 
     led_pwm_start();
 
-    uint8_t  t = 0;
+    uint8_t t = 0;
     uint16_t count;
 
     for (;;)
@@ -102,4 +91,4 @@ void task_led(void *pvParameters)
     }
 }
 
-/************************ (C) COPYRIGHT ngu ********************END OF FILE****/
+/************************ (C) COPYRIGHT NGU ********************END OF FILE****/

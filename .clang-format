@@ -4,8 +4,8 @@ BasedOnStyle:    LLVM
 
 AlignConsecutiveMacros: true
 AlignConsecutiveBitFields: true
-AlignConsecutiveAssignments: true
-AlignConsecutiveDeclarations: true
+# AlignConsecutiveAssignments: true
+# AlignConsecutiveDeclarations: true
 
 AlignEscapedNewlines: Left
 AlignOperands: AlignAfterOperator

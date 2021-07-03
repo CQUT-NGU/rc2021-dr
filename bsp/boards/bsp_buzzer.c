@@ -1,37 +1,24 @@
 /**
  * *****************************************************************************
- * @file         bsp_buzzer.c/h
+ * @file         bsp_buzzer.c
  * @brief        buzzer of boards
- * @author       ngu
+ * @author       NGU
  * @date         20210501
  * @version      1
- * @copyright    Copyright (c) 2021
- * @code         utf-8                                                  @endcode
+ * @copyright    Copyright (C) 2021 NGU
  * *****************************************************************************
 */
 
-/* Includes ------------------------------------------------------------------*/
 #include "bsp_buzzer.h"
 
-/* Private includes ----------------------------------------------------------*/
 #include "main.h"
-
-/* Private define ------------------------------------------------------------*/
 
 #undef htim
 #define htim htim4
 #undef BUZZER_CHANNEL
 #define BUZZER_CHANNEL TIM_CHANNEL_3
 
-/* Private define ------------------------------------------------------------*/
 extern TIM_HandleTypeDef htim;
-
-/* Private macro -------------------------------------------------------------*/
-/* Private typedef -----------------------------------------------------------*/
-/* Private types -------------------------------------------------------------*/
-/* Private variables ---------------------------------------------------------*/
-/* Private function prototypes -----------------------------------------------*/
-/* Private user code ---------------------------------------------------------*/
 
 void buzzer_start(void)
 {
@@ -58,4 +45,4 @@ void buzzer_set(uint16_t psc,
     __HAL_TIM_SetCompare(&htim, BUZZER_CHANNEL, pwm);
 }
 
-/************************ (C) COPYRIGHT ngu ********************END OF FILE****/
+/************************ (C) COPYRIGHT NGU ********************END OF FILE****/

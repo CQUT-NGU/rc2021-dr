@@ -2,10 +2,10 @@
  * *****************************************************************************
  * @file         task_shoot.c
  * @brief        task shoot
- * @author       ngu
+ * @author       NGU
  * @date         20210703
  * @version      1
- * @copyright    Copyright (c) 2021 NGU
+ * @copyright    Copyright (C) 2021 NGU
  * *****************************************************************************
 */
 
@@ -34,18 +34,18 @@ typedef enum
 
 typedef struct
 {
-    shoot_stats_t  stats;
+    shoot_stats_t stats;
     const motor_t *motor;
-    ca_pid_f32_t   pidv;
-    float          v;
-    float          v_set;
-    float          acc;
-    ca_pid_f32_t   pida;
-    float          angle;
-    float          angle_set;
-    float          angle_min;
-    float          angle_max;
-    int16_t        out;
+    ca_pid_f32_t pidv;
+    float v;
+    float v_set;
+    float acc;
+    ca_pid_f32_t pida;
+    float angle;
+    float angle_set;
+    float angle_min;
+    float angle_max;
+    int16_t out;
 } shoot_t;
 
 shoot_t shoot;
@@ -134,15 +134,15 @@ void task_shoot(void *pvParameters)
         /* Update speed and acceleration data */
         {
             float v_tmp = shoot.motor->v_rpm * M3508_MOTOR_RPM_TO_VECTOR;
-            shoot.acc   = shoot.v - v_tmp;
-            shoot.v     = v_tmp;
+            shoot.acc = shoot.v - v_tmp;
+            shoot.v = v_tmp;
         }
 
         /* Process the data of the host computer */
         {
             if (pc->c == 'a')
             {
-                pc->c       = 0;
+                pc->c = 0;
                 shoot.v_set = pc->x;
                 shoot.stats = SHOOT_STATS_RUN;
             }
