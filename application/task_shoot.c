@@ -20,7 +20,7 @@
 /* chassis 3508 max motor control current */
 #define MAX_MOTOR_CAN_CURRENT 0x4000
 /* chassis 3508 max motor calibration control current */
-#define MAX_MOTOR_CLI_CURRENT 2000
+#define MAX_MOTOR_CLI_CURRENT 3000
 
 /* M3508 rmp change to speed */
 /* x * 2 * PI / 60 / 19 */
@@ -28,9 +28,11 @@
 
 typedef enum
 {
-    SHOOT_STATS_RESET,  //!< reset
-    SHOOT_STATS_RUN,    //!< runnig
-    SHOOT_STATS_STOP,   //!< stop
+    SHOOT_STATS_RESET = (1 << 0),  //!< reset
+    SHOOT_STATS_DO = (1 << 1),     //!< do
+    SHOOT_STATS_CLI = (1 << 2),    //!< calibration
+    SHOOT_STATS_BACK = (1 << 3),   //!< back
+    SHOOT_STATS_STOP = (1 << 4),   //!< stop
 } shoot_stats_t;
 
 typedef struct
@@ -65,30 +67,6 @@ void shoot_angle_update(motor_t *mo)
     shoot.angle += MOTOR_ROLLER_RAD * (float)delta;
 }
 
-static void shoot_cli(shoot_t *pdata)
-{
-    static float angle = 0;
-
-    uint16_t count = 200;
-
-    do
-    {
-        other_ctrl(1000, 0, 0, 0);
-
-        osDelay(50);
-
-        if (*(int32_t *)&angle == *(int32_t *)&pdata->angle)
-        {
-            pdata->angle = 0;
-            break;
-        }
-        angle = pdata->angle;
-    } while (--count);
-
-    pdata->out = 0;
-    other_ctrl(0, 0, 0, 0);
-}
-
 void task_shoot(void *pvParameters)
 {
     (void)pvParameters;
@@ -97,6 +75,7 @@ void task_shoot(void *pvParameters)
 
     /* Initialization block */
     {
+        shoot.stats = SHOOT_STATS_RESET;
         /* Get motor data address */
         shoot.motor = chassis_point(4);
         /* Speed pid */
@@ -107,8 +86,8 @@ void task_shoot(void *pvParameters)
         };
         /* Angle pid */
         const float kpida[3] = {
-            500,
-            2,
+            1000,
+            1,
             0,
         };
         /* Speed pid initialization */
@@ -116,7 +95,7 @@ void task_shoot(void *pvParameters)
                             kpidv,
                             -MAX_MOTOR_CAN_CURRENT,
                             MAX_MOTOR_CAN_CURRENT,
-                            MAX_MOTOR_CLI_CURRENT);
+                            MAX_MOTOR_CAN_CURRENT);
         /* Angle pid initialization */
         ca_pid_f32_position(&shoot.pida,
                             kpida,
@@ -125,11 +104,10 @@ void task_shoot(void *pvParameters)
                             MAX_MOTOR_CLI_CURRENT);
         /* Set the limit of the angle */
         shoot.angle_min = 0;
-        shoot.angle_max = (float)M_PI;
-        /* Start to calibrate the zero point */
-        shoot_cli(&shoot);
+        shoot.angle_max = (float)2;
     }
 
+    static float angle = 0;
     /* The data address of the host computer */
     ctrl_pc_t *pc = (ctrl_pc_t *)ctrl_pc_point();
 
@@ -143,82 +121,114 @@ void task_shoot(void *pvParameters)
         }
 
         /* Process the data of the host computer */
+        if (pc->c == 'a')
         {
-            if (pc->c == 'a')
+            pc->c = 0;
+            float x = pc->x;
+            if (x > 0)
             {
-                pc->c = 0;
-                shoot.v_set = pc->x;
-                shoot.stats = SHOOT_STATS_RUN;
+                if (shoot.stats != SHOOT_STATS_STOP)
+                {
+                    shoot.v_set = pc->x;
+                    ca_pid_f32_reset(&shoot.pidv);
+                    shoot.stats = SHOOT_STATS_DO;
+                }
+                else
+                {
+                    shoot.stats = SHOOT_STATS_BACK;
+                }
+            }
+            else if (x < 0)
+            {
+                shoot.stats = SHOOT_STATS_CLI;
             }
         }
 
         /* Output calculation block */
+        if (shoot.stats == SHOOT_STATS_DO)
         {
-            if (shoot.stats == SHOOT_STATS_RUN)
+            if (shoot.angle < shoot.angle_max)
             {
-                if (shoot.angle < 2)
+                shoot.out = (int16_t)ca_pid_f32(&shoot.pidv,
+                                                shoot.v_set,
+                                                shoot.v);
+            }
+            else
+            {
+                shoot.stats = SHOOT_STATS_STOP;
+            }
+        }
+        else if (shoot.stats == SHOOT_STATS_BACK)
+        {
+            angle = shoot.angle;
+            uint8_t count = 10;
+            do
+            {
+                shoot.out = (int16_t)ca_pid_f32(&shoot.pida,
+                                                shoot.angle_min,
+                                                shoot.angle);
+                other_ctrl(shoot.out, 0, 0, 0);
+
+                osDelay(10);
+
+                if (*(int32_t *)&angle == *(int32_t *)&shoot.angle)
                 {
-                    shoot.out = (int16_t)ca_pid_f32(&shoot.pidv,
-                                                    shoot.v_set,
-                                                    shoot.v);
+                    --count;
                 }
-                else
+                angle = shoot.angle;
+            } while (count);
+            shoot.angle = 0;
+            shoot.stats = SHOOT_STATS_RESET;
+        }
+        else if (shoot.stats == SHOOT_STATS_CLI)
+        {
+            angle = 0;
+            uint8_t count = 10;
+            uint8_t wait = 200;
+            do
+            {
+                other_ctrl(2000, 0, 0, 0);
+
+                osDelay(10);
+
+                if (*(int32_t *)&angle == *(int32_t *)&shoot.angle)
                 {
-                    shoot.stats = SHOOT_STATS_STOP;
+                    --count;
                 }
+                angle = shoot.angle;
+            } while (--wait && count);
+            shoot.angle = 0;
+            shoot.stats = SHOOT_STATS_RESET;
+        }
+
+        /* stats block */
+        if (shoot.stats == SHOOT_STATS_RESET)
+        {
+            shoot.out = 0;
+        }
+        else if (shoot.stats == SHOOT_STATS_STOP)
+        {
+            if (shoot.v_set > 0.8F)
+            {
+                shoot.v_set -= 0.8F;
+            }
+            else
+            {
+                shoot.v_set = 0;
             }
 
-            if (shoot.stats == SHOOT_STATS_STOP)
-            {
-                if (-0.01F < shoot.v && shoot.v < 0.01F)
-                {
-                    shoot.stats = SHOOT_STATS_RESET;
-                    ca_pid_f32_reset(&shoot.pidv);
-                    float angle = shoot.angle;
-                    do
-                    {
-                        shoot.out = (int16_t)ca_pid_f32(&shoot.pida,
-                                                        shoot.angle_min,
-                                                        shoot.angle);
-                        other_ctrl(shoot.out, 0, 0, 0);
-
-                        osDelay(10);
-
-                        if (*(int32_t *)&angle == *(int32_t *)&shoot.angle)
-                        {
-                            shoot.out = 0;
-                            shoot.angle = 0;
-                            break;
-                        }
-                        angle = shoot.angle;
-                    } while (1);
-                }
-                else
-                {
-                    if (shoot.v_set > 0.01F)
-                    {
-                        shoot.v_set -= 0.01F;
-                    }
-                    else
-                    {
-                        shoot.v_set = 0;
-                    }
-
-                    shoot.out = (int16_t)ca_pid_f32(&shoot.pidv,
-                                                    shoot.v,
-                                                    shoot.v_set);
-                }
-            }
+            shoot.out = (int16_t)ca_pid_f32(&shoot.pidv,
+                                            shoot.v,
+                                            shoot.v_set);
         }
 
         /* Control motor */
         other_ctrl(shoot.out, 0, 0, 0);
 
-        // os_printf("%i,%g,%g,%g\r\n",
+        // os_printf("%i %g %g\r\n",
+        //           shoot.angle,
         //           shoot.out,
-        //           shoot.v,
-        //           shoot.acc,
-        //           shoot.angle);
+        //           shoot.v);
 
         osDelay(2);
     }
