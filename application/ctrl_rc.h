@@ -13,66 +13,49 @@
 #ifndef __CTRL_RC_H__
 #define __CTRL_RC_H__
 
-#include <stdint.h>
+#include "ctrl.h"
 
-#define SBUS_RX_BUF_NUM 36U
-#define RC_FRAME_LENGTH 18U
+#define SBUS_RX_BUF_NUM 36
+#define RC_FRAME_LENGTH 18
 
-#define RC_CH_VALUE_MIN    ((uint16_t)364U)
-#define RC_CH_VALUE_OFFSET ((uint16_t)1024U)
-#define RC_CH_VALUE_MAX    ((uint16_t)1684U)
+#define RC_CH_VALUE_MIN    364
+#define RC_CH_VALUE_OFFSET 1024
+#define RC_CH_VALUE_MAX    1684
 
 /* ----------------------- RC Switch Definition----------------------------- */
-#define RC_SW_R 0U /* switch right */
-#define RC_SW_L 1U /* switch left  */
+#define RC_SW_R 0 /* switch right */
+#define RC_SW_L 1 /* switch left  */
 
-#define RC_CH_RH 0U /* channel rigth horizontal */
-#define RC_CH_RV 1U /* channel right vertical   */
-#define RC_CH_LH 2U /* channel left horizontal  */
-#define RC_CH_LV 3U /* channel left vertical    */
-#define RC_CH_S  4U /* channel rotation         */
+#define RC_CH_RH 0 /* channel rigth horizontal */
+#define RC_CH_RV 1 /* channel right vertical   */
+#define RC_CH_LH 2 /* channel left horizontal  */
+#define RC_CH_LV 3 /* channel left vertical    */
+#define RC_CH_S  4 /* channel rotation         */
 
-#define RC_SW_UP          ((uint16_t)1U)
-#define RC_SW_MID         ((uint16_t)3U)
-#define RC_SW_DOWN        ((uint16_t)2U)
+#define RC_SW_UP          1
+#define RC_SW_MID         3
+#define RC_SW_DOWN        2
 #define switch_is_down(s) ((s) == RC_SW_DOWN)
 #define switch_is_mid(s)  ((s) == RC_SW_MID)
 #define switch_is_up(s)   ((s) == RC_SW_UP)
 
 /* ----------------------- PC Key Definition-------------------------------- */
-#define KEY_PRESSED_OFFSET_W     ((uint16_t)1U << 0)
-#define KEY_PRESSED_OFFSET_S     ((uint16_t)1U << 1)
-#define KEY_PRESSED_OFFSET_A     ((uint16_t)1U << 2)
-#define KEY_PRESSED_OFFSET_D     ((uint16_t)1U << 3)
-#define KEY_PRESSED_OFFSET_SHIFT ((uint16_t)1U << 4)
-#define KEY_PRESSED_OFFSET_CTRL  ((uint16_t)1U << 5)
-#define KEY_PRESSED_OFFSET_Q     ((uint16_t)1U << 6)
-#define KEY_PRESSED_OFFSET_E     ((uint16_t)1U << 7)
-#define KEY_PRESSED_OFFSET_R     ((uint16_t)1U << 8)
-#define KEY_PRESSED_OFFSET_F     ((uint16_t)1U << 9)
-#define KEY_PRESSED_OFFSET_G     ((uint16_t)1U << 10)
-#define KEY_PRESSED_OFFSET_Z     ((uint16_t)1U << 11)
-#define KEY_PRESSED_OFFSET_X     ((uint16_t)1U << 12)
-#define KEY_PRESSED_OFFSET_C     ((uint16_t)1U << 13)
-#define KEY_PRESSED_OFFSET_V     ((uint16_t)1U << 14)
-#define KEY_PRESSED_OFFSET_B     ((uint16_t)1U << 15)
-
-#undef __BEGIN_DECLS
-#undef __END_DECLS
-
-#if defined(__cplusplus)
-#define __BEGIN_DECLS \
-    extern "C"        \
-    {
-#define __END_DECLS \
-    }
-#else
-#define __BEGIN_DECLS
-#define __END_DECLS
-#endif /* __cplusplus */
-
-#undef __packed
-#define __packed __attribute__((__packed__))
+#define KEY_PRESSED_OFFSET_W     (1 << 0)
+#define KEY_PRESSED_OFFSET_S     (1 << 1)
+#define KEY_PRESSED_OFFSET_A     (1 << 2)
+#define KEY_PRESSED_OFFSET_D     (1 << 3)
+#define KEY_PRESSED_OFFSET_SHIFT (1 << 4)
+#define KEY_PRESSED_OFFSET_CTRL  (1 << 5)
+#define KEY_PRESSED_OFFSET_Q     (1 << 6)
+#define KEY_PRESSED_OFFSET_E     (1 << 7)
+#define KEY_PRESSED_OFFSET_R     (1 << 8)
+#define KEY_PRESSED_OFFSET_F     (1 << 9)
+#define KEY_PRESSED_OFFSET_G     (1 << 10)
+#define KEY_PRESSED_OFFSET_Z     (1 << 11)
+#define KEY_PRESSED_OFFSET_X     (1 << 12)
+#define KEY_PRESSED_OFFSET_C     (1 << 13)
+#define KEY_PRESSED_OFFSET_V     (1 << 14)
+#define KEY_PRESSED_OFFSET_B     (1 << 15)
 
 /**
  * @struct       ctrl_rc_t
@@ -113,7 +96,7 @@ extern void ctrl_rc_init(void);
  * @brief        Get remote control data point
  * @return       ctrl_rc_t remote control data point
 */
-extern const ctrl_rc_t *ctrl_rc_point(void);
+extern ctrl_rc_t *ctrl_rc_point(void);
 
 __END_DECLS
 

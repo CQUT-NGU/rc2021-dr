@@ -32,9 +32,9 @@
 #undef __packed
 #define __packed __attribute__((__packed__))
 
-#define BMI088_ACCEL_NS_L (CS1_ACCEL_PORT->BSRR = (uint32_t)CS1_ACCEL_PIN << 16U)
+#define BMI088_ACCEL_NS_L (CS1_ACCEL_PORT->BSRR = (uint32_t)CS1_ACCEL_PIN << 16)
 #define BMI088_ACCEL_NS_H (CS1_ACCEL_PORT->BSRR = CS1_ACCEL_PIN)
-#define BMI088_GYRO_NS_L  (CS1_GYRO_PORT->BSRR = (uint32_t)CS1_GYRO_PIN << 16U)
+#define BMI088_GYRO_NS_L  (CS1_GYRO_PORT->BSRR = (uint32_t)CS1_GYRO_PIN << 16)
 #define BMI088_GYRO_NS_H  (CS1_GYRO_PORT->BSRR = CS1_GYRO_PIN)
 
 typedef struct

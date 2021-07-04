@@ -18,23 +18,7 @@
 #ifndef __BSP_UART_H__
 #define __BSP_UART_H__
 
-#include "bsp_dma.h"
-#include "main.h"
-
-#include <stdint.h>
-
-#undef __BEGIN_DECLS
-#undef __END_DECLS
-
-#if defined(__cplusplus)
-#define __BEGIN_DECLS \
-    extern "C"        \
-    {
-#define __END_DECLS }
-#else
-#define __BEGIN_DECLS
-#define __END_DECLS
-#endif /* __cplusplus */
+#include "bsp.h"
 
 __BEGIN_DECLS
 

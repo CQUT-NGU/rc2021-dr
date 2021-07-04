@@ -17,35 +17,20 @@
 #ifndef __BSP_LED_H__
 #define __BSP_LED_H__
 
-#include "main.h"
-
-#include <stdint.h>
+#include "bsp.h"
 
 #define LED_PORT      GPIOH
-#define LED_PRESCALER 84U
+#define LED_PRESCALER 84
 
-#define LED_PWM_MAX  1000U
-#define LED_PWM_DIV1 (LED_PWM_MAX >> 0U)
-#define LED_PWM_DIV2 (LED_PWM_MAX >> 0U)
-#define LED_PWM_DIV4 (LED_PWM_MAX >> 0U)
-#define LED_PWM_DIV8 (LED_PWM_MAX >> 0U)
-
-#undef __BEGIN_DECLS
-#undef __END_DECLS
-
-#if defined(__cplusplus)
-#define __BEGIN_DECLS \
-    extern "C"        \
-    {
-#define __END_DECLS }
-#else
-#define __BEGIN_DECLS
-#define __END_DECLS
-#endif /* __cplusplus */
+#define LED_PWM_MAX  1000
+#define LED_PWM_DIV1 (LED_PWM_MAX >> 0)
+#define LED_PWM_DIV2 (LED_PWM_MAX >> 1)
+#define LED_PWM_DIV4 (LED_PWM_MAX >> 2)
+#define LED_PWM_DIV8 (LED_PWM_MAX >> 3)
 
 typedef enum
 {
-    LED_ON = 0U,       /* turn on */
+    LED_ON = 0,        /* turn on */
     LED_OFF = !LED_ON, /* turn off */
 } led_state_e;
 

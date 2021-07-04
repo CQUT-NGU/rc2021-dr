@@ -11,11 +11,6 @@
 
 #include "task_chassis.h"
 
-#include "bsp.h"
-#include "ca.h"
-#include "ctrl.h"
-#include "main.h"
-
 #if USED_OS
 #include "cmsis_os.h"
 #endif /* USED_OS */
@@ -405,7 +400,7 @@ static void chassis_mode_ctrl(float *vx_set,
         int16_t wz_channel = LIMIT_RC(move.data_rc->rc.ch[CHASSIS_WZ_CHANNEL],
                                       CHASSIS_RC_DEADLINE);
 
-        float wz_set_channel = -wz_channel * CHASSIS_WZ_RC_SEN;
+        float wz_set_channel = wz_channel * -CHASSIS_WZ_RC_SEN;
 
         if (move.mode == CHASSIS_VECTOR_SLOW)
         {

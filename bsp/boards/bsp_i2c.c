@@ -14,7 +14,7 @@
 
 void i2c_reset(I2C_HandleTypeDef *hi2c)
 {
-    /*!< Software Reset */
+    /* Software Reset */
     SET_BIT(hi2c->Instance->CR1, I2C_CR1_SWRST);
     CLEAR_BIT(hi2c->Instance->CR1, I2C_CR1_SWRST);
 
@@ -29,7 +29,7 @@ void i2c_master_transmit(I2C_HandleTypeDef *hi2c,
                          uint8_t *data,
                          uint16_t len)
 {
-    HAL_I2C_Master_Transmit(hi2c, addr, data, len, 100U);
+    HAL_I2C_Master_Transmit(hi2c, addr, data, len, 100);
 }
 
 uint8_t i2c_check_ack(I2C_HandleTypeDef *hi2c,
@@ -86,7 +86,7 @@ uint8_t i2c_check_ack(I2C_HandleTypeDef *hi2c,
 
         do
         {
-            __IO uint32_t tmpreg = 0x00U;
+            __IO uint32_t tmpreg = 0x00;
 
             tmpreg = hi2c->Instance->SR1;
             tmpreg = hi2c->Instance->SR2;
@@ -112,7 +112,7 @@ uint8_t i2c_check_ack(I2C_HandleTypeDef *hi2c,
 
 void i2c_dma_tx_init(I2C_HandleTypeDef *hi2c)
 {
-    /*!<DMA Requests Enable     */
+    /*DMA Requests Enable     */
     SET_BIT(hi2c->Instance->CR2, I2C_CR2_DMAEN);
 
     do
@@ -121,7 +121,7 @@ void i2c_dma_tx_init(I2C_HandleTypeDef *hi2c)
         __HAL_DMA_DISABLE(hi2c->hdmatx);
     } while (hi2c->hdmatx->Instance->CR & DMA_SxCR_EN);
 
-    /*!< DMA stream x peripheral address register */
+    /* DMA stream x peripheral address register */
     hi2c->hdmatx->Instance->PAR = (uint32_t)(&hi2c->Instance->DR);
 
     /* Clear Complete Transmit flag */
@@ -144,9 +144,9 @@ void i2c_dma_tx(I2C_HandleTypeDef *hi2c,
     /* Clear Complete Transmit flag */
     BSP_DMA_CLEAR_TC(hi2c->hdmatx);
 
-    /*!< DMA stream x memory 0 address register   */
+    /* DMA stream x memory 0 address register   */
     hi2c->hdmatx->Instance->M0AR = addr;
-    /*!< DMA stream x number of data register     */
+    /* DMA stream x number of data register     */
     hi2c->hdmatx->Instance->NDTR = ndtr;
 
     /* Enable the specified DMA Stream */
@@ -204,7 +204,7 @@ HAL_StatusTypeDef i2c_dma_tx_start(I2C_HandleTypeDef *hi2c,
 
     do
     {
-        __IO uint32_t tmpreg = 0x00U;
+        __IO uint32_t tmpreg = 0x00;
 
         tmpreg = hi2c->Instance->SR1;
         tmpreg = hi2c->Instance->SR2;

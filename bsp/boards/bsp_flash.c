@@ -11,13 +11,11 @@
 
 #include "bsp_flash.h"
 
-#include "main.h"
-
 #include <string.h>
 
 uint32_t flash_sector(uint32_t addr)
 {
-    uint32_t sector = 0U;
+    uint32_t sector = 0;
 
 #if FLASH_SECTOR_TOTAL > 1U
     if ((addr < ADDR_FLASH_SECTOR_1) && (addr >= ADDR_FLASH_SECTOR_0))
@@ -169,7 +167,7 @@ uint32_t flash_sector(uint32_t addr)
 
 uint32_t flash_addr_next(uint32_t addr)
 {
-    uint32_t sector = 0U;
+    uint32_t sector = 0;
 
 #if FLASH_SECTOR_TOTAL > 1U
     if ((addr < ADDR_FLASH_SECTOR_1) && (addr >= ADDR_FLASH_SECTOR_0))
@@ -326,20 +324,20 @@ void flash_erase(uint32_t addr,
 
     uint32_t error;
 
-    /*!< Initial FLASH sector to erase when Mass erase is disabled */
+    /* Initial FLASH sector to erase when Mass erase is disabled */
     flash_erase.Sector = flash_sector(addr);
-    /*!< Mass erase or sector Erase */
+    /* Mass erase or sector Erase */
     flash_erase.TypeErase = FLASH_TYPEERASE_SECTORS;
-    /*!< The device voltage range which defines the erase parallelism */
+    /* The device voltage range which defines the erase parallelism */
     flash_erase.VoltageRange = FLASH_VOLTAGE_RANGE_3;
-    /*!< Number of sectors to be erased */
+    /* Number of sectors to be erased */
     flash_erase.NbSectors = len;
 
-    /*!< Unlock the FLASH control register access */
+    /* Unlock the FLASH control register access */
     (void)HAL_FLASH_Unlock();
-    /*!< Perform a mass erase or erase the specified FLASH memory sectors */
+    /* Perform a mass erase or erase the specified FLASH memory sectors */
     (void)HAL_FLASHEx_Erase(&flash_erase, &error);
-    /*!< Locks the FLASH control register access */
+    /* Locks the FLASH control register access */
     (void)HAL_FLASH_Lock();
 }
 
@@ -358,12 +356,12 @@ int8_t flash_write(uint32_t addr, uint32_t *buf, uint32_t len)
 
     uint32_t addr_end = flash_addr_next(addr);
 
-    /*!< Unlock the FLASH control register access */
+    /* Unlock the FLASH control register access */
     (void)HAL_FLASH_Unlock();
 
     while (addr <= addr_end)
     {
-        /*!< Program word word at a specified address */
+        /* Program word word at a specified address */
         if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, addr, *buf) == HAL_OK)
         {
             addr += sizeof(addr);
@@ -381,7 +379,7 @@ int8_t flash_write(uint32_t addr, uint32_t *buf, uint32_t len)
         }
     }
 
-    /*!< Locks the FLASH control register access */
+    /* Locks the FLASH control register access */
     (void)HAL_FLASH_Lock();
 
     return ret;
@@ -394,16 +392,16 @@ int8_t flash_writen(uint32_t addr,
 {
     int8_t ret = 0;
 
-    uint32_t n = 0U;
+    uint32_t n = 0;
 
     HAL_FLASH_Unlock();
 
-    /*!< Unlock the FLASH control register access */
+    /* Unlock the FLASH control register access */
     (void)HAL_FLASH_Unlock();
 
     while (addr <= addr_end)
     {
-        /*!< Program word word at a specified address */
+        /* Program word word at a specified address */
         if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, addr, *buf) == HAL_OK)
         {
             addr += sizeof(addr);
@@ -421,7 +419,7 @@ int8_t flash_writen(uint32_t addr,
         }
     }
 
-    /*!< Locks the FLASH control register access */
+    /* Locks the FLASH control register access */
     (void)HAL_FLASH_Lock();
 
     return ret;

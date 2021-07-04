@@ -14,28 +14,12 @@
 #ifndef __BSP_I2C_H__
 #define __BSP_I2C_H__
 
-#include "bsp_dma.h"
-#include "main.h"
-
-#include <stdint.h>
+#include "bsp.h"
 
 extern I2C_HandleTypeDef hi2c3;
 
 #define I2C_ACK    1
 #define I2C_NO_ACK 0
-
-#undef __BEGIN_DECLS
-#undef __END_DECLS
-
-#if defined(__cplusplus)
-#define __BEGIN_DECLS \
-    extern "C"        \
-    {
-#define __END_DECLS }
-#else
-#define __BEGIN_DECLS
-#define __END_DECLS
-#endif /* __cplusplus */
 
 __BEGIN_DECLS
 

@@ -11,9 +11,6 @@
 
 #include "ctrl_pc.h"
 
-#include "bsp_usart.h"
-#include "main.h"
-
 #include <stdlib.h>
 
 #undef PC_IS_FLOAT
@@ -52,7 +49,7 @@ ctrl_pc_t *ctrl_pc_point(void)
     return &pc;
 }
 
-void os_rx_irq(volatile void *buf,
+void os_rx_irq(void *buf,
                uint16_t len)
 {
     char *p = (char *)buf;
@@ -60,9 +57,10 @@ void os_rx_irq(volatile void *buf,
     if ('A' <= *p && *p <= 'Z')
     {
         pc.c = *(uint8_t *)buf;
-        pc.x = *(float *)(p + 2);
-        pc.y = *(float *)(p + 2 + 4);
-        pc.z = *(float *)(p + 2 + 4 + 4);
+        float *i = (float *)(uint32_t)(p + 2);
+        pc.x = *i++;
+        pc.y = *i++;
+        pc.z = *i;
         return;
     }
     else if ('a' <= *p && *p <= 'z')

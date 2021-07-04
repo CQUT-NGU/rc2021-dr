@@ -33,7 +33,7 @@
 
 typedef struct
 {
-    uint8_t status;
+    int8_t status;
     float mag[3];
 } ist_t;
 

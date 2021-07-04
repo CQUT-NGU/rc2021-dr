@@ -9,35 +9,19 @@
  * *****************************************************************************
 */
 
-/* Define to prevent recursive inclusion ------------------------------------ */
+/* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __CTRL_PC_H__
 #define __CTRL_PC_H__
 
-#include <stdint.h>
-
-#undef __BEGIN_DECLS
-#undef __END_DECLS
-
-#if defined(__cplusplus)
-#define __BEGIN_DECLS \
-    extern "C"        \
-    {
-#define __END_DECLS }
-#else
-#define __BEGIN_DECLS
-#define __END_DECLS
-#endif /* __cplusplus */
-
-#undef __packed
-#define __packed __attribute__((__packed__))
+#include "ctrl.h"
 
 typedef struct
 {
-    float x;
-    float y;
-    float z;
+    volatile float x;
+    volatile float y;
+    volatile float z;
 
-    uint8_t c;
+    volatile uint8_t c;
 } ctrl_pc_t;
 
 __BEGIN_DECLS
@@ -48,7 +32,7 @@ __BEGIN_DECLS
 */
 extern ctrl_pc_t *ctrl_pc_point(void);
 
-__BEGIN_DECLS
+__END_DECLS
 
 /* Enddef to prevent recursive inclusion ------------------------------------ */
 #endif /* __CTRL_PC_H__ */

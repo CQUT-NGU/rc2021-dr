@@ -11,9 +11,6 @@
 
 #include "ctrl_rc.h"
 
-#include "bsp_usart.h"
-#include "main.h"
-
 #undef hrc
 #define hrc huart_rc
 
@@ -27,10 +24,8 @@ static uint8_t sbus_rx_buf[2][SBUS_RX_BUF_NUM];
 /**
  * @brief        Remote control protocol resolution
  * @param[in]    buf: raw data point
- * @param[out]   rc:  remote control data struct point
 */
-static void sbus_to_rc(volatile const uint8_t *buf,
-                       ctrl_rc_t *rc);
+static void sbus_to_rc(const void *buf);
 
 void ctrl_rc_init(void)
 {
@@ -38,7 +33,7 @@ void ctrl_rc_init(void)
     usart_dma_rx(&hrc, sbus_rx_buf[0], sbus_rx_buf[1], SBUS_RX_BUF_NUM);
 }
 
-const ctrl_rc_t *ctrl_rc_point(void)
+ctrl_rc_t *ctrl_rc_point(void)
 {
     return &rc;
 }
@@ -48,102 +43,88 @@ const ctrl_rc_t *ctrl_rc_point(void)
 */
 void RC_IRQHandler(void)
 {
-    if (hrc.Instance->SR & UART_FLAG_RXNE) /*!< USART Status register*/
+    if (hrc.Instance->SR & UART_FLAG_RXNE) /* USART Status register*/
     {
         __HAL_UART_CLEAR_PEFLAG(&hrc); /* Clears the UART PE pending flag */
     }
     else if (hrc.Instance->SR & UART_FLAG_IDLE)
     {
-        static uint16_t len_rx = 0;
-
         __HAL_UART_CLEAR_PEFLAG(&hrc); /* Clears the UART PE pending flag */
 
-        /*!< DMA stream x configuration register */
+        void *rx_p = 0;
+
+        /* Disable the specified DMA Stream */
+        __HAL_DMA_DISABLE(hrc.hdmarx);
+
+        /* Receive data length, length = set_data_length - remain_length */
+        uint16_t rx_l = (uint16_t)(SBUS_RX_BUF_NUM - hrc.hdmarx->Instance->NDTR);
+
+        /* DMA stream x configuration register */
         if ((hrc.hdmarx->Instance->CR & DMA_SxCR_CT) == RESET)
         {
             /* Current memory buffer used is Memory 0 */
-
-            /* Disable the specified DMA Stream */
-            __HAL_DMA_DISABLE(hrc.hdmarx);
-
-            /* Receive data length, length = set_data_length - remain_length */
-            len_rx = SBUS_RX_BUF_NUM - hrc.hdmarx->Instance->NDTR;
-
-            /* Reset set_data_lenght */
-            hrc.hdmarx->Instance->NDTR = SBUS_RX_BUF_NUM;
-
+            rx_p = (void *)hrc.hdmarx->Instance->M0AR;
             /* Set memory buffer 1 */
             hrc.hdmarx->Instance->CR |= DMA_SxCR_CT;
-
-            /* Enable the specified DMA Stream */
-            __HAL_DMA_ENABLE(hrc.hdmarx);
-
-            if (len_rx == RC_FRAME_LENGTH)
-            {
-                sbus_to_rc(sbus_rx_buf[0], &rc);
-            }
         }
         else
         {
             /* Current memory buffer used is Memory 1 */
-
-            /* Disable the specified DMA Stream */
-            __HAL_DMA_DISABLE(hrc.hdmarx);
-
-            /* Receive data length, length = set_data_length - remain_length */
-            len_rx = SBUS_RX_BUF_NUM - hrc.hdmarx->Instance->NDTR;
-
-            /* Reset set_data_lenght */
-            hrc.hdmarx->Instance->NDTR = SBUS_RX_BUF_NUM;
+            rx_p = sbus_rx_buf[1];
 
             /* Set memory buffer 0 */
             hrc.hdmarx->Instance->CR &= ~(DMA_SxCR_CT);
+        }
 
-            /* Enable the specified DMA Stream */
-            __HAL_DMA_ENABLE(hrc.hdmarx);
+        /* Reset set_data_lenght */
+        hrc.hdmarx->Instance->NDTR = SBUS_RX_BUF_NUM;
 
-            if (len_rx == RC_FRAME_LENGTH)
-            {
-                sbus_to_rc(sbus_rx_buf[1], &rc);
-            }
+        /* Enable the specified DMA Stream */
+        __HAL_DMA_ENABLE(hrc.hdmarx);
+
+        if (rx_l == RC_FRAME_LENGTH)
+        {
+            sbus_to_rc(rx_p);
         }
     }
 }
 
-static void sbus_to_rc(volatile const uint8_t *buf, ctrl_rc_t *rc)
+static void sbus_to_rc(const void *buf)
 {
-    /*!< Channel 0 */
-    rc->rc.ch[0] = 0x7ff & ((buf[1] << 8) | buf[0]);
-    /*!< Channel 1 */
-    rc->rc.ch[1] = 0x7ff & ((buf[1] >> 3) | (buf[2] << 5));
-    /*!< Channel 2 */
-    rc->rc.ch[2] = 0x7ff & ((buf[2] >> 6) | (buf[3] << 2) | (buf[4] << 10));
-    /*!< Channel 3 */
-    rc->rc.ch[3] = 0x7ff & ((buf[4] >> 1) | (buf[5] << 7));
-    /*!< Switch left */
-    rc->rc.s[0] = ((buf[5] >> 4) & 0x3);
-    /*!< Switch right */
-    rc->rc.s[1] = ((buf[5] >> 4) & 0xC) >> 2;
-    /*!< Mouse X axis */
-    rc->mouse.x = buf[6] | (buf[7] << 8);
-    /*!< Mouse Y axis */
-    rc->mouse.y = buf[8] | (buf[9] << 8);
-    /*!< Mouse Z axis */
-    rc->mouse.z = buf[10] | (buf[11] << 8);
-    /*!< Mouse Left Is Press ? */
-    rc->mouse.press_l = buf[12];
-    /*!< Mouse Right Is Press ? */
-    rc->mouse.press_r = buf[13];
-    /*!< KeyBoard value */
-    rc->key.v = buf[14] | (buf[15] << 8);
-    /*!< NULL */
-    rc->rc.ch[4] = buf[16] | (buf[17] << 8);
+    const uint8_t *p = (const uint8_t *)buf;
 
-    rc->rc.ch[0] -= RC_CH_VALUE_OFFSET;
-    rc->rc.ch[1] -= RC_CH_VALUE_OFFSET;
-    rc->rc.ch[2] -= RC_CH_VALUE_OFFSET;
-    rc->rc.ch[3] -= RC_CH_VALUE_OFFSET;
-    rc->rc.ch[4] -= RC_CH_VALUE_OFFSET;
+    /* Channel 0 */
+    rc.rc.ch[0] = 0x7FF & (int16_t)((p[1] << 8) | p[0]);
+    /* Channel 1 */
+    rc.rc.ch[1] = 0x7FF & (int16_t)((p[1] >> 3) | (p[2] << 5));
+    /* Channel 2 */
+    rc.rc.ch[2] = 0x7FF & (int16_t)((p[2] >> 6) | (p[3] << 2) | (p[4] << 10));
+    /* Channel 3 */
+    rc.rc.ch[3] = 0x7FF & (int16_t)((p[4] >> 1) | (p[5] << 7));
+    /* Switch left */
+    rc.rc.s[0] = ((p[5] >> 4) & 0x3);
+    /* Switch right */
+    rc.rc.s[1] = ((p[5] >> 4) & 0xC) >> 2;
+    /* Mouse X axis */
+    rc.mouse.x = (int16_t)(p[6] | (p[7] << 8));
+    /* Mouse Y axis */
+    rc.mouse.y = (int16_t)(p[8] | (p[9] << 8));
+    /* Mouse Z axis */
+    rc.mouse.z = (int16_t)(p[10] | (p[11] << 8));
+    /* Mouse Left Is Press ? */
+    rc.mouse.press_l = p[12];
+    /* Mouse Right Is Press ? */
+    rc.mouse.press_r = p[13];
+    /* KeyBoard value */
+    rc.key.v = (uint16_t)(p[14] | (p[15] << 8));
+    /* NULL */
+    rc.rc.ch[4] = (int16_t)(p[16] | (p[17] << 8));
+
+    rc.rc.ch[0] = (int16_t)(rc.rc.ch[0] - RC_CH_VALUE_OFFSET);
+    rc.rc.ch[1] = (int16_t)(rc.rc.ch[1] - RC_CH_VALUE_OFFSET);
+    rc.rc.ch[2] = (int16_t)(rc.rc.ch[2] - RC_CH_VALUE_OFFSET);
+    rc.rc.ch[3] = (int16_t)(rc.rc.ch[3] - RC_CH_VALUE_OFFSET);
+    rc.rc.ch[4] = (int16_t)(rc.rc.ch[4] - RC_CH_VALUE_OFFSET);
 }
 
 /************************ (C) COPYRIGHT NGU ********************END OF FILE****/

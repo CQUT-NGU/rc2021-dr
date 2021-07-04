@@ -37,20 +37,20 @@
 #define IMU_SHFITS_SPI    1 /* SPI is running */
 #define IMU_SHFITS_UPDATE 2 /* Data is updated */
 #define IMU_NOTIFY_SHFITS 3
-#define IMU_FLAG_DR       (1U << IMU_SHFITS_DR)
-#define IMU_FLAG_SPI      (1U << IMU_SHFITS_SPI)
-#define IMU_FLAG_UPDATE   (1U << IMU_SHFITS_UPDATE)
-#define IMU_FLAG_NOTIFY   (1U << IMU_NOTIFY_SHFITS)
+#define IMU_FLAG_DR       (1 << IMU_SHFITS_DR)
+#define IMU_FLAG_SPI      (1 << IMU_SHFITS_SPI)
+#define IMU_FLAG_UPDATE   (1 << IMU_SHFITS_UPDATE)
+#define IMU_FLAG_NOTIFY   (1 << IMU_NOTIFY_SHFITS)
 
 #define BMI088_GYRO_RX_BUF_DATA_OFFSET  1
 #define BMI088_ACCEL_RX_BUF_DATA_OFFSET 2
 #define IST8310_RX_BUF_DATA_OFFSET      16
 
-#define TEMPERATURE_PID_KP       1600.0f
-#define TEMPERATURE_PID_KI       0.2f
-#define TEMPERATURE_PID_KD       0.0f
-#define TEMPERATURE_PID_MAX_OUT  4500.0f
-#define TEMPERATURE_PID_MAX_IOUT 4400.0f
+#define TEMPERATURE_PID_KP       1600.0F
+#define TEMPERATURE_PID_KI       0.2F
+#define TEMPERATURE_PID_KD       0.0F
+#define TEMPERATURE_PID_MAX_OUT  4500.0F
+#define TEMPERATURE_PID_MAX_IOUT 4400.0F
 
 #define MPU6500_TEMP_PWM_MAX 5000
 
@@ -74,16 +74,16 @@
 
 #define BMI088_BOARD_INSTALL_SPIN_MATRIX \
     {                                    \
-        {0.0f, 1.0f, 0.0f},              \
-            {-1.0f, 0.0f, 0.0f},         \
-            {0.0f, 0.0f, 1.0f},          \
+        {0.0F, 1.0F, 0.0F},              \
+            {-1.0F, 0.0F, 0.0F},         \
+            {0.0F, 0.0F, 1.0F},          \
     }
 
 #define IST8310_BOARD_INSTALL_SPIN_MATRIX \
     {                                     \
-        {1.0f, 0.0f, 0.0f},               \
-            {0.0f, 1.0f, 0.0f},           \
-            {0.0f, 0.0f, 1.0f},           \
+        {1.0F, 0.0F, 0.0F},               \
+            {0.0F, 1.0F, 0.0F},           \
+            {0.0F, 0.0F, 1.0F},           \
     }
 
 static TaskHandle_t ins_task_local_handler;
@@ -121,12 +121,12 @@ static uint8_t dma_tx_buf_temp[SPI_DMA_LENGHT_TEMP] = {
     0xFF,
 };
 
-volatile uint8_t flag_update_gyro = 0;  /* flag which update gyroscope */
-volatile uint8_t flag_update_accel = 0; /* flag which update accelerometer */
-volatile uint8_t flag_update_temp = 0;  /* flag which update temperature */
-volatile uint8_t flag_update_mag = 0;   /* flag which update magnetometer */
+volatile int8_t flag_update_gyro = 0;  /* flag which update gyroscope */
+volatile int8_t flag_update_accel = 0; /* flag which update accelerometer */
+volatile int8_t flag_update_temp = 0;  /* flag which update temperature */
+volatile int8_t flag_update_mag = 0;   /* flag which update magnetometer */
 
-volatile uint8_t flag_imu_dma = 0; /* flag which can dma tx */
+volatile int8_t flag_imu_dma = 0; /* flag which can dma tx */
 
 bmi_t bmi;
 ist_t ist;
@@ -162,38 +162,38 @@ static ca_pid_f32_t pid_temp;
 
 static uint8_t temp_first; /* the flag of the first temperature */
 
-//static const float timing_time = 0.001f; /* task run time , unit s */
+//static const float timing_time = 0.001F; /* task run time , unit s */
 
-static float accel_fliter_1[3] = {0.0f, 0.0f, 0.0f};
-static float accel_fliter_2[3] = {0.0f, 0.0f, 0.0f};
-static float accel_fliter_3[3] = {0.0f, 0.0f, 0.0f};
+static float accel_fliter_1[3] = {0.0F, 0.0F, 0.0F};
+static float accel_fliter_2[3] = {0.0F, 0.0F, 0.0F};
+static float accel_fliter_3[3] = {0.0F, 0.0F, 0.0F};
 
 /* the number of fliter */
 #if 1
 static const float fliter_num[3] = {
-    1.929454039488895f,
-    -0.93178349823448126f,
-    0.002329458745586203f,
+    1.929454039488895F,
+    -0.93178349823448126F,
+    0.002329458745586203F,
 };
 #elif 0
 static const float fliter_num[3] = {
-    0.1f,
-    0.1f,
-    0.1f,
+    0.1F,
+    0.1F,
+    0.1F,
 };
 #endif
 
 /* x,y,z axis of gyroscope */
-static float ins_gyro[3] = {0.0f, 0.0f, 0.0f};
+static float ins_gyro[3] = {0.0F, 0.0F, 0.0F};
 /* x,y,z axis of accelerometer */
-static float ins_accel[3] = {0.0f, 0.0f, 0.0f};
+static float ins_accel[3] = {0.0F, 0.0F, 0.0F};
 /* x,y,z axis of magnetometer */
-static float ins_mag[3] = {0.0f, 0.0f, 0.0f};
+static float ins_mag[3] = {0.0F, 0.0F, 0.0F};
 /* quaternionq[0]+q[1]* i +q[2]* j +q[3]* k */
-static float ins_quat[4] = {1.0f, 0.0f, 0.0f, 0.0f};
+static float ins_quat[4] = {1.0F, 0.0F, 0.0F, 0.0F};
 
 /* euler angle, unit rad */
-float ins_angle[3] = {0.0f, 0.0f, 0.0f};
+float ins_angle[3] = {0.0F, 0.0F, 0.0F};
 
 /**
  * @brief        open the SPI DMA accord to the value of flag_update_imu
@@ -369,28 +369,26 @@ void DMA2_Stream2_IRQHandler(void)
 */
 static void imu_cali_slove(float gyro[3],
                            float accel[3],
-                           float mag[3],
-                           bmi_t *bmi,
-                           ist_t *ist)
+                           float mag[3])
 {
-    for (uint8_t i = 0U; i != 3U; ++i)
+    for (uint8_t i = 0; i != 3; ++i)
     {
         /* calculate the zero drift of gyroscope */
-        gyro[i] = bmi->gyro[INS_GYRO_X] * scale_factor_gyro[i][INS_GYRO_X] +
-                  bmi->gyro[INS_GYRO_Y] * scale_factor_gyro[i][INS_GYRO_Y] +
-                  bmi->gyro[INS_GYRO_Z] * scale_factor_gyro[i][INS_GYRO_Z] +
+        gyro[i] = bmi.gyro[INS_GYRO_X] * scale_factor_gyro[i][INS_GYRO_X] +
+                  bmi.gyro[INS_GYRO_Y] * scale_factor_gyro[i][INS_GYRO_Y] +
+                  bmi.gyro[INS_GYRO_Z] * scale_factor_gyro[i][INS_GYRO_Z] +
                   offset_gyro[i];
 
         /* calculate the zero drift of accelerometer */
-        accel[i] = bmi->accel[INS_ACCEL_X] * scale_factor_accel[i][INS_ACCEL_X] +
-                   bmi->accel[INS_ACCEL_Y] * scale_factor_accel[i][INS_ACCEL_Y] +
-                   bmi->accel[INS_ACCEL_Z] * scale_factor_accel[i][INS_ACCEL_Z] +
+        accel[i] = bmi.accel[INS_ACCEL_X] * scale_factor_accel[i][INS_ACCEL_X] +
+                   bmi.accel[INS_ACCEL_Y] * scale_factor_accel[i][INS_ACCEL_Y] +
+                   bmi.accel[INS_ACCEL_Z] * scale_factor_accel[i][INS_ACCEL_Z] +
                    offset_accel[i];
 
         /* calculate the zero drift of magnetometer */
-        mag[i] = ist->mag[INS_MAG_X] * scale_factor_mag[i][INS_MAG_X] +
-                 ist->mag[INS_MAG_Y] * scale_factor_mag[i][INS_MAG_Y] +
-                 ist->mag[INS_MAG_Z] * scale_factor_mag[i][INS_MAG_Z] +
+        mag[i] = ist.mag[INS_MAG_X] * scale_factor_mag[i][INS_MAG_X] +
+                 ist.mag[INS_MAG_Y] * scale_factor_mag[i][INS_MAG_Y] +
+                 ist.mag[INS_MAG_Z] * scale_factor_mag[i][INS_MAG_Z] +
                  offset_mag[i];
     }
 }
@@ -405,9 +403,9 @@ void offset_gyro_calc(float offset[3],
                       float gyro[3],
                       uint16_t *count)
 {
-    offset[INS_GYRO_X] -= 0.0003f * gyro[INS_GYRO_X];
-    offset[INS_GYRO_Y] -= 0.0003f * gyro[INS_GYRO_Y];
-    offset[INS_GYRO_Z] -= 0.0003f * gyro[INS_GYRO_Z];
+    offset[INS_GYRO_X] -= 0.0003F * gyro[INS_GYRO_X];
+    offset[INS_GYRO_Y] -= 0.0003F * gyro[INS_GYRO_Y];
+    offset[INS_GYRO_Z] -= 0.0003F * gyro[INS_GYRO_Z];
 
     (*count)++;
 }
@@ -435,9 +433,9 @@ void ins_cali_gyro(float scale[3],
     offset[INS_GYRO_Y] = offset_gyro[INS_GYRO_Y];
     offset[INS_GYRO_Z] = offset_gyro[INS_GYRO_Z];
 
-    scale[INS_GYRO_X] = 1.0f;
-    scale[INS_GYRO_Y] = 1.0f;
-    scale[INS_GYRO_Z] = 1.0f;
+    scale[INS_GYRO_X] = 1.0F;
+    scale[INS_GYRO_Y] = 1.0F;
+    scale[INS_GYRO_Z] = 1.0F;
 }
 
 /**
@@ -480,7 +478,7 @@ static void imu_temp_control(float temp)
             {
                 temp_first = 1;
 
-                pid_temp.y = MPU6500_TEMP_PWM_MAX / 2.0f;
+                pid_temp.y = MPU6500_TEMP_PWM_MAX / 2.0F;
             }
         }
 
@@ -498,7 +496,7 @@ static float ht_get(void)
 
     update_now = HAL_GetTick(); /* ms */
 
-    float ret = (float)(update_now - update_last) / 2000.0f;
+    float ret = (float)(update_now - update_last) / 2000.0F;
 
     update_last = update_now;
 
@@ -520,68 +518,68 @@ void quat_init(float q[4],
     {
         if (fabsf(hx / hy) >= 1)
         {
-            q[0] = -0.005f;
-            q[1] = -0.199f;
-            q[2] = 0.979f;
-            q[3] = -0.0089f;
+            q[0] = -0.005F;
+            q[1] = -0.199F;
+            q[2] = 0.979F;
+            q[3] = -0.0089F;
         }
         else
         {
-            q[0] = -0.008f;
-            q[1] = -0.555f;
-            q[2] = 0.83f;
-            q[3] = -0.002f;
+            q[0] = -0.008F;
+            q[1] = -0.555F;
+            q[2] = 0.83F;
+            q[3] = -0.002F;
         }
     }
     else if (hx < 0 && hy > 0)
     {
         if (fabsf(hx / hy) >= 1)
         {
-            q[0] = 0.005f;
-            q[1] = -0.199f;
-            q[2] = -0.978f;
-            q[3] = 0.012f;
+            q[0] = 0.005F;
+            q[1] = -0.199F;
+            q[2] = -0.978F;
+            q[3] = 0.012F;
         }
         else
         {
-            q[0] = 0.005f;
-            q[1] = -0.553f;
-            q[2] = -0.83f;
-            q[3] = -0.0023f;
+            q[0] = 0.005F;
+            q[1] = -0.553F;
+            q[2] = -0.83F;
+            q[3] = -0.0023F;
         }
     }
     else if (hx > 0 && hy > 0)
     {
         if (fabsf(hx / hy) >= 1)
         {
-            q[0] = 0.0012f;
-            q[1] = -0.978f;
-            q[2] = -0.199f;
-            q[3] = -0.005f;
+            q[0] = 0.0012F;
+            q[1] = -0.978F;
+            q[2] = -0.199F;
+            q[3] = -0.005F;
         }
         else
         {
-            q[0] = 0.0023f;
-            q[1] = -0.83f;
-            q[2] = -0.553f;
-            q[3] = 0.0023f;
+            q[0] = 0.0023F;
+            q[1] = -0.83F;
+            q[2] = -0.553F;
+            q[3] = 0.0023F;
         }
     }
     else if (hx > 0 && hy < 0)
     {
         if (fabsf(hx / hy) >= 1)
         {
-            q[0] = 0.0025f;
-            q[1] = 0.978f;
-            q[2] = -0.199f;
-            q[3] = 0.008f;
+            q[0] = 0.0025F;
+            q[1] = 0.978F;
+            q[2] = -0.199F;
+            q[3] = 0.008F;
         }
         else
         {
-            q[0] = 0.0025f;
-            q[1] = 0.83f;
-            q[2] = -0.56f;
-            q[3] = 0.0045f;
+            q[0] = 0.0025F;
+            q[1] = 0.83F;
+            q[2] = -0.56F;
+            q[3] = 0.0045F;
         }
     }
 #else
@@ -589,68 +587,68 @@ void quat_init(float q[4],
     {
         if (fabsf(hx / hy) >= 1)
         {
-            q[0] = 0.195f;
-            q[1] = -0.015f;
-            q[2] = 0.0043f;
-            q[3] = 0.979f;
+            q[0] = 0.195F;
+            q[1] = -0.015F;
+            q[2] = 0.0043F;
+            q[3] = 0.979F;
         }
         else
         {
-            q[0] = 0.555f;
-            q[1] = -0.015f;
-            q[2] = 0.006f;
-            q[3] = 0.829f;
+            q[0] = 0.555F;
+            q[1] = -0.015F;
+            q[2] = 0.006F;
+            q[3] = 0.829F;
         }
     }
     else if (hx < 0 && hy > 0)
     {
         if (fabsf(hx / hy) >= 1)
         {
-            q[0] = -0.193f;
-            q[1] = -0.009f;
-            q[2] = -0.006f;
-            q[3] = 0.979f;
+            q[0] = -0.193F;
+            q[1] = -0.009F;
+            q[2] = -0.006F;
+            q[3] = 0.979F;
         }
         else
         {
-            q[0] = -0.552f;
-            q[1] = -0.0048f;
-            q[2] = -0.0115f;
-            q[3] = 0.8313f;
+            q[0] = -0.552F;
+            q[1] = -0.0048F;
+            q[2] = -0.0115F;
+            q[3] = 0.8313F;
         }
     }
     else if (hx > 0 && hy > 0)
     {
         if (fabsf(hx / hy) >= 1)
         {
-            q[0] = -0.9785f;
-            q[1] = 0.008f;
-            q[2] = -0.02f;
-            q[3] = 0.195f;
+            q[0] = -0.9785F;
+            q[1] = 0.008F;
+            q[2] = -0.02F;
+            q[3] = 0.195F;
         }
         else
         {
-            q[0] = -0.9828f;
-            q[1] = 0.002f;
-            q[2] = -0.0167f;
-            q[3] = 0.5557f;
+            q[0] = -0.9828F;
+            q[1] = 0.002F;
+            q[2] = -0.0167F;
+            q[3] = 0.5557F;
         }
     }
     else if (hx > 0 && hy < 0)
     {
         if (fabsf(hx / hy) >= 1)
         {
-            q[0] = -0.979f;
-            q[1] = 0.0116f;
-            q[2] = -0.0167f;
-            q[3] = -0.195f;
+            q[0] = -0.979F;
+            q[1] = 0.0116F;
+            q[2] = -0.0167F;
+            q[3] = -0.195F;
         }
         else
         {
-            q[0] = -0.83f;
-            q[1] = 0.014f;
-            q[2] = -0.012f;
-            q[3] = -0.556f;
+            q[0] = -0.83F;
+            q[1] = 0.014F;
+            q[2] = -0.012F;
+            q[3] = -0.556F;
         }
     }
 #endif /* BOARD_IS_DOWN */
@@ -687,7 +685,7 @@ void task_ins(void const *pvParameters)
 
     bmi088_read(bmi.gyro, bmi.accel, &bmi.temp);
     /* rotate and zero drift */
-    imu_cali_slove(ins_gyro, ins_accel, ins_mag, &bmi, &ist);
+    imu_cali_slove(ins_gyro, ins_accel, ins_mag);
 
     quat_init(ins_quat, ins_mag[INS_MAG_X], ins_mag[INS_MAG_Y]);
 
@@ -767,7 +765,7 @@ void task_ins(void const *pvParameters)
         }
 
         /* rotate and zero drift */
-        imu_cali_slove(ins_gyro, ins_accel, ins_mag, &bmi, &ist);
+        imu_cali_slove(ins_gyro, ins_accel, ins_mag);
 
         /* accel low-pass filter */
         accel_fliter_1[INS_ACCEL_X] = accel_fliter_2[INS_ACCEL_X];

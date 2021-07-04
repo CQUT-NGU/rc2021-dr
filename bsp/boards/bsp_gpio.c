@@ -11,6 +11,4 @@
 
 #include "bsp_gpio.h"
 
-#include "main.h"
-
 /************************ (C) COPYRIGHT NGU ********************END OF FILE****/

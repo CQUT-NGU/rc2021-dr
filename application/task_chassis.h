@@ -14,22 +14,9 @@
 #define __TASK_CHASSIS_H__
 
 #include "ca.h"
+#include "bsp.h"
 #include "ctrl.h"
 #include "task_ins.h"
-
-#undef __BEGIN_DECLS
-#undef __END_DECLS
-
-#if defined(__cplusplus)
-#define __BEGIN_DECLS \
-    extern "C"        \
-    {
-#define __END_DECLS \
-    }
-#else
-#define __BEGIN_DECLS
-#define __END_DECLS
-#endif /* __cplusplus */
 
 typedef enum
 {
@@ -41,7 +28,6 @@ typedef enum
     CHASSIS_VECTOR_NO_FOLLOW_YAW,
     /* chassis will have rotation speed control slowly */
     CHASSIS_VECTOR_SLOW,
-
 } chassis_mode_e;
 
 typedef struct

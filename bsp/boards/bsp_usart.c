@@ -11,8 +11,6 @@
 
 #include "bsp_usart.h"
 
-#include "main.h"
-
 #include <stdarg.h>
 #include <stdio.h>
 
@@ -175,7 +173,7 @@ void usart_dma_rx(UART_HandleTypeDef *huart,
 }
 
 void usart_dma_tx(UART_HandleTypeDef *huart,
-                  void *data,
+                  const void *data,
                   uint16_t len)
 {
     do
@@ -250,7 +248,7 @@ static void dma_printf_irq(void)
 */
 void OS_IRQHandler(void)
 {
-    if (huart_os.Instance->SR & UART_FLAG_RXNE) /*!< USART Status register*/
+    if (huart_os.Instance->SR & UART_FLAG_RXNE) /* USART Status register*/
     {
         __HAL_UART_CLEAR_PEFLAG(&huart_os); /* Clears the UART PE pending flag */
     }
@@ -261,7 +259,7 @@ void OS_IRQHandler(void)
         /* Disable the specified DMA Stream */
         __HAL_DMA_DISABLE(huart_os.hdmarx);
 
-        /*!< DMA stream x configuration register */
+        /* DMA stream x configuration register */
         if ((huart_os.hdmarx->Instance->CR & DMA_SxCR_CT) == RESET)
         {
             /* Current memory buffer used is Memory 0 */
@@ -346,7 +344,7 @@ void os_justfloat(uint8_t n, ...)
     va_end(ap);
 
     /* USART transmit by DMA Stream */
-    usart_dma_tx(&huart_os, (uint8_t *)buf32, (uint16_t)(sizeof(float) * (n + 1U)));
+    usart_dma_tx(&huart_os, (void *)buf32, (uint16_t)(sizeof(float) * (n + 1U)));
 
     /* Wait Complete Transmit flag to be set */
     BSP_DMA_WAIT_TC(huart_os.hdmatx);

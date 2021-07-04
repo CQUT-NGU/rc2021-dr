@@ -11,8 +11,6 @@
 
 #include "bsp_buzzer.h"
 
-#include "main.h"
-
 #undef htim
 #define htim htim4
 #undef BUZZER_CHANNEL
@@ -22,26 +20,26 @@ extern TIM_HandleTypeDef htim;
 
 void buzzer_start(void)
 {
-    /*!< Set the TIM Autoreload Register value on runtime */
+    /* Set the TIM Autoreload Register value on runtime */
     __HAL_TIM_SetAutoreload(&htim, BUZZER_PWM_MAX - 1U);
-    /*!< Set the TIM Clock Division value on runtime */
+    /* Set the TIM Clock Division value on runtime */
     __HAL_TIM_SetClockDivision(&htim, TIM_CLOCKDIVISION_DIV1);
-    /*!< Starts the PWM signal generation */
+    /* Starts the PWM signal generation */
     HAL_TIM_PWM_Start(&htim, BUZZER_CHANNEL);
 }
 
 void buzzer_stop(void)
 {
-    /*!< Stops the PWM signal generation */
+    /* Stops the PWM signal generation */
     HAL_TIM_PWM_Stop(&htim, BUZZER_CHANNEL);
 }
 
 void buzzer_set(uint16_t psc,
                 uint16_t pwm)
 {
-    /*!< Set the TIM Prescaler on runtime */
+    /* Set the TIM Prescaler on runtime */
     __HAL_TIM_SET_PRESCALER(&htim, psc & 0xFFFU);
-    /*!< Set the TIM Capture Compare Register value on runtime */
+    /* Set the TIM Capture Compare Register value on runtime */
     __HAL_TIM_SetCompare(&htim, BUZZER_CHANNEL, pwm);
 }
 

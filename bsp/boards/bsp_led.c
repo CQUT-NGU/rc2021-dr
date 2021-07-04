@@ -39,7 +39,7 @@ extern TIM_HandleTypeDef htim;
         }                                       \
         else                                    \
         {                                       \
-            GPIOx->BSRR = (uint32_t)PIN << 16U; \
+            GPIOx->BSRR = (uint32_t)PIN << 16; \
         }                                       \
     } while (0)
 
@@ -63,7 +63,7 @@ extern TIM_HandleTypeDef htim;
     {                                           \
         if ((GPIOx->ODR & PIN) == PIN)          \
         {                                       \
-            GPIOx->BSRR = (uint32_t)PIN << 16U; \
+            GPIOx->BSRR = (uint32_t)PIN << 16; \
         }                                       \
         else                                    \
         {                                       \
@@ -126,13 +126,13 @@ void led_toggle(led_e pin)
 
 void led_pwm_start(void)
 {
-    /*!< Set the TIM Prescaler on runtime */
-    __HAL_TIM_SET_PRESCALER(&htim, LED_PRESCALER - 1U);
-    /*!< Set the TIM Autoreload Register value on runtime */
-    __HAL_TIM_SetAutoreload(&htim, LED_PWM_MAX - 1U);
-    /*!< Set the TIM Clock Division value on runtime */
+    /* Set the TIM Prescaler on runtime */
+    __HAL_TIM_SET_PRESCALER(&htim, LED_PRESCALER - 1);
+    /* Set the TIM Autoreload Register value on runtime */
+    __HAL_TIM_SetAutoreload(&htim, LED_PWM_MAX - 1);
+    /* Set the TIM Clock Division value on runtime */
     __HAL_TIM_SetClockDivision(&htim, TIM_CLOCKDIVISION_DIV1);
-    /*!< Starts the PWM signal generation */
+    /* Starts the PWM signal generation */
     HAL_TIM_PWM_Start(&htim, LED_CHANNEL_R);
     HAL_TIM_PWM_Start(&htim, LED_CHANNEL_G);
     HAL_TIM_PWM_Start(&htim, LED_CHANNEL_B);
@@ -140,7 +140,7 @@ void led_pwm_start(void)
 
 void led_pwm_stop(void)
 {
-    /*!< Stops the PWM signal generation */
+    /* Stops the PWM signal generation */
     HAL_TIM_PWM_Stop(&htim, LED_CHANNEL_R);
     HAL_TIM_PWM_Stop(&htim, LED_CHANNEL_G);
     HAL_TIM_PWM_Stop(&htim, LED_CHANNEL_B);
@@ -149,7 +149,7 @@ void led_pwm_stop(void)
 void led_pwm_set(led_e pin,
                  uint16_t value)
 {
-    /*!< Set the TIM Capture Compare Register value on runtime */
+    /* Set the TIM Capture Compare Register value on runtime */
     switch (pin)
     {
     case LED_R:

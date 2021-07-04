@@ -9,10 +9,9 @@
  * *****************************************************************************
 */
 
-#include "bsp.h"
 #include "ca.h"
+#include "bsp.h"
 #include "ctrl.h"
-#include "main.h"
 
 #if USED_OS
 #include "cmsis_os.h"

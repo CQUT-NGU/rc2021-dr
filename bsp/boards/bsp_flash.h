@@ -13,9 +13,7 @@
 #ifndef __BSP_FLASH_H__
 #define __BSP_FLASH_H__
 
-#include "main.h"
-
-#include <stdint.h>
+#include "bsp.h"
 
 /* Base address of the Flash sectors */
 
@@ -238,19 +236,6 @@
 #ifndef ADDR_FLASH_END
 #define ADDR_FLASH_END ((uint32_t)0x08200000)
 #endif /* ADDR_FLASH_END */
-
-#undef __BEGIN_DECLS
-#undef __END_DECLS
-
-#if defined(__cplusplus)
-#define __BEGIN_DECLS \
-    extern "C"        \
-    {
-#define __END_DECLS }
-#else
-#define __BEGIN_DECLS
-#define __END_DECLS
-#endif /* __cplusplus */
 
 __BEGIN_DECLS
 

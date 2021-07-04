@@ -12,16 +12,13 @@
 #include "task_led.h"
 
 #include "bsp.h"
-#include "bsp_delay.h"
-#include "bsp_led.h"
 
 #if USED_OS
 #include "cmsis_os.h"
 #endif /* USED_OS */
 
-#include <stdint.h>
-
 #include "task_chassis.h"
+
 extern chassis_move_t move;
 
 void task_led(void *pvParameters)
@@ -41,23 +38,23 @@ void task_led(void *pvParameters)
 
     for (;;)
     {
-        for (count = 0U; count != LED_PWM_MAX; ++count)
+        for (count = 0; count != LED_PWM_MAX; ++count)
         {
             led_pwm_set(LED_R, count);
-            led_pwm_set(LED_B, LED_PWM_MAX - count);
-            osDelay(1U);
+            led_pwm_set(LED_B, (uint16_t)(LED_PWM_MAX - count));
+            osDelay(1);
         }
-        for (count = 0U; count != LED_PWM_MAX; ++count)
+        for (count = 0; count != LED_PWM_MAX; ++count)
         {
             led_pwm_set(LED_G, count);
-            led_pwm_set(LED_R, LED_PWM_MAX - count);
-            osDelay(1U);
+            led_pwm_set(LED_R, (uint16_t)(LED_PWM_MAX - count));
+            osDelay(1);
         }
-        for (count = 0U; count != LED_PWM_MAX; ++count)
+        for (count = 0; count != LED_PWM_MAX; ++count)
         {
             led_pwm_set(LED_B, count);
-            led_pwm_set(LED_G, LED_PWM_MAX - count);
-            osDelay(1U);
+            led_pwm_set(LED_G, (uint16_t)(LED_PWM_MAX - count));
+            osDelay(1);
         }
 
 #if 0

@@ -2,7 +2,7 @@
  * *****************************************************************************
  * @file         bsp_gpio.h
  * @brief        gpio of boards
- * @author       NGU
+ * @author       tqfx
  * @date         20210101
  * @version      1
  * @copyright    Copyright (C) 2021 NGU
@@ -15,28 +15,10 @@
 
 #include "main.h"
 
-#include <stdint.h>
-
-#undef __BEGIN_DECLS
-#undef __END_DECLS
-
-#if defined(__cplusplus)
-#define __BEGIN_DECLS \
-    extern "C"        \
-    {
-#define __END_DECLS }
-#else
-#define __BEGIN_DECLS
-#define __END_DECLS
-#endif /* __cplusplus */
-
-__BEGIN_DECLS
-
-__END_DECLS
-
-static inline void gpio_pin_write(GPIO_TypeDef *gpio,
-                                  uint16_t pin,
-                                  FlagStatus state)
+__STATIC_INLINE
+void gpio_pin_write(GPIO_TypeDef *gpio,
+                    uint16_t pin,
+                    FlagStatus state)
 {
     if (state == SET)
     {
@@ -44,24 +26,27 @@ static inline void gpio_pin_write(GPIO_TypeDef *gpio,
     }
     else
     {
-        gpio->BSRR = (uint32_t)pin << 16U;
+        gpio->BSRR = (uint32_t)pin << 16;
     }
 }
 
-static inline void gpio_pin_set(GPIO_TypeDef *gpio,
-                                uint16_t pin)
+__STATIC_INLINE
+void gpio_pin_set(GPIO_TypeDef *gpio,
+                  uint16_t pin)
 {
     gpio->BSRR = pin;
 }
 
-static inline void gpio_pin_reset(GPIO_TypeDef *gpio,
-                                  uint16_t pin)
+__STATIC_INLINE
+void gpio_pin_reset(GPIO_TypeDef *gpio,
+                    uint16_t pin)
 {
-    gpio->BSRR = (uint32_t)pin << 16U;
+    gpio->BSRR = (uint32_t)pin << 16;
 }
 
-static inline FlagStatus gpio_pin_read(GPIO_TypeDef *gpio,
-                                       uint16_t pin)
+__STATIC_INLINE
+FlagStatus gpio_pin_read(GPIO_TypeDef *gpio,
+                         uint16_t pin)
 {
     if (gpio->IDR & pin)
     {
@@ -73,12 +58,13 @@ static inline FlagStatus gpio_pin_read(GPIO_TypeDef *gpio,
     }
 }
 
-static inline void gpio_pin_toggle(GPIO_TypeDef *gpio,
-                                   uint16_t pin)
+__STATIC_INLINE
+void gpio_pin_toggle(GPIO_TypeDef *gpio,
+                     uint16_t pin)
 {
     if ((gpio->ODR & pin) == pin)
     {
-        gpio->BSRR = (uint32_t)pin << 16U;
+        gpio->BSRR = (uint32_t)pin << 16;
     }
     else
     {
@@ -86,8 +72,9 @@ static inline void gpio_pin_toggle(GPIO_TypeDef *gpio,
     }
 }
 
-static inline void gpio_pin_lock(GPIO_TypeDef *gpio,
-                                 uint16_t pin)
+__STATIC_INLINE
+void gpio_pin_lock(GPIO_TypeDef *gpio,
+                   uint16_t pin)
 {
     /* Apply lock key write sequence */
     __IO uint32_t tmp = GPIO_LCKR_LCKK | pin;

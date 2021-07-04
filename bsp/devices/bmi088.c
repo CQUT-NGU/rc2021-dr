@@ -21,8 +21,8 @@
 #undef hspi
 #define hspi hspi1
 
-#define BMI088_TEMP_FACTOR 0.125f
-#define BMI088_TEMP_OFFSET 23.0f
+#define BMI088_TEMP_FACTOR 0.125F
+#define BMI088_TEMP_OFFSET 23.0F
 
 #define BMI088_WRITE_ACCEL_REG_NUM 6
 #define BMI088_WRITE_GYRO_REG_NUM  6
@@ -48,17 +48,17 @@
 //#define BMI088_GYRO_RANGE_250
 //#define BMI088_GYRO_RANGE_125
 
-#define BMI088_ACCEL_3G_SEN  0.0008974358974f
-#define BMI088_ACCEL_6G_SEN  0.00179443359375f
-#define BMI088_ACCEL_12G_SEN 0.0035888671875f
-#define BMI088_ACCEL_24G_SEN 0.007177734375f
+#define BMI088_ACCEL_3G_SEN  0.0008974358974F
+#define BMI088_ACCEL_6G_SEN  0.00179443359375F
+#define BMI088_ACCEL_12G_SEN 0.0035888671875F
+#define BMI088_ACCEL_24G_SEN 0.007177734375F
 #define BMI088_ACCEL_SEN     BMI088_ACCEL_3G_SEN
 
-#define BMI088_GYRO_2000_SEN 0.00106526443603169529841533860381f
-#define BMI088_GYRO_1000_SEN 0.00053263221801584764920766930190693f
-#define BMI088_GYRO_500_SEN  0.00026631610900792382460383465095346f
-#define BMI088_GYRO_250_SEN  0.00013315805450396191230191732547673f
-#define BMI088_GYRO_125_SEN  0.000066579027251980956150958662738366f
+#define BMI088_GYRO_2000_SEN 0.00106526443603169529841533860381F
+#define BMI088_GYRO_1000_SEN 0.00053263221801584764920766930190693F
+#define BMI088_GYRO_500_SEN  0.00026631610900792382460383465095346F
+#define BMI088_GYRO_250_SEN  0.00013315805450396191230191732547673F
+#define BMI088_GYRO_125_SEN  0.000066579027251980956150958662738366F
 #define BMI088_GYRO_SEN      BMI088_GYRO_2000_SEN
 
 #define BMI088_USE_SPI
@@ -75,14 +75,14 @@ extern SPI_HandleTypeDef hspi;
         BMI088_ACCEL_NS_H;       \
     } while (0)
 
-#define bmi_accel_r(reg, data)            \
-    do                                    \
-    {                                     \
-        BMI088_ACCEL_NS_L;                \
-        (void)bmi_byte_rw((reg) | 0x80U); \
-        (void)bmi_byte_rw(0x55U);         \
-        (data) = bmi_byte_rw(0x55U);      \
-        BMI088_ACCEL_NS_H;                \
+#define bmi_accel_r(reg, data)           \
+    do                                   \
+    {                                    \
+        BMI088_ACCEL_NS_L;               \
+        (void)bmi_byte_rw((reg) | 0x80); \
+        (void)bmi_byte_rw(0x55);         \
+        (data) = bmi_byte_rw(0x55);      \
+        BMI088_ACCEL_NS_H;               \
     } while (0)
 
 #define bmi_accel_muli_w(reg, data, len)      \
@@ -96,7 +96,7 @@ extern SPI_HandleTypeDef hspi;
 #define bmi_accel_muli_r(reg, data, len)      \
     {                                         \
         BMI088_ACCEL_NS_L;                    \
-        (void)bmi_byte_rw((reg) | 0x80U);     \
+        (void)bmi_byte_rw((reg) | 0x80);      \
         bmi_reg_muli_r((reg), (data), (len)); \
         BMI088_ACCEL_NS_H;                    \
     }
@@ -109,12 +109,12 @@ extern SPI_HandleTypeDef hspi;
         BMI088_GYRO_NS_H;        \
     }
 
-#define bmi_gyro_r(reg, data)             \
-    {                                     \
-        BMI088_GYRO_NS_L;                 \
-        (void)bmi_byte_rw((reg) | 0x80U); \
-        (data) = bmi_byte_rw(0x55U);      \
-        BMI088_GYRO_NS_H;                 \
+#define bmi_gyro_r(reg, data)            \
+    {                                    \
+        BMI088_GYRO_NS_L;                \
+        (void)bmi_byte_rw((reg) | 0x80); \
+        (data) = bmi_byte_rw(0x55);      \
+        BMI088_GYRO_NS_H;                \
     }
 
 #define bmi_gyro_muli_w(reg, data, len)       \
@@ -207,7 +207,7 @@ static uint8_t bmi_byte_rw(uint8_t data)
 {
     uint8_t ret;
 
-    HAL_SPI_TransmitReceive(&hspi, &data, &ret, 1U, 1000U);
+    HAL_SPI_TransmitReceive(&hspi, &data, &ret, 1, 1000);
 
     return ret;
 }
@@ -221,15 +221,15 @@ static void bmi_reg_w(uint8_t reg, uint8_t data)
 
 static uint8_t bmi_reg_r(uint8_t reg)
 {
-    (void)bmi_byte_rw(reg | 0x80U);
-    return bmi_byte_rw(0x55U);
+    (void)bmi_byte_rw(reg | 0x80);
+    return bmi_byte_rw(0x55);
 }
 
 static void bmi_reg_muli_w(uint8_t reg, uint8_t *buf, uint8_t len)
 {
     (void)bmi_byte_rw(reg);
 
-    while (len-- != 0U)
+    while (len-- != 0)
     {
         (void)bmi_byte_rw(*buf++);
     }
@@ -238,11 +238,11 @@ static void bmi_reg_muli_w(uint8_t reg, uint8_t *buf, uint8_t len)
 
 static void bmi_reg_muli_r(uint8_t reg, uint8_t *buf, uint8_t len)
 {
-    (void)bmi_byte_rw(reg | 0x80U);
+    (void)bmi_byte_rw(reg | 0x80);
 
-    while (len-- != 0U)
+    while (len-- != 0)
     {
-        *buf++ = bmi_byte_rw(0x55U);
+        *buf++ = bmi_byte_rw(0x55);
     }
 }
 
@@ -274,7 +274,7 @@ uint8_t bmi088_accel_init(void)
     }
 
     /* set accel sonsor config and check */
-    for (num = 0U; num != BMI088_WRITE_ACCEL_REG_NUM; ++num)
+    for (num = 0; num != BMI088_WRITE_ACCEL_REG_NUM; ++num)
     {
         bmi_accel_w(bmi088_accel_error[num][0], bmi088_accel_error[num][1]);
         delay_us(BMI088_COM_WAIT_SENSOR_TIME);
@@ -319,7 +319,7 @@ uint8_t bmi088_gyro_init(void)
     }
 
     /* set gyro sonsor config and check */
-    for (num = 0U; num != BMI088_WRITE_GYRO_REG_NUM; ++num)
+    for (num = 0; num != BMI088_WRITE_GYRO_REG_NUM; ++num)
     {
         bmi_gyro_w(bmi088_gyro_error[num][0], bmi088_gyro_error[num][1]);
         delay_us(BMI088_COM_WAIT_SENSOR_TIME);
@@ -352,7 +352,7 @@ void bmi088_read_over_temp(uint8_t *buf, float *temperate)
 
     if (temp > 1023)
     {
-        temp -= 2048;
+        temp = (int16_t)(temp - 2048);
     }
 
     *temperate = BMI088_TEMP_FACTOR * temp + BMI088_TEMP_OFFSET;
@@ -363,26 +363,26 @@ void bmi088_read_over_accel(uint8_t *buf, float accel[3], float *time)
     int16_t temp;
     uint32_t sensor;
 
-    temp = (int16_t)((buf[1]) << 8) | buf[0];
+    temp = (int16_t)((buf[1] << 8) | buf[0]);
     accel[0] = BMI088_ACCEL_SEN * temp;
-    temp = (int16_t)((buf[3]) << 8) | buf[2];
+    temp = (int16_t)((buf[3] << 8) | buf[2]);
     accel[1] = BMI088_ACCEL_SEN * temp;
-    temp = (int16_t)((buf[5]) << 8) | buf[4];
+    temp = (int16_t)((buf[5] << 8) | buf[4]);
     accel[2] = BMI088_ACCEL_SEN * temp;
 
     sensor = (uint32_t)((buf[8] << 16) | (buf[7] << 8) | buf[6]);
-    *time = sensor * 39.0625f;
+    *time = (float)sensor * 39.0625F;
 }
 
 void bmi088_read_over_gyro(uint8_t *buf, float gyro[3])
 {
     int16_t temp;
 
-    temp = (int16_t)((buf[1]) << 8) | buf[0];
+    temp = (int16_t)((buf[1] << 8) | buf[0]);
     gyro[0] = BMI088_GYRO_SEN * temp;
-    temp = (int16_t)((buf[3]) << 8) | buf[2];
+    temp = (int16_t)((buf[3] << 8) | buf[2]);
     gyro[1] = BMI088_GYRO_SEN * temp;
-    temp = (int16_t)((buf[5]) << 8) | buf[4];
+    temp = (int16_t)((buf[5] << 8) | buf[4]);
     gyro[2] = BMI088_GYRO_SEN * temp;
 }
 
@@ -393,22 +393,22 @@ void bmi088_read(float gyro[3], float accel[3], float *temperate)
 
     bmi_accel_muli_r(BMI088_ACCEL_XOUT_L, buf, 6);
 
-    temp = (int16_t)((buf[1]) << 8) | buf[0];
+    temp = (int16_t)((buf[1] << 8) | buf[0]);
     accel[0] = BMI088_ACCEL_SEN * temp;
-    temp = (int16_t)((buf[3]) << 8) | buf[2];
+    temp = (int16_t)((buf[3] << 8) | buf[2]);
     accel[1] = BMI088_ACCEL_SEN * temp;
-    temp = (int16_t)((buf[5]) << 8) | buf[4];
+    temp = (int16_t)((buf[5] << 8) | buf[4]);
     accel[2] = BMI088_ACCEL_SEN * temp;
 
     bmi_gyro_muli_r(BMI088_GYRO_CHIP_ID, buf, 8);
 
     if (buf[0] == BMI088_GYRO_CHIP_ID_VALUE)
     {
-        temp = (int16_t)((buf[3]) << 8) | buf[2];
+        temp = (int16_t)((buf[3] << 8) | buf[2]);
         gyro[0] = BMI088_GYRO_SEN * temp;
-        temp = (int16_t)((buf[5]) << 8) | buf[4];
+        temp = (int16_t)((buf[5] << 8) | buf[4]);
         gyro[1] = BMI088_GYRO_SEN * temp;
-        temp = (int16_t)((buf[7]) << 8) | buf[6];
+        temp = (int16_t)((buf[7] << 8) | buf[6]);
         gyro[2] = BMI088_GYRO_SEN * temp;
     }
 
@@ -418,7 +418,7 @@ void bmi088_read(float gyro[3], float accel[3], float *temperate)
 
     if (temp > 1023)
     {
-        temp -= 2048;
+        temp = (int16_t)(temp - 2048);
     }
 
     *temperate = BMI088_TEMP_FACTOR * temp + BMI088_TEMP_OFFSET;
@@ -444,7 +444,7 @@ float bmi088_temperate(void)
 
     if (temp > 1023)
     {
-        temp -= 2048;
+        temp = (int16_t)(temp - 2048);
     }
 
     return BMI088_TEMP_FACTOR * temp + BMI088_TEMP_OFFSET;
@@ -457,11 +457,11 @@ void bmi088_gyro(float gyro[3])
 
     bmi_gyro_muli_r(BMI088_GYRO_X_L, buf, 6);
 
-    temp = (int16_t)((buf[1]) << 8) | buf[0];
+    temp = (int16_t)((buf[1] << 8) | buf[0]);
     gyro[0] = BMI088_GYRO_SEN * temp;
-    temp = (int16_t)((buf[3]) << 8) | buf[2];
+    temp = (int16_t)((buf[3] << 8) | buf[2]);
     gyro[1] = BMI088_GYRO_SEN * temp;
-    temp = (int16_t)((buf[5]) << 8) | buf[4];
+    temp = (int16_t)((buf[5] << 8) | buf[4]);
     gyro[2] = BMI088_GYRO_SEN * temp;
 }
 
@@ -472,11 +472,11 @@ void bmi088_accel(float accel[3])
 
     bmi_accel_muli_r(BMI088_ACCEL_XOUT_L, buf, 6);
 
-    temp = (int16_t)((buf[1]) << 8) | buf[0];
+    temp = (int16_t)((buf[1] << 8) | buf[0]);
     accel[0] = BMI088_ACCEL_SEN * temp;
-    temp = (int16_t)((buf[3]) << 8) | buf[2];
+    temp = (int16_t)((buf[3] << 8) | buf[2]);
     accel[1] = BMI088_ACCEL_SEN * temp;
-    temp = (int16_t)((buf[5]) << 8) | buf[4];
+    temp = (int16_t)((buf[5] << 8) | buf[4]);
     accel[2] = BMI088_ACCEL_SEN * temp;
 }
 

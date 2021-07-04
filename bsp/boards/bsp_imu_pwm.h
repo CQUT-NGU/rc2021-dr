@@ -13,20 +13,10 @@
 #ifndef __BSP_IMU_PWM_H__
 #define __BSP_IMU_PWM_H__
 
-#include <stdint.h>
+#include "bsp.h"
 
-#undef __BEGIN_DECLS
-#undef __END_DECLS
-
-#if defined(__cplusplus)
-#define __BEGIN_DECLS \
-    extern "C"        \
-    {
-#define __END_DECLS }
-#else
-#define __BEGIN_DECLS
-#define __END_DECLS
-#endif /* __cplusplus */
+#define IMU_PWM_PSC 1
+#define IMU_PWM_MAX 5000
 
 __BEGIN_DECLS
 

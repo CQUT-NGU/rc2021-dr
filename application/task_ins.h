@@ -15,19 +15,7 @@
 #ifndef __TASK_INS_H__
 #define __TASK_INS_H__
 
-#undef __BEGIN_DECLS
-#undef __END_DECLS
-
-#if defined(__cplusplus)
-#define __BEGIN_DECLS \
-    extern "C"        \
-    {
-#define __END_DECLS \
-    }
-#else
-#define __BEGIN_DECLS
-#define __END_DECLS
-#endif /* __cplusplus */
+#include "bsp.h"
 
 __BEGIN_DECLS
 

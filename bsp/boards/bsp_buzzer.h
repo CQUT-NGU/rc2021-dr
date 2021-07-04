@@ -14,29 +14,16 @@
 #ifndef __BSP_BUZZER_H__
 #define __BSP_BUZZER_H__
 
-#include <stdint.h>
+#include "bsp.h"
 
-#define BUZZER_PWM_MAX   ((168000000U >> 1U) / 4000U)
-#define BUZZER_PWM_DIV1  (BUZZER_PWM_MAX >> 0U)
-#define BUZZER_PWM_DIV2  (BUZZER_PWM_MAX >> 1U)
-#define BUZZER_PWM_DIV4  (BUZZER_PWM_MAX >> 2U)
-#define BUZZER_PWM_DIV8  (BUZZER_PWM_MAX >> 3U)
-#define BUZZER_PWM_DIV16 (BUZZER_PWM_MAX >> 4U)
-#define BUZZER_PWM_DIV32 (BUZZER_PWM_MAX >> 5U)
-#define BUZZER_PWM_DIV64 (BUZZER_PWM_MAX >> 6U)
-
-#undef __BEGIN_DECLS
-#undef __END_DECLS
-
-#if defined(__cplusplus)
-#define __BEGIN_DECLS \
-    extern "C"        \
-    {
-#define __END_DECLS }
-#else
-#define __BEGIN_DECLS
-#define __END_DECLS
-#endif /* __cplusplus */
+#define BUZZER_PWM_MAX   ((168000000 >> 1) / 4000)
+#define BUZZER_PWM_DIV1  (BUZZER_PWM_MAX >> 0)
+#define BUZZER_PWM_DIV2  (BUZZER_PWM_MAX >> 1)
+#define BUZZER_PWM_DIV4  (BUZZER_PWM_MAX >> 2)
+#define BUZZER_PWM_DIV8  (BUZZER_PWM_MAX >> 3)
+#define BUZZER_PWM_DIV16 (BUZZER_PWM_MAX >> 4)
+#define BUZZER_PWM_DIV32 (BUZZER_PWM_MAX >> 5)
+#define BUZZER_PWM_DIV64 (BUZZER_PWM_MAX >> 6)
 
 __BEGIN_DECLS
 

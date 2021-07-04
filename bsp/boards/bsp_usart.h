@@ -19,10 +19,7 @@
 #ifndef __BSP_USART_H__
 #define __BSP_USART_H__
 
-#include "bsp_dma.h"
-#include "main.h"
-
-#include <stdint.h>
+#include "bsp.h"
 
 #define huart_rc huart3 /* dbus, connect to the remote control */
 #undef RC_IRQHandler
@@ -35,7 +32,7 @@
 extern UART_HandleTypeDef huart_rc;
 extern UART_HandleTypeDef huart_os;
 
-#define BUFSIZ_OS 256U
+#define BUFSIZ_OS 256
 extern uint8_t *os_buf;
 
 #undef __BEGIN_DECLS
@@ -118,7 +115,7 @@ extern void usart_dma_rx(UART_HandleTypeDef *huart,
  * @param[in]    len:   the length of data
 */
 extern void usart_dma_tx(UART_HandleTypeDef *huart,
-                         void *data,
+                         const void *data,
                          uint16_t len);
 
 /**
