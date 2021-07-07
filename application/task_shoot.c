@@ -20,11 +20,21 @@
 /* chassis 3508 max motor control current */
 #define MAX_MOTOR_CAN_CURRENT 0x4000
 /* chassis 3508 max motor calibration control current */
-#define MAX_MOTOR_CLI_CURRENT 3000
+#define MAX_MOTOR_CLI_CURRENT 2000
 
 /* M3508 rmp change to speed */
 /* x * 2 * PI / 60 / 19 */
 #define M3508_MOTOR_RPM_TO_VECTOR 0.005511566058929462F
+
+/**
+ * @brief        aiming signal
+*/
+typedef enum
+{
+    SIGNAL_AIMING_NONE = (1 << 0),  //!< none
+    SIGNAL_AIMING_DO = (1 << 1),    //!< aim do
+    SIGNAL_AIMING_DONE = (1 << 2),  //!< aim done
+} signal_aiming_t;
 
 typedef enum
 {
@@ -41,11 +51,9 @@ typedef struct
     const motor_t *motor;
     ca_pid_f32_t pidv;
     float v;
-    float v_set;
-    float acc;
+    // float v_set;
     ca_pid_f32_t pida;
     float angle;
-    float angle_set;
     float angle_min;
     float angle_max;
     int16_t out;
@@ -104,20 +112,57 @@ void task_shoot(void *pvParameters)
                             MAX_MOTOR_CLI_CURRENT);
         /* Set the limit of the angle */
         shoot.angle_min = 0;
-        shoot.angle_max = (float)2;
+        shoot.angle_max = 2;
     }
 
     static float angle = 0;
     /* The data address of the host computer */
     ctrl_pc_t *pc = (ctrl_pc_t *)ctrl_pc_point();
 
-    while (1)
+    const ctrl_rc_t *rc = ctrl_rc_point();
+
+    static int8_t signal_aiming = SIGNAL_AIMING_NONE;
+
+    for (;;)
     {
         /* Update speed and acceleration data */
         {
-            float v_tmp = shoot.motor->v_rpm * M3508_MOTOR_RPM_TO_VECTOR;
-            shoot.acc = shoot.v - v_tmp;
-            shoot.v = v_tmp;
+            shoot.v = shoot.motor->v_rpm * M3508_MOTOR_RPM_TO_VECTOR;
+        }
+
+        /* Aiming signal control */
+        {
+            if (switch_is_mid(rc->rc.s[RC_SW_L]) &&
+                switch_is_down(rc->rc.s[RC_SW_R]))
+            {
+                /* restart control */
+                if (rc->rc.ch[RC_CH_LV] < -220)
+                {
+                    pc->c = 0;
+                }
+
+                /* Start sending aiming signal */
+                if (signal_aiming == SIGNAL_AIMING_NONE &&
+                    rc->rc.ch[RC_CH_LV] > 220)
+                {
+                    signal_aiming = SIGNAL_AIMING_DO;
+                }
+
+                /* End sending aiming signal */
+                else if (signal_aiming != SIGNAL_AIMING_NONE &&
+                         rc->rc.ch[RC_CH_LV] < 220)
+                {
+                    signal_aiming = SIGNAL_AIMING_NONE;
+                }
+            }
+
+            /* Send aiming signal */
+            if (signal_aiming == SIGNAL_AIMING_DO)
+            {
+                signal_aiming = SIGNAL_AIMING_DONE;
+
+                usart_dma_tx(&huart_os, (const void *)"a\n", 2);
+            }
         }
 
         /* Process the data of the host computer */
@@ -129,8 +174,7 @@ void task_shoot(void *pvParameters)
             {
                 if (shoot.stats != SHOOT_STATS_STOP)
                 {
-                    shoot.v_set = pc->x;
-                    ca_pid_f32_reset(&shoot.pidv);
+                    // shoot.v_set = pc->x;
                     shoot.stats = SHOOT_STATS_DO;
                 }
                 else
@@ -149,9 +193,7 @@ void task_shoot(void *pvParameters)
         {
             if (shoot.angle < shoot.angle_max)
             {
-                shoot.out = (int16_t)ca_pid_f32(&shoot.pidv,
-                                                shoot.v_set,
-                                                shoot.v);
+                shoot.out = -MAX_MOTOR_CAN_CURRENT;
             }
             else
             {
@@ -187,7 +229,7 @@ void task_shoot(void *pvParameters)
             uint8_t wait = 200;
             do
             {
-                other_ctrl(2000, 0, 0, 0);
+                other_ctrl(MAX_MOTOR_CLI_CURRENT, 0, 0, 0);
 
                 osDelay(10);
 
@@ -208,18 +250,18 @@ void task_shoot(void *pvParameters)
         }
         else if (shoot.stats == SHOOT_STATS_STOP)
         {
-            if (shoot.v_set > 0.8F)
-            {
-                shoot.v_set -= 0.8F;
-            }
-            else
-            {
-                shoot.v_set = 0;
-            }
+            // if (shoot.v_set > 2)
+            // {
+            //     shoot.v_set -= 2;
+            // }
+            // else
+            // {
+            //     shoot.v_set = 0;
+            // }
 
             shoot.out = (int16_t)ca_pid_f32(&shoot.pidv,
                                             shoot.v,
-                                            shoot.v_set);
+                                            0);
         }
 
         /* Control motor */
