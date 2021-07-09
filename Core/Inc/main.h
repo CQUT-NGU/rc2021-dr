@@ -64,12 +64,14 @@ void Error_Handler(void);
 #define NULL_GPIO_Port GPIOC
 #define RELAY_Pin GPIO_PIN_7
 #define RELAY_GPIO_Port GPIOI
-#define NIP_DIR_Pin GPIO_PIN_6
-#define NIP_DIR_GPIO_Port GPIOI
-#define NIP_PWM_Pin GPIO_PIN_6
-#define NIP_PWM_GPIO_Port GPIOC
+#define HOLD_DIR_Pin GPIO_PIN_6
+#define HOLD_DIR_GPIO_Port GPIOI
+#define HOLD_PWM_Pin GPIO_PIN_6
+#define HOLD_PWM_GPIO_Port GPIOC
 #define IST8310_RST_Pin GPIO_PIN_6
 #define IST8310_RST_GPIO_Port GPIOG
+#define IMU_PWM_Pin GPIO_PIN_6
+#define IMU_PWM_GPIO_Port GPIOF
 #define LED_R_Pin GPIO_PIN_12
 #define LED_R_GPIO_Port GPIOH
 #define IST8310_DRDY_Pin GPIO_PIN_3
@@ -79,26 +81,26 @@ void Error_Handler(void);
 #define LED_G_GPIO_Port GPIOH
 #define LED_B_Pin GPIO_PIN_10
 #define LED_B_GPIO_Port GPIOH
-#define buzzer_Pin GPIO_PIN_14
-#define buzzer_GPIO_Port GPIOD
+#define BUZZER_Pin GPIO_PIN_14
+#define BUZZER_GPIO_Port GPIOD
 #define CS1_Accel_Pin GPIO_PIN_4
 #define CS1_Accel_GPIO_Port GPIOA
 #define INT1_ACCEL_Pin GPIO_PIN_4
 #define INT1_ACCEL_GPIO_Port GPIOC
 #define INT1_ACCEL_EXTI_IRQn EXTI4_IRQn
-#define PICK_R_PWM_Pin GPIO_PIN_13
-#define PICK_R_PWM_GPIO_Port GPIOE
 #define INT1_GRYO_Pin GPIO_PIN_5
 #define INT1_GRYO_GPIO_Port GPIOC
 #define INT1_GRYO_EXTI_IRQn EXTI9_5_IRQn
-#define PICK_L_PWM_Pin GPIO_PIN_9
-#define PICK_L_PWM_GPIO_Port GPIOE
-#define PICK_L_DIR_Pin GPIO_PIN_11
-#define PICK_L_DIR_GPIO_Port GPIOE
-#define PICK_R_DIR_Pin GPIO_PIN_14
-#define PICK_R_DIR_GPIO_Port GPIOE
+#define PICK_PWM_Pin GPIO_PIN_9
+#define PICK_PWM_GPIO_Port GPIOE
+#define PICK_DIR_Pin GPIO_PIN_11
+#define PICK_DIR_GPIO_Port GPIOE
+#define POT_DIR_Pin GPIO_PIN_13
+#define POT_DIR_GPIO_Port GPIOB
 #define CS1_Gyro_Pin GPIO_PIN_0
 #define CS1_Gyro_GPIO_Port GPIOB
+#define POT_PWM_Pin GPIO_PIN_14
+#define POT_PWM_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

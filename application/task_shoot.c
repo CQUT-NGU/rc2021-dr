@@ -112,7 +112,7 @@ void task_shoot(void *pvParameters)
                             MAX_MOTOR_CLI_CURRENT);
         /* Set the limit of the angle */
         shoot.angle_min = 0;
-        shoot.angle_max = 2;
+        shoot.angle_max = 1;
     }
 
     static float angle = 0;
@@ -250,15 +250,6 @@ void task_shoot(void *pvParameters)
         }
         else if (shoot.stats == SHOOT_STATS_STOP)
         {
-            // if (shoot.v_set > 2)
-            // {
-            //     shoot.v_set -= 2;
-            // }
-            // else
-            // {
-            //     shoot.v_set = 0;
-            // }
-
             shoot.out = (int16_t)ca_pid_f32(&shoot.pidv,
                                             shoot.v,
                                             0);
@@ -266,11 +257,6 @@ void task_shoot(void *pvParameters)
 
         /* Control motor */
         other_ctrl(shoot.out, 0, 0, 0);
-
-        // os_printf("%i %g %g\r\n",
-        //           shoot.angle,
-        //           shoot.out,
-        //           shoot.v);
 
         osDelay(2);
     }

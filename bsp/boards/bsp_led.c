@@ -30,17 +30,17 @@
 extern TIM_HandleTypeDef htim;
 
 #undef LED_W
-#define LED_W(GPIOx, PIN, STATE)                \
-    do                                          \
-    {                                           \
-        if (STATE == LED_OFF)                   \
-        {                                       \
-            GPIOx->BSRR = (uint32_t)PIN;        \
-        }                                       \
-        else                                    \
-        {                                       \
+#define LED_W(GPIOx, PIN, STATE)               \
+    do                                         \
+    {                                          \
+        if (STATE == LED_OFF)                  \
+        {                                      \
+            GPIOx->BSRR = (uint32_t)PIN;       \
+        }                                      \
+        else                                   \
+        {                                      \
             GPIOx->BSRR = (uint32_t)PIN << 16; \
-        }                                       \
+        }                                      \
     } while (0)
 
 #undef LED_R
@@ -58,17 +58,17 @@ extern TIM_HandleTypeDef htim;
     } while (0)
 
 #undef LED_T
-#define LED_T(GPIOx, PIN)                       \
-    do                                          \
-    {                                           \
-        if ((GPIOx->ODR & PIN) == PIN)          \
-        {                                       \
+#define LED_T(GPIOx, PIN)                      \
+    do                                         \
+    {                                          \
+        if ((GPIOx->ODR & PIN) == PIN)         \
+        {                                      \
             GPIOx->BSRR = (uint32_t)PIN << 16; \
-        }                                       \
-        else                                    \
-        {                                       \
-            GPIOx->BSRR = (uint32_t)PIN;        \
-        }                                       \
+        }                                      \
+        else                                   \
+        {                                      \
+            GPIOx->BSRR = (uint32_t)PIN;       \
+        }                                      \
     } while (0)
 
 void led_write(led_e pin,
