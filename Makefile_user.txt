@@ -43,7 +43,7 @@ C_SOURCES += app/ctrl_serial.c
 
 C_SOURCES += app/app_led.c
 C_SOURCES += app/app_chassis.c
+C_SOURCES += app/app_ins.c
 
 C_SOURCES += app/task_step.c
-C_SOURCES += app/task_ins.c
 C_SOURCES += app/task_shoot.c

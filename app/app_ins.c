@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * @file         task_ins.c
+ * @file         app_ins.c
  * @brief        use bmi088 to calculate the euler angle. no use ist8310, so only
  *               enable data ready pin to save cpu time.enalbe bmi088 data ready
  *               enable spi DMA to save the time spi transmit
@@ -11,11 +11,7 @@
  * *****************************************************************************
 */
 
-#include "task_ins.h"
-
-#include "bsp.h"
-#include "ca.h"
-#include "main.h"
+#include "app_ins.h"
 
 /* ahrs */
 #include "ahrs.h"
@@ -407,7 +403,7 @@ void offset_gyro_calc(float offset[3],
     offset[INS_GYRO_Y] -= 0.0003F * gyro[INS_GYRO_Y];
     offset[INS_GYRO_Z] -= 0.0003F * gyro[INS_GYRO_Z];
 
-    (*count)++;
+    ++(*count);
 }
 
 /**
@@ -756,7 +752,7 @@ void task_ins(void const *pvParameters)
         }
 
         /* read magnetometer */
-        if (flag_update_mag &= IMU_FLAG_DR)
+        if (flag_update_mag & IMU_FLAG_DR)
         {
             flag_update_mag &= ~IMU_FLAG_DR;
             flag_update_mag |= IMU_FLAG_SPI;

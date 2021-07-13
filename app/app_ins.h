@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * @file         task_ins.h
+ * @file         app_ins.h
  * @brief        use bmi088 to calculate the euler angle. no use ist8310, so only
  *               enable data ready pin to save cpu time.enalbe bmi088 data ready
  *               enable spi DMA to save the time spi transmit
@@ -15,7 +15,7 @@
 #ifndef __APP_INS_H__
 #define __APP_INS_H__
 
-#include "bsp.h"
+#include "app.h"
 
 __BEGIN_DECLS
 
