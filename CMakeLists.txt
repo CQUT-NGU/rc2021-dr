@@ -2,7 +2,7 @@ include(cmake/cmake-arm-none-eabi.cmake)
 
 cmake_minimum_required(VERSION 3.10)
 
-project(rc2021_stm32_dr)
+project(rc2021-stm32-dr)
 
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 
@@ -52,14 +52,15 @@ list(APPEND SOURCE ${SOURCE_Core})
 # list(APPEND SOURCE "DSP/Source/FastMathFunctions/FastMathFunctions.c")
 
 include_directories("bsp/boards")
-include_directories("bsp/devices")
 aux_source_directory("bsp/boards" SOURCE_boards)
+list(APPEND SOURCE ${SOURCE_boards})
+include_directories("bsp/devices")
 aux_source_directory("bsp/devices" SOURCE_devices)
-list(APPEND SOURCE ${SOURCE_boards} ${SOURCE_devices})
+list(APPEND SOURCE ${SOURCE_devices})
 
-include_directories("application")
-aux_source_directory("application" SOURCE_application)
-list(APPEND SOURCE ${SOURCE_application})
+include_directories("app")
+aux_source_directory("app" SOURCE_app)
+list(APPEND SOURCE ${SOURCE_app})
 
 add_subdirectory(ca)
 
