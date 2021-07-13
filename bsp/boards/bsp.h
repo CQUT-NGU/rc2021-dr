@@ -44,7 +44,6 @@
 #include "bsp_delay.h"
 #include "bsp_flash.h"
 #include "bsp_dma.h"
-#include "bsp_uart.h"
 #include "bsp_usart.h"
 #include "bsp_can.h"
 #include "bsp_i2c.h"
