@@ -17,18 +17,14 @@
 #include "cmsis_os.h"
 #endif /* USED_OS */
 
-#include "task_chassis.h"
-
-extern chassis_move_t move;
-
 void task_led(void *pvParameters)
 {
     (void)pvParameters;
 
     buzzer_start();
     {
-        uint32_t i = 0;
-        while (i != 8)
+        uint16_t i = 0;
+        while (i != 4)
         {
             buzzer_set(i++, BUZZER_PWM_DIV2);
             osDelay(0x80);
