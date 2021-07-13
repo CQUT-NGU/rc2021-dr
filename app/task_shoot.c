@@ -117,7 +117,7 @@ void task_shoot(void *pvParameters)
 
     static float angle = 0;
     /* The data address of the host computer */
-    ctrl_pc_t *pc = (ctrl_pc_t *)ctrl_pc_point();
+    ctrl_serial_t *serial = (ctrl_serial_t *)ctrl_serial_point();
 
     const ctrl_rc_t *rc = ctrl_rc_point();
 
@@ -138,7 +138,7 @@ void task_shoot(void *pvParameters)
                 /* restart control */
                 if (rc->rc.ch[RC_CH_LV] < -220)
                 {
-                    pc->c = 0;
+                    serial->c = 0;
                 }
 
                 /* Start sending aiming signal */
@@ -166,15 +166,15 @@ void task_shoot(void *pvParameters)
         }
 
         /* Process the data of the host computer */
-        if (pc->c == 'a')
+        if (serial->c == 'a')
         {
-            pc->c = 0;
-            float x = pc->x;
+            serial->c = 0;
+            float x = serial->x;
             if (x > 0)
             {
                 if (shoot.stats != SHOOT_STATS_STOP)
                 {
-                    // shoot.v_set = pc->x;
+                    // shoot.v_set = serial->x;
                     shoot.stats = SHOOT_STATS_DO;
                 }
                 else

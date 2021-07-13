@@ -10,10 +10,10 @@
 */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __TASK_STEP_H__
-#define __TASK_STEP_H__
+#ifndef __APP_STEP_H__
+#define __APP_STEP_H__
 
 /* Enddef to prevent recursive inclusion ------------------------------------ */
-#endif /* __TASK_STEP_H__ */
+#endif /* __APP_STEP_H__ */
 
 /************************ (C) COPYRIGHT NGU ********************END OF FILE****/

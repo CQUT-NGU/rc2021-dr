@@ -109,7 +109,6 @@ int main(void)
     MX_TIM12_Init();
     /* USER CODE BEGIN 2 */
     delay_init();
-    usart_init();
     ctrl_rc_init();
     os_dma_init();
     can_filter_init();

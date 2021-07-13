@@ -15,11 +15,11 @@
 
 #include "bsp.h"
 
-#include "ctrl_can.h"
-#include "ctrl_pc.h"
-#include "ctrl_rc.h"
-
 #include <stdint.h>
+
+#include "ctrl_rc.h"
+#include "ctrl_can.h"
+#include "ctrl_serial.h"
 
 /* Enddef to prevent recursive inclusion ------------------------------------ */
 #endif /* __CTRL_H__ */

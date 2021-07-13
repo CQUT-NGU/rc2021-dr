@@ -1,21 +1,15 @@
 /**
  * *****************************************************************************
- * @file         task_led.c
- * @brief        led task
+ * @file         app_led.c
+ * @brief        led application
  * @author       NGU
- * @date         20210407
+ * @date         20210427
  * @version      1
  * @copyright    Copyright (C) 2021 NGU
  * *****************************************************************************
 */
 
-#include "task_led.h"
-
-#include "bsp.h"
-
-#if USED_OS
-#include "cmsis_os.h"
-#endif /* USED_OS */
+#include "app_led.h"
 
 void task_led(void *pvParameters)
 {

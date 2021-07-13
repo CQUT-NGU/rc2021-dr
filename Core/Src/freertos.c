@@ -180,6 +180,7 @@ void MX_FREERTOS_Init(void) {
 __weak void task_led(void *argument)
 {
   /* USER CODE BEGIN task_led */
+  (void)argument;
   /* Infinite loop */
   for(;;)
   {

@@ -1,7 +1,7 @@
 /**
  * *****************************************************************************
- * @file         task_led.h
- * @brief        led task
+ * @file         app.h
+ * @brief        application
  * @author       NGU
  * @date         20210427
  * @version      1
@@ -10,18 +10,23 @@
 */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __TASK_LED_H__
-#define __TASK_LED_H__
+#ifndef __APP_H__
+#define __APP_H__
 
+#include "ca.h"
 #include "bsp.h"
+#include "ctrl.h"
 
-__BEGIN_DECLS
+#if USED_OS
+#include "cmsis_os.h"
+#endif /* USED_OS */
 
-extern void task_led(void *pvParameters);
+#include <stdint.h>
 
-__END_DECLS
+#include "app_led.h"
+// #include "app_chassis.h"
 
-/* Enddef to prevent recursive inclusion ------------------------------------ */
-#endif /* __TASK_LED_H__ */
+/* Enddef to prevent recursive inclusion -------------------------------------*/
+#endif /* __APP_H__ */
 
 /************************ (C) COPYRIGHT NGU ********************END OF FILE****/

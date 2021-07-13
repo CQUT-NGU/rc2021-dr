@@ -12,8 +12,8 @@
 */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __TASK_INS_H__
-#define __TASK_INS_H__
+#ifndef __APP_INS_H__
+#define __APP_INS_H__
 
 #include "bsp.h"
 
@@ -24,6 +24,6 @@ extern void task_ins(void const *pvParameters);
 __END_DECLS
 
 /* Enddef to prevent recursive inclusion ------------------------------------ */
-#endif /* __TASK_INS_H__ */
+#endif /* __APP_INS_H__ */
 
 /************************ (C) COPYRIGHT NGU ********************END OF FILE****/
