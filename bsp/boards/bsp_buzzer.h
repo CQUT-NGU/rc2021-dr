@@ -16,7 +16,7 @@
 
 #include "bsp.h"
 
-#define BUZZER_PWM_MAX   ((168000000 >> 1) / 4000)
+#define BUZZER_PWM_MAX   200
 #define BUZZER_PWM_DIV1  (BUZZER_PWM_MAX >> 0)
 #define BUZZER_PWM_DIV2  (BUZZER_PWM_MAX >> 1)
 #define BUZZER_PWM_DIV4  (BUZZER_PWM_MAX >> 2)
@@ -39,11 +39,11 @@ extern void buzzer_stop(void);
 
 /**
  * @brief        Set pwm of the buzzer
- * @param[in]    psc: 0x0000 ~ 0x0FFF
- * @param[in]    pwm: 0x0000 ~ 0x4FFF
+ * @param[in]    psc: 0 ~ 420000
+ * @param[in]    pwm: 0 ~ 200
 */
-extern void buzzer_set(uint16_t psc,
-                       uint16_t pwm);
+extern void buzzer_set(uint32_t psc,
+                       uint32_t pwm);
 
 __END_DECLS
 
