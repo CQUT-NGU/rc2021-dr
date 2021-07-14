@@ -21,7 +21,7 @@
 #include "bsp.h"
 
 #ifndef CAN2_IS_ENABLE
-#define CAN2_IS_ENABLE 1
+#define CAN2_IS_ENABLE 0
 #endif /* CAN2_IS_ENABLE */
 
 __BEGIN_DECLS

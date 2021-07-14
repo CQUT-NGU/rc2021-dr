@@ -85,24 +85,17 @@ const osThreadAttr_t ins_attributes = {
   .stack_size = sizeof(insBuffer),
   .priority = (osPriority_t) osPriorityHigh,
 };
-/* Definitions for step */
-osThreadId_t stepHandle;
-uint32_t testBuffer[ 256 ];
-osStaticThreadDef_t testControlBlock;
-const osThreadAttr_t step_attributes = {
-  .name = "step",
-  .cb_mem = &testControlBlock,
-  .cb_size = sizeof(testControlBlock),
-  .stack_mem = &testBuffer[0],
-  .stack_size = sizeof(testBuffer),
-  .priority = (osPriority_t) osPriorityLow,
-};
-/* Definitions for shoot */
-osThreadId_t shootHandle;
-const osThreadAttr_t shoot_attributes = {
-  .name = "shoot",
-  .stack_size = 256 * 4,
-  .priority = (osPriority_t) osPriorityHigh,
+/* Definitions for defense */
+osThreadId_t defenseHandle;
+uint32_t defenseBuffer[ 256 ];
+osStaticThreadDef_t defenseControlBlock;
+const osThreadAttr_t defense_attributes = {
+  .name = "defense",
+  .cb_mem = &defenseControlBlock,
+  .cb_size = sizeof(defenseControlBlock),
+  .stack_mem = &defenseBuffer[0],
+  .stack_size = sizeof(defenseBuffer),
+  .priority = (osPriority_t) osPriorityRealtime,
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -113,8 +106,7 @@ const osThreadAttr_t shoot_attributes = {
 void task_led(void *argument);
 extern void task_chassis(void *argument);
 extern void task_ins(void *argument);
-extern void task_step(void *argument);
-extern void task_shoot(void *argument);
+extern void task_defense(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -154,11 +146,8 @@ void MX_FREERTOS_Init(void) {
   /* creation of ins */
   insHandle = osThreadNew(task_ins, NULL, &ins_attributes);
 
-  /* creation of step */
-  stepHandle = osThreadNew(task_step, NULL, &step_attributes);
-
-  /* creation of shoot */
-  shootHandle = osThreadNew(task_shoot, NULL, &shoot_attributes);
+  /* creation of defense */
+  defenseHandle = osThreadNew(task_defense, NULL, &defense_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */

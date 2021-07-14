@@ -20,6 +20,8 @@
 #include "ctrl_rc.h"
 #include "ctrl_can.h"
 #include "ctrl_serial.h"
+#include "ctrl_servo.h"
+#include "ctrl_step.h"
 
 /* Enddef to prevent recursive inclusion ------------------------------------ */
 #endif /* __CTRL_H__ */

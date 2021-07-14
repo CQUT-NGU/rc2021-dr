@@ -32,7 +32,7 @@ extern CAN_HandleTypeDef hcan2;
         (ptr)->temperate = (data)[6];                             \
     } while (0)
 
-static motor_t motor_chassis[5];
+static motor_t motor_chassis[4];
 
 static CAN_TxHeaderTypeDef chassis_tx_message;
 
@@ -57,13 +57,9 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
     case CAN_ID_3508_M2:
     case CAN_ID_3508_M3:
     case CAN_ID_3508_M4:
-    case CAN_ID_3508_SHOOT:
     {
-        MOTOR_MEASURE(&motor_chassis[(header_rx.StdId - CAN_ID_3508_M1)], data_rx);
-        if (header_rx.StdId == CAN_ID_3508_SHOOT)
-        {
-            shoot_angle_update(motor_chassis + 4);
-        }
+        uint32_t id = header_rx.StdId - CAN_ID_3508_M1;
+        MOTOR_MEASURE(&motor_chassis[id], data_rx);
         break;
     }
 

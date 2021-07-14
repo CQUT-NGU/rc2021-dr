@@ -18,7 +18,6 @@
 #include "ctrl.h"
 
 #define CHASSIS_CAN hcan1
-#define OTHER_CAN   hcan2
 
 /**
  * @enum         can_msg_id_enum
@@ -92,8 +91,6 @@ extern void other_ctrl(int16_t motor1,
  *               it will set chassis motor 3508 to quick ID setting
 */
 extern void chassis_reset(void);
-
-extern void shoot_angle_reset(void);
 
 __END_DECLS
 

@@ -62,12 +62,12 @@ void Error_Handler(void);
 #define DBUS_GPIO_Port GPIOC
 #define NULL_Pin GPIO_PIN_10
 #define NULL_GPIO_Port GPIOC
-#define RELAY_Pin GPIO_PIN_7
-#define RELAY_GPIO_Port GPIOI
-#define HOLD_DIR_Pin GPIO_PIN_6
-#define HOLD_DIR_GPIO_Port GPIOI
-#define HOLD_PWM_Pin GPIO_PIN_6
-#define HOLD_PWM_GPIO_Port GPIOC
+#define PICK_DIR_Pin GPIO_PIN_7
+#define PICK_DIR_GPIO_Port GPIOI
+#define PICK_PWM_Pin GPIO_PIN_6
+#define PICK_PWM_GPIO_Port GPIOI
+#define DEFENSE_Pin GPIO_PIN_6
+#define DEFENSE_GPIO_Port GPIOC
 #define IST8310_RST_Pin GPIO_PIN_6
 #define IST8310_RST_GPIO_Port GPIOG
 #define IMU_PWM_Pin GPIO_PIN_6
@@ -88,19 +88,19 @@ void Error_Handler(void);
 #define INT1_ACCEL_Pin GPIO_PIN_4
 #define INT1_ACCEL_GPIO_Port GPIOC
 #define INT1_ACCEL_EXTI_IRQn EXTI4_IRQn
+#define POT_Pin GPIO_PIN_13
+#define POT_GPIO_Port GPIOE
 #define INT1_GRYO_Pin GPIO_PIN_5
 #define INT1_GRYO_GPIO_Port GPIOC
 #define INT1_GRYO_EXTI_IRQn EXTI9_5_IRQn
-#define PICK_PWM_Pin GPIO_PIN_9
-#define PICK_PWM_GPIO_Port GPIOE
-#define PICK_DIR_Pin GPIO_PIN_11
-#define PICK_DIR_GPIO_Port GPIOE
-#define POT_DIR_Pin GPIO_PIN_13
-#define POT_DIR_GPIO_Port GPIOB
+#define SHOT0_Pin GPIO_PIN_9
+#define SHOT0_GPIO_Port GPIOE
+#define SHOT1_Pin GPIO_PIN_11
+#define SHOT1_GPIO_Port GPIOE
+#define CLIP_Pin GPIO_PIN_14
+#define CLIP_GPIO_Port GPIOE
 #define CS1_Gyro_Pin GPIO_PIN_0
 #define CS1_Gyro_GPIO_Port GPIOB
-#define POT_PWM_Pin GPIO_PIN_14
-#define POT_PWM_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

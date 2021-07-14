@@ -40,10 +40,10 @@ C_SOURCES += ca/zyx.c
 C_SOURCES += app/ctrl_rc.c
 C_SOURCES += app/ctrl_can.c
 C_SOURCES += app/ctrl_serial.c
+C_SOURCES += app/ctrl_servo.c
+C_SOURCES += app/ctrl_step.c
 
 C_SOURCES += app/app_led.c
 C_SOURCES += app/app_chassis.c
 C_SOURCES += app/app_ins.c
-
-C_SOURCES += app/task_step.c
-C_SOURCES += app/task_shoot.c
+C_SOURCES += app/app_defense.c
