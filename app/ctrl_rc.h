@@ -22,6 +22,9 @@
 #define RC_CH_VALUE_OFFSET 1024
 #define RC_CH_VALUE_MAX    1684
 
+#define RC_ROCKER_MAX (RC_CH_VALUE_MAX - RC_CH_VALUE_OFFSET)
+#define RC_ROCKER_MIN (RC_CH_VALUE_MIN - RC_CH_VALUE_OFFSET)
+
 /* ----------------------- RC Switch Definition----------------------------- */
 #define RC_SW_R 0 /* switch right */
 #define RC_SW_L 1 /* switch left  */
@@ -32,9 +35,10 @@
 #define RC_CH_LV 3 /* channel left vertical    */
 #define RC_CH_S  4 /* channel rotation         */
 
-#define RC_SW_UP          1
-#define RC_SW_MID         3
-#define RC_SW_DOWN        2
+#define RC_SW_UP   1
+#define RC_SW_MID  3
+#define RC_SW_DOWN 2
+
 #define switch_is_down(s) ((s) == RC_SW_DOWN)
 #define switch_is_mid(s)  ((s) == RC_SW_MID)
 #define switch_is_up(s)   ((s) == RC_SW_UP)
