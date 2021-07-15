@@ -80,7 +80,7 @@ extern void led_pwm_stop(void);
  * @param[in]    value: 0 ~ LED_PWM_MAX
  */
 extern void led_pwm_set(led_e pin,
-                        uint16_t value);
+                        uint32_t value);
 
 __END_DECLS
 

@@ -17,38 +17,38 @@
 #include "app_led.h"
 
 static unsigned int song[][2] = {
-    {NOTEFREQS_G4, 50},
-    {NOTEFREQS_A4, 50},
-    {NOTEFREQS_C5, 50},
+    {NOTEFREQS_G4 - 1, 50},
+    {NOTEFREQS_A4 - 1, 50},
+    {NOTEFREQS_C5 - 1, 50},
     {0, 10},
-    {NOTEFREQS_D5, 50},
+    {NOTEFREQS_D5 - 1, 50},
     {0, 10},
-    {NOTEFREQS_D5, 50},
+    {NOTEFREQS_D5 - 1, 50},
     {0, 1},
-    {NOTEFREQS_D5, 50},
+    {NOTEFREQS_D5 - 1, 50},
     {0, 1},
-    {NOTEFREQS_C5, 50},
+    {NOTEFREQS_C5 - 1, 50},
     {0, 1},
-    {NOTEFREQS_D5, 50},
+    {NOTEFREQS_D5 - 1, 50},
     {0, 15},
-    {NOTEFREQS_C5, 50},
+    {NOTEFREQS_C5 - 1, 50},
     {0, 15},
-    {NOTEFREQS_E5, 50},
+    {NOTEFREQS_E5 - 1, 50},
     {0, 15},
     {0, 50},
-    {NOTEFREQS_B4, 40},
+    {NOTEFREQS_B4 - 1, 40},
     {0, 10},
-    {NOTEFREQS_B4, 40},
+    {NOTEFREQS_B4 - 1, 40},
     {0, 10},
-    {NOTEFREQS_B4, 40},
+    {NOTEFREQS_B4 - 1, 40},
     {0, 10},
-    {NOTEFREQS_B4, 75},
+    {NOTEFREQS_B4 - 1, 75},
     {0, 15},
-    {NOTEFREQS_B4, 50},
+    {NOTEFREQS_B4 - 1, 50},
     {0, 25},
-    {NOTEFREQS_A4, 25},
+    {NOTEFREQS_A4 - 1, 25},
     {0, 25},
-    {NOTEFREQS_C5, 25},
+    {NOTEFREQS_C5 - 1, 25},
     {0, 25},
 };
 
@@ -73,22 +73,22 @@ void task_led(void *pvParameters)
 
     for (;;)
     {
-        for (uint16_t count = 0; count != LED_PWM_MAX; ++count)
+        for (uint32_t count = 0; count != LED_PWM_MAX; ++count)
         {
             led_pwm_set(LED_R, count);
-            led_pwm_set(LED_B, (uint16_t)(LED_PWM_MAX - count));
+            led_pwm_set(LED_B, LED_PWM_MAX - count);
             osDelay(1);
         }
-        for (uint16_t count = 0; count != LED_PWM_MAX; ++count)
+        for (uint32_t count = 0; count != LED_PWM_MAX; ++count)
         {
             led_pwm_set(LED_G, count);
-            led_pwm_set(LED_R, (uint16_t)(LED_PWM_MAX - count));
+            led_pwm_set(LED_R, LED_PWM_MAX - count);
             osDelay(1);
         }
-        for (uint16_t count = 0; count != LED_PWM_MAX; ++count)
+        for (uint32_t count = 0; count != LED_PWM_MAX; ++count)
         {
             led_pwm_set(LED_B, count);
-            led_pwm_set(LED_G, (uint16_t)(LED_PWM_MAX - count));
+            led_pwm_set(LED_G, LED_PWM_MAX - count);
             osDelay(1);
         }
     }

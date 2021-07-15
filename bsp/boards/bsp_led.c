@@ -147,7 +147,7 @@ void led_pwm_stop(void)
 }
 
 void led_pwm_set(led_e pin,
-                 uint16_t value)
+                 uint32_t value)
 {
     /* Set the TIM Capture Compare Register value on runtime */
     switch (pin)
