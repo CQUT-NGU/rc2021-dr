@@ -143,6 +143,21 @@ void task_defense(void *pvParameters)
         }
 
         if (switch_is_mid(rc->rc.s[RC_SW_L]) &&
+            (switch_is_mid(rc->rc.s[RC_SW_R]) ||
+             switch_is_down(rc->rc.s[RC_SW_R])))
+        {
+            value = LIMIT_RC(rc->rc.ch[RC_CH_LV], DEFENSE_RC_DEADLINE);
+            if (value > 330)
+            {
+                pot_set(SERVO_PWMMID + 333);
+            }
+            if (value < -330)
+            {
+                pot_set(SERVO_PWMMID + 111);
+            }
+        }
+
+        if (switch_is_mid(rc->rc.s[RC_SW_L]) &&
             switch_is_down(rc->rc.s[RC_SW_R]))
         {
             value = rc->rc.ch[RC_CH_LV];
@@ -171,16 +186,6 @@ void task_defense(void *pvParameters)
 
             value = LIMIT_RC(rc->rc.ch[RC_CH_LV], DEFENSE_RC_DEADLINE);
             clip_set((uint32_t)(SERVO_PWMMID + value));
-
-            value = LIMIT_RC(rc->rc.ch[RC_CH_RH], DEFENSE_RC_DEADLINE);
-            if (value < -330)
-            {
-                pot_set(SERVO_PWMMID + 333);
-            }
-            if (value > 330)
-            {
-                pot_set(SERVO_PWMMID - 333);
-            }
         }
 
         if (switch_is_down(rc->rc.s[RC_SW_L]) &&
