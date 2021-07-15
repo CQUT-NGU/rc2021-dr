@@ -15,39 +15,6 @@ extern float ins_angle[3]; /* euler angle, unit rad */
 
 /* in the beginning of task ,wait a time */
 #define CHASSIS_TASK_INIT_TIME 357
-
-/* the channel num of controlling horizontal speed */
-#define CHASSIS_X_CHANNEL 0
-/* the channel num of controlling vertial speed */
-#define CHASSIS_Y_CHANNEL 1
-/* in some mode, can use remote control to control rotation speed */
-#define CHASSIS_WZ_CHANNEL 2
-
-/* rocker value (max 660) change to horizontal speed (m/s) */
-#define CHASSIS_VX_RC_SEN 0.005F
-/* rocker value (max 660) change to vertial speed (m/s) */
-#define CHASSIS_VY_RC_SEN 0.005F
-/* in following yaw angle mode, rocker value add to angle */
-#define CHASSIS_ANGLE_Z_RC_SEN 0.000002F
-/* in not following yaw angle mode, rocker value change to rotation speed */
-#define CHASSIS_WZ_RC_SEN 0.01F
-/* vertial speed slowly (dm/s) */
-#define CHASSIS_RC_SLOW_SEN 0.1F
-
-#define CHASSIS_ACCEL_X_NUM 0.1F
-#define CHASSIS_ACCEL_Y_NUM 0.1F
-#define CHASSIS_ACCEL_Z_NUM 0.1F
-
-/* rocker value deadline */
-#define CHASSIS_RC_DEADLINE 10
-
-#define MOTOR_SPEED_TO_CHASSIS_SPEED_VX 0.25F
-#define MOTOR_SPEED_TO_CHASSIS_SPEED_VY 0.25F
-#define MOTOR_SPEED_TO_CHASSIS_SPEED_WZ 0.25F
-
-/* a = 0.338 b = 0.550 */
-#define MOTOR_DISTANCE_TO_CENTER 0.444F
-
 /* chassis task control time 2ms */
 #define CHASSIS_CONTROL_TIME_MS 2
 /* chassis task control time 0.002s */
@@ -57,15 +24,21 @@ extern float ins_angle[3]; /* euler angle, unit rad */
 /* chassis 3508 max motor control current */
 #define MAX_MOTOR_CAN_CURRENT 0x4000
 
-/* chassi forward, back, left, right key */
-#define CHASSIS_FRONT_KEY KEY_PRESSED_OFFSET_W
-#define CHASSIS_BACK_KEY  KEY_PRESSED_OFFSET_S
-#define CHASSIS_LEFT_KEY  KEY_PRESSED_OFFSET_A
-#define CHASSIS_RIGHT_KEY KEY_PRESSED_OFFSET_D
-
+/*!
+ M3508 rmp change to chassis speed
+ \f{aligned}
+ V_{m/s} = K V_{rpm}, K = \cfrac {2 \pi r} {60 \cdot 19}, d = 2r = 0.1524 m
+ \f}
+*/
 /* M3508 rmp change to chassis speed */
-#define M3508_MOTOR_RPM_TO_VECTOR       0.000415809748903494517209F
+#define M3508_MOTOR_RPM_TO_VECTOR       0.00041998133369042494F
 #define CHASSIS_MOTOR_RPM_TO_VECTOR_SEN M3508_MOTOR_RPM_TO_VECTOR
+
+#define MOTOR_SPEED_TO_CHASSIS_SPEED_VX 0.25F
+#define MOTOR_SPEED_TO_CHASSIS_SPEED_VY 0.25F
+#define MOTOR_SPEED_TO_CHASSIS_SPEED_WZ 0.25F
+/* a = 0.338 b = 0.550 */
+#define MOTOR_DISTANCE_TO_CENTER 0.444F
 
 /* single chassis motor max speed */
 #define MAX_WHEEL_SPEED 4.0F
@@ -74,9 +47,9 @@ extern float ins_angle[3]; /* euler angle, unit rad */
 /* chassis forward or back max speed */
 #define NORMAL_MAX_CHASSIS_SPEED_Y 2.0F
 /* chassis left or right max accelerated speed */
-#define NORMAL_MAX_CHASSIS_ACC_X 3.0F
+#define NORMAL_MAX_CHASSIS_ACC_X 4.0F
 /* chassis forward or back max accelerated speed */
-#define NORMAL_MAX_CHASSIS_ACC_Y 3.0F
+#define NORMAL_MAX_CHASSIS_ACC_Y 4.0F
 /* chassis left or right max speed increment */
 #define NORMAL_MAX_CHASSIS_SPEED_DELTA_X \
     (CHASSIS_CONTROL_TIME * NORMAL_MAX_CHASSIS_ACC_X)
@@ -84,12 +57,41 @@ extern float ins_angle[3]; /* euler angle, unit rad */
 #define NORMAL_MAX_CHASSIS_SPEED_DELTA_Y \
     (CHASSIS_CONTROL_TIME * NORMAL_MAX_CHASSIS_ACC_Y)
 
-#define CHASSIS_WZ_SET_SCALE 0.1F
+#define CHASSIS_ACCEL_X_NUM 0.1F
+#define CHASSIS_ACCEL_Y_NUM 0.1F
+#define CHASSIS_ACCEL_Z_NUM 0.1F
 
-/* when chassis is not set to move, swing max angle */
-#define SWING_NO_MOVE_ANGLE 0.7F
-/* when chassis is set to move, swing max angle */
-#define SWING_MOVE_ANGLE 0.31415926535897932384626433832795F
+/* the channel num of controlling horizontal speed */
+#define CHASSIS_X_CHANNEL RC_CH_RH
+/* the channel num of controlling vertial speed */
+#define CHASSIS_Y_CHANNEL RC_CH_RV
+/* in some mode, can use remote control to control rotation speed */
+#define CHASSIS_WZ_CHANNEL RC_CH_LH
+/* rocker value deadline */
+#define CHASSIS_RC_DEADLINE 10
+/* chassi forward, back, left, right key */
+#define CHASSIS_FRONT_KEY KEY_PRESSED_OFFSET_W
+#define CHASSIS_BACK_KEY  KEY_PRESSED_OFFSET_S
+#define CHASSIS_LEFT_KEY  KEY_PRESSED_OFFSET_A
+#define CHASSIS_RIGHT_KEY KEY_PRESSED_OFFSET_D
+
+/* rocker value (max 660) change to horizontal speed (m/s) */
+#define CHASSIS_VX_RC_SEN (NORMAL_MAX_CHASSIS_SPEED_X / RC_ROCKER_MAX)
+/* rocker value (max 660) change to vertial speed (m/s) */
+#define CHASSIS_VY_RC_SEN (NORMAL_MAX_CHASSIS_SPEED_Y / RC_ROCKER_MAX)
+/* in not following yaw angle mode, rocker value change to rotation speed */
+#define CHASSIS_WZ_RC_SEN (MAX_WHEEL_SPEED / RC_ROCKER_MAX)
+/* vertial speed slowly (dm/s) */
+#define CHASSIS_RC_SLOW_SEN 0.1F
+
+/* in following yaw angle mode, rocker value add to angle */
+#define CHASSIS_ANGLE_Z_RC_SEN 0.000002F
+
+// #define CHASSIS_WZ_SET_SCALE 0.1F
+// /* when chassis is not set to move, swing max angle */
+// #define SWING_NO_MOVE_ANGLE 0.7F
+// /* when chassis is set to move, swing max angle */
+// #define SWING_MOVE_ANGLE 0.31415926535897932384626433832795F
 
 /* chassis motor speed PID */
 #define M3505_MOTOR_SPEED_PID_KP       15000.0F
