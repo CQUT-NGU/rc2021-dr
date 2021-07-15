@@ -175,11 +175,11 @@ void task_defense(void *pvParameters)
             value = LIMIT_RC(rc->rc.ch[RC_CH_RH], DEFENSE_RC_DEADLINE);
             if (value < -330)
             {
-                pot_set(SERVO_PWMMID + 330);
+                pot_set(SERVO_PWMMID + 333);
             }
             if (value > 330)
             {
-                pot_set(SERVO_PWMMID);
+                pot_set(SERVO_PWMMID - 333);
             }
         }
 
@@ -228,7 +228,10 @@ void task_defense(void *pvParameters)
                 usart_dma_tx(&huart_os, (const void *)"b\n", 2);
             }
 
-            servo_update();
+            if (defense.tick % 2 == 0)
+            {
+                servo_update();
+            }
         }
 
         ++defense.tick;
