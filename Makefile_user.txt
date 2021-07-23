@@ -32,10 +32,11 @@ C_SOURCES += bsp/boards/bsp_imu_pwm.c
 C_SOURCES += bsp/devices/bmi088.c
 C_SOURCES += bsp/devices/ist8310.c
 
-C_SOURCES += ca/ca-pid.c
-C_SOURCES += ca/ca-math.c
+C_SOURCES += ca/ca_pid.c
+C_SOURCES += ca/ca_math.c
 C_SOURCES += ca/ahrs.c
 C_SOURCES += ca/zyx.c
+C_SOURCES += ca/polynomial.c
 
 C_SOURCES += app/ctrl_rc.c
 C_SOURCES += app/ctrl_can.c

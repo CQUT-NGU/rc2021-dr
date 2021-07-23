@@ -71,7 +71,7 @@ const osThreadAttr_t chassis_attributes = {
   .cb_size = sizeof(chssisControlBlock),
   .stack_mem = &chssisBuffer[0],
   .stack_size = sizeof(chssisBuffer),
-  .priority = (osPriority_t) osPriorityHigh,
+  .priority = (osPriority_t) osPriorityRealtime,
 };
 /* Definitions for ins */
 osThreadId_t insHandle;

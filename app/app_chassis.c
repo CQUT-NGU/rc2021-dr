@@ -21,8 +21,6 @@ extern float ins_angle[3]; /* euler angle, unit rad */
 #define CHASSIS_CONTROL_TIME 0.002F
 /* chassis control frequence */
 #define CHASSIS_CONTROL_FREQUENCE 500.0F
-/* chassis 3508 max motor control current */
-#define MAX_MOTOR_CAN_CURRENT 0x4000
 
 /*!
  M3508 rmp change to chassis speed
@@ -81,8 +79,8 @@ extern float ins_angle[3]; /* euler angle, unit rad */
 #define CHASSIS_VY_RC_SEN (NORMAL_MAX_CHASSIS_SPEED_Y / RC_ROCKER_MAX)
 /* in not following yaw angle mode, rocker value change to rotation speed */
 #define CHASSIS_WZ_RC_SEN (MAX_WHEEL_SPEED / RC_ROCKER_MAX)
-/* vertial speed slowly (dm/s) */
-#define CHASSIS_RC_SLOW_SEN 0.1F
+/* vertial speed slowly (m/s) */
+#define CHASSIS_RC_SLOW_SEN 0.2F
 
 /* in following yaw angle mode, rocker value add to angle */
 #define CHASSIS_ANGLE_Z_RC_SEN 0.000002F

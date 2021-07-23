@@ -12,7 +12,7 @@
 #include "app.h"
 
 #define DEFENSE_RC_DEADLINE     10
-#define DEFENSE_JET_TIME_MS     200
+#define DEFENSE_JET_TIME_MS     300
 #define DEFENSE_CONTROL_TIME_MS 2
 #define DEFENSE_CONTROL_TIME    0.002F
 
@@ -31,7 +31,26 @@
 #define DEFENSE_ROTATE_NONE  (0)
 #define DEFENSE_ROTATE_STATE (1 << 0)  //!< change state
 
+/* rpm -> n/s */
+#define DEFENSE_MOTOR_RPM_TO_VECTOR_SEN (1.0F / 60 / 19)
+
+#define M3505_MOTOR_SPEED_PID_KP       15000.0F
+#define M3505_MOTOR_SPEED_PID_KI       10.0F
+#define M3505_MOTOR_SPEED_PID_KD       0.0F
+#define M3505_MOTOR_SPEED_PID_MAX_OUT  MAX_MOTOR_CAN_CURRENT
+#define M3505_MOTOR_SPEED_PID_MAX_IOUT 2000.0F
+
 #define LIMIT_RC(x, max) ((x) > -(max) && ((x) < (max)) ? 0 : x)
+
+typedef struct
+{
+    const motor_t *fb; /* feedback */
+
+    int16_t i;   /* current value */
+    float v;     /* velocity */
+    float v_set; /* velocity set-point */
+    float accel; /* accelerated speed */
+} mo_t;
 
 typedef struct
 {
@@ -40,10 +59,12 @@ typedef struct
     int rotate;  //!< state of turn arrow
 
     unsigned int jet_count;  //!< count of jet time
+    ca_pid_f32_t pid[1];     //!< motor pid
     uint32_t tick;           //!< count of run
+    mo_t mo[1];              //!< motor pointer
 } defense_t;
 
-defense_t defense;
+static defense_t defense;
 
 __STATIC_INLINE
 void jet_left_on(void)
@@ -118,22 +139,44 @@ void task_defense(void *pvParameters)
 
     /* Initialization block */
     {
+        static float kpid_v[3] = {
+            M3505_MOTOR_SPEED_PID_KP,
+            M3505_MOTOR_SPEED_PID_KI,
+            M3505_MOTOR_SPEED_PID_KD,
+        };
+
         servo_init();
         uint32_t pwm[2] = {
-            SERVO_PWMMID,
-            SERVO_PWMMID,
+            SERVO_PWMMID + 222,
+            900,
         };
         servo_start(pwm);
+
+        pick_init();
+
+        ca_pid_f32_position(defense.pid,
+                            kpid_v,
+                            -M3505_MOTOR_SPEED_PID_MAX_OUT,
+                            M3505_MOTOR_SPEED_PID_MAX_OUT,
+                            M3505_MOTOR_SPEED_PID_MAX_IOUT);
     }
 
     /* The data address of the host computer */
     ctrl_serial_t *serial = ctrl_serial_point();
     const ctrl_rc_t *rc = ctrl_rc_point();
+    defense.mo->fb = defense_point();
 
     for (;;)
     {
-        int16_t value = value = rc->rc.ch[RC_CH_S];
-        if (value > 1000)
+        /* motor data update */
+        {
+            defense.mo->v = defense.mo->fb->v_rpm * DEFENSE_MOTOR_RPM_TO_VECTOR_SEN;
+            defense.mo->accel = defense.pid->x[0] - defense.mo->v;
+            defense.mo->accel *= DEFENSE_CONTROL_TIME;
+        }
+
+        int16_t value = rc->rc.ch[RC_CH_S];
+        if (value > 650)
         {
             rotate_on();
         }
@@ -149,16 +192,15 @@ void task_defense(void *pvParameters)
             value = LIMIT_RC(rc->rc.ch[RC_CH_LV], DEFENSE_RC_DEADLINE);
             if (value > 330)
             {
-                pot_set(SERVO_PWMMID + 333);
+                pot_set(SERVO_PWMMID - 111);
             }
             if (value < -330)
             {
-                pot_set(SERVO_PWMMID + 111);
+                pot_set(SERVO_PWMMID + 222);
             }
         }
-
-        if (switch_is_mid(rc->rc.s[RC_SW_L]) &&
-            switch_is_down(rc->rc.s[RC_SW_R]))
+        else if (switch_is_mid(rc->rc.s[RC_SW_L]) &&
+                 switch_is_down(rc->rc.s[RC_SW_R]))
         {
             value = rc->rc.ch[RC_CH_LV];
             /* restart control */
@@ -178,35 +220,95 @@ void task_defense(void *pvParameters)
             }
         }
 
-        if (switch_is_down(rc->rc.s[RC_SW_L]) &&
-            switch_is_down(rc->rc.s[RC_SW_R]))
+        value = rc->rc.ch[RC_CH_LV];
+        if (value < RC_ROCKER_MIN + DEFENSE_RC_DEADLINE)
         {
+            /* 2 rps */
             value = LIMIT_RC(rc->rc.ch[RC_CH_LH], DEFENSE_RC_DEADLINE);
-            pick_set(value * (1 << 4));  // 3200 div
+            defense.mo->v_set = value * (5.0F / RC_ROCKER_MIN);
+        }
+        else
+        {
+            if (switch_is_down(rc->rc.s[RC_SW_L]) &&
+                switch_is_down(rc->rc.s[RC_SW_R]))
+            {
+                value = LIMIT_RC(rc->rc.ch[RC_CH_RV], DEFENSE_RC_DEADLINE);
+                if (value > 330)
+                {
+                    pick_stop();
+                    clip_set_pwm(900);
+                    pick_index(15500);
+                    do
+                    {
+                        pick_update(PICK_PWM_DELTA, PICK_PWM_DIVIDE);
+                        osDelay(DEFENSE_CONTROL_TIME_MS);
+                    } while (step.idx != 15500 && rc->rc.ch[RC_CH_RV] > -330);
+                    osDelay(500);
+                    clip_set_pwm(1800);
+                    osDelay(500);
+                    pick_index(0);
+                    do
+                    {
+                        pick_update(PICK_PWM_DELTA, PICK_PWM_DIVIDE);
+                        osDelay(DEFENSE_CONTROL_TIME_MS);
+                    } while (step.idx != 0 && rc->rc.ch[RC_CH_RV] > -330);
+                    osDelay(1500);
+                    clip_set_pwm(900);
+                    osDelay(500);
+                    pick_index(15500);
+                    do
+                    {
+                        pick_update(PICK_PWM_DELTA, PICK_PWM_DIVIDE);
+                        osDelay(DEFENSE_CONTROL_TIME_MS);
+                    } while (step.idx != 15500 && rc->rc.ch[RC_CH_RV] > -330);
+                }
+                else if (value < -330)
+                {
+                    pick_zero_cli(PICK_INDEX_CLI);
+                }
 
-            value = LIMIT_RC(rc->rc.ch[RC_CH_LV], DEFENSE_RC_DEADLINE);
-            clip_set((uint32_t)(SERVO_PWMMID + value));
+                value = -LIMIT_RC(rc->rc.ch[RC_CH_RH], DEFENSE_RC_DEADLINE);
+                pick_set(value * (1 << 4));  // 3200 div
+
+                value = LIMIT_RC(rc->rc.ch[RC_CH_LV], DEFENSE_RC_DEADLINE);
+                if (value > 0)
+                {
+                    clip_set((uint32_t)(SERVO_PWMMID + (value * 800) / 660 - 500));
+                }
+                else
+                {
+                    clip_set_pwm(1000);
+                }
+            }
+            else if (switch_is_down(rc->rc.s[RC_SW_L]) &&
+                     switch_is_mid(rc->rc.s[RC_SW_R]))
+            {
+                value = rc->rc.ch[RC_CH_RH];
+                if (value > 440)
+                {
+                    jet_right_on();
+                }
+                else if (value < -440)
+                {
+                    jet_left_on();
+                }
+                else
+                {
+                    jet_off();
+                }
+            }
         }
 
-        if (switch_is_down(rc->rc.s[RC_SW_L]) &&
-            switch_is_mid(rc->rc.s[RC_SW_R]))
+        if (serial->c == 'h')
         {
-            value = rc->rc.ch[RC_CH_LH];
-            if (value > 440)
-            {
-                jet_right_on();
-            }
-            else if (value < -440)
-            {
-                jet_left_on();
-            }
-            else
-            {
-                jet_off();
-            }
+            serial->c = 0;
+            pick_index((uint32_t)serial->x);
         }
 
         {
+            defense.mo->i = (int16_t)ca_pid_f32(defense.pid, defense.mo->v, defense.mo->v_set);
+            other_ctrl(defense.mo->i, 0, 0, 0);
+
             /* Send aiming signal */
             if (READ_BIT(defense.aim, DEFENSE_AIM_DO))
             {
@@ -233,9 +335,11 @@ void task_defense(void *pvParameters)
                 usart_dma_tx(&huart_os, (const void *)"b\n", 2);
             }
 
+            pick_update(PICK_PWM_DELTA, PICK_PWM_DIVIDE);
+
             if (defense.tick % 2 == 0)
             {
-                servo_update();
+                servo_update(1);
             }
         }
 

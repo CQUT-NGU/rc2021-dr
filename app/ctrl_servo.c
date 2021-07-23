@@ -25,27 +25,32 @@ ctrl_servo_t servo = {
     .match = SERVO_MATCH_POT | SERVO_MATCH_CLIP,
 };
 
-#define SERVO_UPDATE(htim, ch, flag, ref, set)       \
-    do                                               \
-    {                                                \
-        int delta = (int)((set) - (ref));            \
-        if (delta > 0)                               \
-        {                                            \
-            ++(ref);                                 \
-        }                                            \
-        else if (delta < 0)                          \
-        {                                            \
-            --(ref);                                 \
-        }                                            \
-        if (delta)                                   \
-        {                                            \
-            __HAL_TIM_SET_COMPARE(&htim, ch, (ref)); \
-            CLEAR_BIT(servo.match, flag);            \
-        }                                            \
-        else                                         \
-        {                                            \
-            SET_BIT(servo.match, flag);              \
-        }                                            \
+#define SERVO_UPDATE(htim, ch, flag, ref, set, inc) \
+    do                                              \
+    {                                               \
+        int delta = (int)((set) - (ref));           \
+        if (delta >= (int)(inc))                    \
+        {                                           \
+            (ref) = (ref) + (inc);                  \
+        }                                           \
+        else if (delta <= -(int)(inc))              \
+        {                                           \
+            (ref) = (ref) - (inc);                  \
+        }                                           \
+        else                                        \
+        {                                           \
+            (ref) = (set);                          \
+            delta = 0;                              \
+        }                                           \
+        if (delta)                                  \
+        {                                           \
+            CLEAR_BIT(servo.match, flag);           \
+        }                                           \
+        else                                        \
+        {                                           \
+            SET_BIT(servo.match, flag);             \
+        }                                           \
+        __HAL_TIM_SET_COMPARE(&htim, ch, (ref));    \
     } while (0)
 
 void servo_init(void)
@@ -59,20 +64,32 @@ void servo_start(uint32_t pwm[2])
     HAL_TIM_PWM_Start(&SERVO_TIM, POT_CHANNEL);
     HAL_TIM_PWM_Start(&SERVO_TIM, CLIP_CHANNEL);
 
-    servo.pot_set = pwm[0];
-    servo.pot = servo.pot_set - 1;
-
-    servo.clip_set = pwm[1];
-    servo.clip = servo.clip_set - 1;
+    pot_set_pwm(pwm[0]);
+    clip_set_pwm(pwm[1]);
 }
 
-void servo_update(void)
+void pot_set_pwm(uint32_t pwm)
+{
+    pot_set(pwm);
+    servo.pot = pwm;
+    __HAL_TIM_SET_COMPARE(&SERVO_TIM, POT_CHANNEL, pwm);
+}
+
+void clip_set_pwm(uint32_t pwm)
+{
+    clip_set(pwm);
+    servo.clip = pwm;
+    __HAL_TIM_SET_COMPARE(&SERVO_TIM, CLIP_CHANNEL, pwm);
+}
+
+void servo_update(uint32_t inc)
 {
     SERVO_UPDATE(SERVO_TIM,
                  POT_CHANNEL,
                  SERVO_MATCH_POT,
                  servo.pot,
-                 servo.pot_set);
+                 servo.pot_set,
+                 inc);
 #if SERVO_CONFIG_CLIP_FAST
     if (servo.clip != servo.clip_set)
     {
@@ -83,8 +100,9 @@ void servo_update(void)
                  CLIP_CHANNEL,
                  SERVO_MATCH_CLIP,
                  servo.clip,
-                 servo.clip_set);
-#endif
+                 servo.clip_set,
+                 inc);
+#endif /* SERVO_CONFIG_CLIP_FAST */
 }
 
 /************************ (C) COPYRIGHT NGU ********************END OF FILE****/

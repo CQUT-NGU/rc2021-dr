@@ -53,20 +53,39 @@ extern void servo_init(void);
 */
 extern void servo_start(uint32_t pwm[2]);
 
-extern void servo_update(void);
+extern void servo_update(uint32_t inc);
+
+extern void pot_set_pwm(uint32_t pwm);
+extern void clip_set_pwm(uint32_t pwm);
 
 __END_DECLS
 
 __STATIC_INLINE
 void pot_set(uint32_t pwm)
 {
-    servo.pot_set = pwm;
+    if (servo.pot_set != pwm)
+    {
+        servo.pot_set = pwm;
+        CLEAR_BIT(servo.match, SERVO_MATCH_POT);
+    }
+    else
+    {
+        SET_BIT(servo.match, SERVO_MATCH_POT);
+    }
 }
 
 __STATIC_INLINE
 void clip_set(uint32_t pwm)
 {
-    servo.clip_set = pwm;
+    if (servo.clip_set != pwm)
+    {
+        servo.clip_set = pwm;
+        CLEAR_BIT(servo.match, SERVO_MATCH_CLIP);
+    }
+    else
+    {
+        SET_BIT(servo.match, SERVO_MATCH_CLIP);
+    }
 }
 
 /* Enddef to prevent recursive inclusion -------------------------------------*/

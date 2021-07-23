@@ -32,7 +32,7 @@ extern CAN_HandleTypeDef hcan2;
         (ptr)->temperate = (data)[6];                             \
     } while (0)
 
-static motor_t motor_chassis[4];
+static motor_t motor_chassis[8];
 
 static CAN_TxHeaderTypeDef chassis_tx_message;
 
@@ -57,6 +57,10 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
     case CAN_ID_3508_M2:
     case CAN_ID_3508_M3:
     case CAN_ID_3508_M4:
+    case CAN_ID_3508_M5:
+    case CAN_ID_3508_M6:
+    case CAN_ID_3508_M7:
+    case CAN_ID_3508_M8:
     {
         uint32_t id = header_rx.StdId - CAN_ID_3508_M1;
         MOTOR_MEASURE(&motor_chassis[id], data_rx);
@@ -68,12 +72,17 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
     }
 }
 
-const motor_t *chassis_point(uint8_t i)
+const motor_t *defense_point(void)
 {
-    return &motor_chassis[(i & 0x07)];
+    return motor_chassis + 4;
 }
 
-void chassis_ctrl(int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4)
+const motor_t *chassis_point(int i)
+{
+    return motor_chassis + (i & 0x07);
+}
+
+void chassis_ctrl(int16_t mo1, int16_t mo2, int16_t mo3, int16_t mo4)
 {
     /* the TxMailbox used to store the Tx message */
     uint32_t send_mail_box;
@@ -86,14 +95,14 @@ void chassis_ctrl(int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4
     /* Specifies the length of the frame that will be transmitted */
     chassis_tx_message.DLC = 0x08;
 
-    chassis_tx_can_data[0] = (uint8_t)(motor1 >> 8);
-    chassis_tx_can_data[1] = (uint8_t)(motor1);
-    chassis_tx_can_data[2] = (uint8_t)(motor2 >> 8);
-    chassis_tx_can_data[3] = (uint8_t)(motor2);
-    chassis_tx_can_data[4] = (uint8_t)(motor3 >> 8);
-    chassis_tx_can_data[5] = (uint8_t)(motor3);
-    chassis_tx_can_data[6] = (uint8_t)(motor4 >> 8);
-    chassis_tx_can_data[7] = (uint8_t)(motor4);
+    chassis_tx_can_data[0] = (uint8_t)(mo1 >> 8);
+    chassis_tx_can_data[1] = (uint8_t)(mo1);
+    chassis_tx_can_data[2] = (uint8_t)(mo2 >> 8);
+    chassis_tx_can_data[3] = (uint8_t)(mo2);
+    chassis_tx_can_data[4] = (uint8_t)(mo3 >> 8);
+    chassis_tx_can_data[5] = (uint8_t)(mo3);
+    chassis_tx_can_data[6] = (uint8_t)(mo4 >> 8);
+    chassis_tx_can_data[7] = (uint8_t)(mo4);
 
     /**
      * Add a message to the first free Tx mailbox and
@@ -105,7 +114,7 @@ void chassis_ctrl(int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4
                                &send_mail_box);
 }
 
-void other_ctrl(int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4)
+void other_ctrl(int16_t mo1, int16_t mo2, int16_t mo3, int16_t mo4)
 {
     /* the TxMailbox used to store the Tx message */
     uint32_t send_mail_box;
@@ -118,14 +127,14 @@ void other_ctrl(int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4)
     /* Specifies the length of the frame that will be transmitted */
     chassis_tx_message.DLC = 0x08;
 
-    chassis_tx_can_data[0] = (uint8_t)(motor1 >> 8);
-    chassis_tx_can_data[1] = (uint8_t)(motor1);
-    chassis_tx_can_data[2] = (uint8_t)(motor2 >> 8);
-    chassis_tx_can_data[3] = (uint8_t)(motor2);
-    chassis_tx_can_data[4] = (uint8_t)(motor3 >> 8);
-    chassis_tx_can_data[5] = (uint8_t)(motor3);
-    chassis_tx_can_data[6] = (uint8_t)(motor4 >> 8);
-    chassis_tx_can_data[7] = (uint8_t)(motor4);
+    chassis_tx_can_data[0] = (uint8_t)(mo1 >> 8);
+    chassis_tx_can_data[1] = (uint8_t)(mo1);
+    chassis_tx_can_data[2] = (uint8_t)(mo2 >> 8);
+    chassis_tx_can_data[3] = (uint8_t)(mo2);
+    chassis_tx_can_data[4] = (uint8_t)(mo3 >> 8);
+    chassis_tx_can_data[5] = (uint8_t)(mo3);
+    chassis_tx_can_data[6] = (uint8_t)(mo4 >> 8);
+    chassis_tx_can_data[7] = (uint8_t)(mo4);
 
     /**
      * Add a message to the first free Tx mailbox and
