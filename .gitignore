@@ -68,4 +68,4 @@ latex
 *.lst
 MDK-ARM/DebugConfig
 MDK-ARM/*.uvguix.*
-MDK-ARM/rc2021_stm32_dr
+MDK-ARM/DR

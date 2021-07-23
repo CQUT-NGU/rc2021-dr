@@ -1,8 +1,8 @@
-include(cmake/cmake-arm-none-eabi.cmake)
+include(cmake/arm_none_eabi.cmake)
 
 cmake_minimum_required(VERSION 3.10)
 
-project(rc2021-dr-rm-c)
+project(DR)
 
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 
@@ -12,8 +12,8 @@ endif(NOT CMAKE_BUILD_TYPE)
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Og -ggdb -gdwarf-2")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Og -ggdb -gdwarf-2")
 
-include(cmake/cmake-flags.cmake)
-include(cmake-flags.cmake)
+include(cmake/check_flag.cmake)
+include(check_flag.cmake)
 add_compile_definitions(
     USE_HAL_DRIVER STM32F407xx
 )
