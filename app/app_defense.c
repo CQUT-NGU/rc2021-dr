@@ -42,29 +42,7 @@
 
 #define LIMIT_RC(x, max) ((x) > -(max) && ((x) < (max)) ? 0 : x)
 
-typedef struct
-{
-    const motor_t *fb; /* feedback */
-
-    int16_t i;   /* current value */
-    float v;     /* velocity */
-    float v_set; /* velocity set-point */
-    float accel; /* accelerated speed */
-} mo_t;
-
-typedef struct
-{
-    int aim;     //!< state of aiming
-    int jet;     //!< state of jet
-    int rotate;  //!< state of turn arrow
-
-    unsigned int jet_count;  //!< count of jet time
-    ca_pid_f32_t pid[1];     //!< motor pid
-    uint32_t tick;           //!< count of run
-    mo_t mo[1];              //!< motor pointer
-} defense_t;
-
-static defense_t defense;
+defense_t defense;
 
 __STATIC_INLINE
 void jet_left_on(void)
@@ -225,7 +203,7 @@ void task_defense(void *pvParameters)
         {
             /* 2 rps */
             value = LIMIT_RC(rc->rc.ch[RC_CH_LH], DEFENSE_RC_DEADLINE);
-            defense.mo->v_set = value * (5.0F / RC_ROCKER_MIN);
+            defense.mo->v_set = value * (4.0F / RC_ROCKER_MIN);
         }
         else
         {
@@ -306,9 +284,6 @@ void task_defense(void *pvParameters)
         }
 
         {
-            defense.mo->i = (int16_t)ca_pid_f32(defense.pid, defense.mo->v, defense.mo->v_set);
-            other_ctrl(defense.mo->i, 0, 0, 0);
-
             /* Send aiming signal */
             if (READ_BIT(defense.aim, DEFENSE_AIM_DO))
             {

@@ -26,6 +26,7 @@
 #include "app_led.h"
 #include "app_chassis.h"
 #include "app_ins.h"
+#include "app_defense.h"
 
 /* Enddef to prevent recursive inclusion -------------------------------------*/
 #endif /* __APP_H__ */

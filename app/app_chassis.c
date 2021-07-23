@@ -427,6 +427,9 @@ void task_chassis(void *pvParameters)
 
         chassis_ctrl(move.mo[0].i, move.mo[1].i, move.mo[2].i, move.mo[3].i);
 
+        defense.mo->i = (int16_t)ca_pid_f32(defense.pid, defense.mo->v, defense.mo->v_set);
+        other_ctrl(defense.mo->i, 0, 0, 0);
+
         osDelay(CHASSIS_CONTROL_TIME_MS);
     }
 }
