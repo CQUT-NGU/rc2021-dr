@@ -34,15 +34,15 @@ uint32_t pick_set_dir(int32_t offset)
 {
     if (offset < 0)
     {
-        gpio_pin_set(PICK_DIR_GPIO_Port, PICK_DIR_Pin);
         SET_BIT(step.flag, PICK_FLAG_REVERSE);
         step.cnt = (uint32_t)-offset;
+        gpio_pin_set(PICK_DIR_GPIO_Port, PICK_DIR_Pin);
     }
     else
     {
-        gpio_pin_reset(PICK_DIR_GPIO_Port, PICK_DIR_Pin);
         CLEAR_BIT(step.flag, PICK_FLAG_REVERSE);
         step.cnt = (uint32_t)offset;
+        gpio_pin_reset(PICK_DIR_GPIO_Port, PICK_DIR_Pin);
     }
 
     return step.cnt;
@@ -50,11 +50,14 @@ uint32_t pick_set_dir(int32_t offset)
 
 void pick_set_freq(uint32_t hz)
 {
+    step.fr = hz;
+
     uint32_t x = (uint32_t)ca_sqrt_u32(SystemCoreClock / hz);
+    uint32_t xh = x >> 1;
 
     __HAL_TIM_SET_PRESCALER(&PICK_TIM, x - 1);
     __HAL_TIM_SET_AUTORELOAD(&PICK_TIM, x - 1);
-    __HAL_TIM_SET_COMPARE(&PICK_TIM, PICK_CHANNEL, (x >> 1));
+    __HAL_TIM_SET_COMPARE(&PICK_TIM, PICK_CHANNEL, xh);
 }
 
 void pick_set(int32_t hz)
@@ -69,23 +72,39 @@ void pick_set(int32_t hz)
         }
         return;
     }
+    else if (READ_BIT(step.flag, PICK_FLAG_AUTO | PICK_FLAG_ZERO))
+    {
+        CLEAR_BIT(step.flag, PICK_FLAG_AUTO | PICK_FLAG_ZERO);
+
+        pick_stop();
+    }
 
     uint32_t set = pick_set_dir(hz);
+    if (step.fr != set)
+    {
+        pick_set_freq(set);
+    }
 
     if (!READ_BIT(step.flag, PICK_FLAG_RUN))
     {
         SET_BIT(step.flag, PICK_FLAG_RUN);
 
+        __HAL_TIM_DISABLE_IT(&COUNT_TIM, PICK_IT_CC);
         __HAL_TIM_ENABLE(&COUNT_TIM);
 
         HAL_TIM_PWM_Start(&PICK_TIM, PICK_CHANNEL);
     }
-
-    pick_set_freq(set);
 }
 
 void pick_zero_cli(int32_t idx)
 {
+    if (READ_BIT(step.flag, PICK_FLAG_RUN))
+    {
+        CLEAR_BIT(step.flag, PICK_FLAG_RUN);
+
+        pick_stop();
+    }
+
     if (!READ_BIT(step.flag, PICK_FLAG_ZERO))
     {
         SET_BIT(step.flag, PICK_FLAG_ZERO);
@@ -109,18 +128,16 @@ void pick_update(uint32_t inc, uint32_t cnt)
 
 void pick_index(uint32_t idx)
 {
-    step.set = idx;
-
-    if (READ_BIT(step.flag, PICK_FLAG_RUN) ||
-        READ_BIT(step.flag, PICK_FLAG_AUTO))
+    if (READ_BIT(step.flag, PICK_FLAG_RUN | PICK_FLAG_AUTO))
     {
         CLEAR_BIT(step.flag, PICK_FLAG_RUN);
 
         pick_stop();
     }
 
-    if (step.idx != step.set)
+    if (step.idx != idx)
     {
+        step.set = idx;
         int32_t delta = (int32_t)(step.set - step.idx);
         pick_start(delta);
     }
@@ -128,23 +145,25 @@ void pick_index(uint32_t idx)
 
 void pick_start(int32_t offset)
 {
-    step.fr = 0;
+    step.cnt = pick_set_dir(offset);
+    pick_set_freq(PICK_PWM_DELTA);
+
     SET_BIT(step.flag, PICK_FLAG_AUTO);
 
-    __HAL_TIM_SET_COMPARE(&COUNT_TIM, PICK_CHANNEL, pick_set_dir(offset));
+    __HAL_TIM_SET_COUNTER(&COUNT_TIM, 0);
+    __HAL_TIM_SET_COMPARE(&COUNT_TIM, PICK_CHANNEL, step.cnt);
     __HAL_TIM_ENABLE_IT(&COUNT_TIM, PICK_IT_CC);
     __HAL_TIM_ENABLE(&COUNT_TIM);
 
     HAL_TIM_PWM_Start(&PICK_TIM, PICK_CHANNEL);
-
-    pick_update(PICK_PWM_DELTA, PICK_PWM_DIVIDE);
 }
 
 void pick_stop(void)
 {
     HAL_TIM_PWM_Stop(&PICK_TIM, PICK_CHANNEL);
 
-    __HAL_TIM_DISABLE(&COUNT_TIM);
+    CLEAR_BIT(step.flag, PICK_FLAG_AUTO);
+
     step.cnt = __HAL_TIM_GET_COUNTER(&COUNT_TIM);
     __HAL_TIM_SET_COUNTER(&COUNT_TIM, 0);
     if (READ_BIT(step.flag, PICK_FLAG_REVERSE))
@@ -170,16 +189,12 @@ void COUNT_IRQHandler(void)
 
     if (READ_BIT(step.flag, PICK_FLAG_AUTO))
     {
-        CLEAR_BIT(step.flag, PICK_FLAG_AUTO);
-
         pick_stop();
     }
 
     if (READ_BIT(step.flag, PICK_FLAG_ZERO))
     {
         CLEAR_BIT(step.flag, PICK_FLAG_ZERO);
-
-        pick_stop();
 
         step.idx = 0;
         step.set = 0;

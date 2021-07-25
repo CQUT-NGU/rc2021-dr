@@ -130,8 +130,9 @@ static void chassis_update(void)
     for (uint8_t i = 0; i != 4; ++i)
     {
         /* update motor speed, accel is differential of speed PID */
-        move.mo[i].v = move.mo[i].fb->v_rpm * CHASSIS_MOTOR_RPM_TO_VECTOR_SEN;
-        move.mo[i].accel = move.pid_speed[i].x[0] - move.mo[i].v;
+        float v = move.mo[i].fb->v_rpm * CHASSIS_MOTOR_RPM_TO_VECTOR_SEN;
+        move.mo[i].accel = v - move.mo[i].v;
+        move.mo[i].v = v;
         move.mo[i].accel *= CHASSIS_CONTROL_TIME;
     }
 
@@ -427,8 +428,14 @@ void task_chassis(void *pvParameters)
 
         chassis_ctrl(move.mo[0].i, move.mo[1].i, move.mo[2].i, move.mo[3].i);
 
-        defense.mo->i = (int16_t)ca_pid_f32(defense.pid, defense.mo->v, defense.mo->v_set);
-        other_ctrl(defense.mo->i, 0, 0, 0);
+        {
+            float v = defense.mo->fb->v_rpm * DEFENSE_MOTOR_RPM_TO_VECTOR_SEN;
+            defense.mo->accel = v - defense.mo->v;
+            defense.mo->v = v;
+            defense.mo->accel *= CHASSIS_CONTROL_TIME_MS;
+            defense.mo->i = (int16_t)ca_pid_f32(defense.pid, defense.mo->v, defense.mo->v_set);
+            other_ctrl(defense.mo->i, 0, 0, 0);
+        }
 
         osDelay(CHASSIS_CONTROL_TIME_MS);
     }

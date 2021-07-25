@@ -18,9 +18,9 @@
 #define PICK_INDEX_CLI -18000
 
 #define PICK_FLAG_REVERSE (1 << 0)
-#define PICK_FLAG_AUTO    (1 << 1)
-#define PICK_FLAG_ZERO    (1 << 2)
-#define PICK_FLAG_RUN     (1 << 3)
+#define PICK_FLAG_RUN     (1 << 1)
+#define PICK_FLAG_AUTO    (1 << 2)
+#define PICK_FLAG_ZERO    (1 << 3)
 
 #define PICK_PWM_DIVIDE 320
 #define PICK_PWM_DELTA  400

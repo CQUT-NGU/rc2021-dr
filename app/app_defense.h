@@ -15,6 +15,9 @@
 
 #include "app.h"
 
+/* rpm -> n/s */
+#define DEFENSE_MOTOR_RPM_TO_VECTOR_SEN (1.0F / 60 / 19)
+
 typedef struct
 {
     const motor_t *fb; /* feedback */

@@ -31,9 +31,6 @@
 #define DEFENSE_ROTATE_NONE  (0)
 #define DEFENSE_ROTATE_STATE (1 << 0)  //!< change state
 
-/* rpm -> n/s */
-#define DEFENSE_MOTOR_RPM_TO_VECTOR_SEN (1.0F / 60 / 19)
-
 #define M3505_MOTOR_SPEED_PID_KP       16000.0F
 #define M3505_MOTOR_SPEED_PID_KI       10.0F
 #define M3505_MOTOR_SPEED_PID_KD       0.0F
@@ -146,13 +143,6 @@ void task_defense(void *pvParameters)
 
     for (;;)
     {
-        /* motor data update */
-        {
-            defense.mo->v = defense.mo->fb->v_rpm * DEFENSE_MOTOR_RPM_TO_VECTOR_SEN;
-            defense.mo->accel = defense.pid->x[0] - defense.mo->v;
-            defense.mo->accel *= DEFENSE_CONTROL_TIME;
-        }
-
         int16_t value = rc->rc.ch[RC_CH_S];
         if (value > 650)
         {
@@ -198,8 +188,7 @@ void task_defense(void *pvParameters)
             }
         }
 
-        value = rc->rc.ch[RC_CH_LV];
-        if (value < RC_ROCKER_MIN + DEFENSE_RC_DEADLINE)
+        if (rc->rc.ch[RC_CH_LV] < RC_ROCKER_MIN + DEFENSE_RC_DEADLINE)
         {
             /* 2 rps */
             value = LIMIT_RC(rc->rc.ch[RC_CH_LH], DEFENSE_RC_DEADLINE);
@@ -210,42 +199,6 @@ void task_defense(void *pvParameters)
             if (switch_is_down(rc->rc.s[RC_SW_L]) &&
                 switch_is_down(rc->rc.s[RC_SW_R]))
             {
-                value = LIMIT_RC(rc->rc.ch[RC_CH_RV], DEFENSE_RC_DEADLINE);
-                if (value > 330)
-                {
-                    const uint32_t idx = 16500;
-                    // pick_stop();
-                    clip_set_pwm(900);
-                    pick_index(idx);
-                    do
-                    {
-                        pick_update(PICK_PWM_DELTA, PICK_PWM_DIVIDE);
-                        osDelay(DEFENSE_CONTROL_TIME_MS);
-                    } while (step.idx != idx && rc->rc.ch[RC_CH_RV] > -330);
-                    osDelay(500);
-                    clip_set_pwm(1800);
-                    osDelay(500);
-                    pick_index(0);
-                    do
-                    {
-                        pick_update(PICK_PWM_DELTA, PICK_PWM_DIVIDE);
-                        osDelay(DEFENSE_CONTROL_TIME_MS);
-                    } while (step.idx != 0 && rc->rc.ch[RC_CH_RV] > -330);
-                    osDelay(1500);
-                    clip_set_pwm(900);
-                    osDelay(500);
-                    pick_index(idx);
-                    do
-                    {
-                        pick_update(PICK_PWM_DELTA, PICK_PWM_DIVIDE);
-                        osDelay(DEFENSE_CONTROL_TIME_MS);
-                    } while (step.idx != idx && rc->rc.ch[RC_CH_RV] > -330);
-                }
-                else if (value < -330)
-                {
-                    pick_zero_cli(PICK_INDEX_CLI);
-                }
-
                 value = -LIMIT_RC(rc->rc.ch[RC_CH_RH], DEFENSE_RC_DEADLINE);
                 pick_set(value * (1 << 4));  // 3200 div
 
@@ -257,6 +210,46 @@ void task_defense(void *pvParameters)
                 else
                 {
                     clip_set_pwm(1000);
+                }
+
+                value = LIMIT_RC(rc->rc.ch[RC_CH_RV], DEFENSE_RC_DEADLINE);
+                if (value > 330)
+                {
+                    const uint32_t idx = 17500;
+
+                    clip_set_pwm(900);
+                    pick_index(idx);
+                    do
+                    {
+                        pick_update(PICK_PWM_DELTA, PICK_PWM_DIVIDE);
+                        osDelay(DEFENSE_CONTROL_TIME_MS);
+                    } while (step.idx != idx);
+                    osDelay(500);
+
+                    clip_set_pwm(1800);
+                    osDelay(500);
+
+                    pick_index(0);
+                    do
+                    {
+                        pick_update(PICK_PWM_DELTA, PICK_PWM_DIVIDE);
+                        osDelay(DEFENSE_CONTROL_TIME_MS);
+                    } while (step.idx != 0);
+                    osDelay(500);
+
+                    clip_set_pwm(900);
+                    osDelay(500);
+
+                    pick_index(idx);
+                    do
+                    {
+                        pick_update(PICK_PWM_DELTA, PICK_PWM_DIVIDE);
+                        osDelay(DEFENSE_CONTROL_TIME_MS);
+                    } while (step.idx != idx);
+                }
+                else if (value < -330)
+                {
+                    pick_zero_cli(PICK_INDEX_CLI);
                 }
             }
             else if (switch_is_down(rc->rc.s[RC_SW_L]) &&
