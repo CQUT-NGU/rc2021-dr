@@ -92,7 +92,7 @@ extern float ins_angle[3]; /* euler angle, unit rad */
 // #define SWING_MOVE_ANGLE 0.31415926535897932384626433832795F
 
 /* chassis motor speed PID */
-#define M3505_MOTOR_SPEED_PID_KP       15000.0F
+#define M3505_MOTOR_SPEED_PID_KP       16000.0F
 #define M3505_MOTOR_SPEED_PID_KI       10.0F
 #define M3505_MOTOR_SPEED_PID_KD       0.0F
 #define M3505_MOTOR_SPEED_PID_MAX_OUT  MAX_MOTOR_CAN_CURRENT

@@ -17,39 +17,9 @@
 #include "app_led.h"
 
 static unsigned int song[][2] = {
-    {NOTEFREQS_G4 - 1, 50},
-    {NOTEFREQS_A4 - 1, 50},
-    {NOTEFREQS_C5 - 1, 50},
-    {0, 10},
-    {NOTEFREQS_D5 - 1, 50},
-    {0, 10},
-    {NOTEFREQS_D5 - 1, 50},
-    {0, 1},
-    {NOTEFREQS_D5 - 1, 50},
-    {0, 1},
-    {NOTEFREQS_C5 - 1, 50},
-    {0, 1},
-    {NOTEFREQS_D5 - 1, 50},
-    {0, 15},
-    {NOTEFREQS_C5 - 1, 50},
-    {0, 15},
-    {NOTEFREQS_E5 - 1, 50},
-    {0, 15},
-    {0, 50},
-    {NOTEFREQS_B4 - 1, 40},
-    {0, 10},
-    {NOTEFREQS_B4 - 1, 40},
-    {0, 10},
-    {NOTEFREQS_B4 - 1, 40},
-    {0, 10},
-    {NOTEFREQS_B4 - 1, 75},
-    {0, 15},
-    {NOTEFREQS_B4 - 1, 50},
-    {0, 25},
-    {NOTEFREQS_A4 - 1, 25},
-    {0, 25},
-    {NOTEFREQS_C5 - 1, 25},
-    {0, 25},
+    {NOTEFREQS_C4 - 1, 250},
+    {NOTEFREQS_D4 - 1, 250},
+    {NOTEFREQS_E4 - 1, 250},
 };
 
 void task_led(void *pvParameters)
@@ -63,7 +33,7 @@ void task_led(void *pvParameters)
         while (i != n)
         {
             buzzer_set(song[i][0], BUZZER_PWM_DIV2);
-            vTaskDelay((song[i][1] << 2) + song[i][1]);
+            vTaskDelay(song[i][1]);
             ++i;
         }
     }

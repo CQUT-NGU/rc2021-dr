@@ -111,8 +111,11 @@ void pick_index(uint32_t idx)
 {
     step.set = idx;
 
-    if (READ_BIT(step.flag, PICK_FLAG_AUTO))
+    if (READ_BIT(step.flag, PICK_FLAG_RUN) ||
+        READ_BIT(step.flag, PICK_FLAG_AUTO))
     {
+        CLEAR_BIT(step.flag, PICK_FLAG_RUN);
+
         pick_stop();
     }
 

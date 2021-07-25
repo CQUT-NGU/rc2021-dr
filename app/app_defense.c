@@ -34,7 +34,7 @@
 /* rpm -> n/s */
 #define DEFENSE_MOTOR_RPM_TO_VECTOR_SEN (1.0F / 60 / 19)
 
-#define M3505_MOTOR_SPEED_PID_KP       15000.0F
+#define M3505_MOTOR_SPEED_PID_KP       16000.0F
 #define M3505_MOTOR_SPEED_PID_KI       10.0F
 #define M3505_MOTOR_SPEED_PID_KD       0.0F
 #define M3505_MOTOR_SPEED_PID_MAX_OUT  MAX_MOTOR_CAN_CURRENT
@@ -203,7 +203,7 @@ void task_defense(void *pvParameters)
         {
             /* 2 rps */
             value = LIMIT_RC(rc->rc.ch[RC_CH_LH], DEFENSE_RC_DEADLINE);
-            defense.mo->v_set = value * (4.0F / RC_ROCKER_MIN);
+            defense.mo->v_set = value * (5.0F / RC_ROCKER_MIN);
         }
         else
         {
@@ -213,14 +213,15 @@ void task_defense(void *pvParameters)
                 value = LIMIT_RC(rc->rc.ch[RC_CH_RV], DEFENSE_RC_DEADLINE);
                 if (value > 330)
                 {
-                    pick_stop();
+                    const uint32_t idx = 16500;
+                    // pick_stop();
                     clip_set_pwm(900);
-                    pick_index(15500);
+                    pick_index(idx);
                     do
                     {
                         pick_update(PICK_PWM_DELTA, PICK_PWM_DIVIDE);
                         osDelay(DEFENSE_CONTROL_TIME_MS);
-                    } while (step.idx != 15500 && rc->rc.ch[RC_CH_RV] > -330);
+                    } while (step.idx != idx && rc->rc.ch[RC_CH_RV] > -330);
                     osDelay(500);
                     clip_set_pwm(1800);
                     osDelay(500);
@@ -233,12 +234,12 @@ void task_defense(void *pvParameters)
                     osDelay(1500);
                     clip_set_pwm(900);
                     osDelay(500);
-                    pick_index(15500);
+                    pick_index(idx);
                     do
                     {
                         pick_update(PICK_PWM_DELTA, PICK_PWM_DIVIDE);
                         osDelay(DEFENSE_CONTROL_TIME_MS);
-                    } while (step.idx != 15500 && rc->rc.ch[RC_CH_RV] > -330);
+                    } while (step.idx != idx && rc->rc.ch[RC_CH_RV] > -330);
                 }
                 else if (value < -330)
                 {
