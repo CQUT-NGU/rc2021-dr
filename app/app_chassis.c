@@ -163,6 +163,20 @@ static void chassis_update(void)
     move.yaw = restrict_rad_f32(move.angle_ins[ZYX_YAW]);
 }
 
+static void robot_reset(void)
+{
+    chassis_ctrl(0, 0, 0, 0);
+    other_ctrl(0, 0, 0, 0);
+
+    uint32_t pwm[2] = {
+        SERVO_PWMMID + 222,
+        900,
+    };
+    servo_start(pwm);
+
+    nvic_reset();
+}
+
 /**
  * @brief        accroding to the channel value of remote control,
  *               calculate chassis horizontal and vertical speed set-point
@@ -331,6 +345,12 @@ void task_chassis(void *pvParameters)
     {
         /* update chassis measure data */
         chassis_update();
+
+        if (switch_is_up(move.rc->rc.s[RC_SW_L]) &&
+            switch_is_up(move.rc->rc.s[RC_SW_R]))
+        {
+            robot_reset();
+        }
 
         /* chassis mode set */
         if (switch_is_mid(move.rc->rc.s[RC_SW_L]))

@@ -39,6 +39,7 @@
 #include "cmsis_os.h"
 #endif /* USED_OS */
 
+#include "bsp_nvic.h"
 #include "bsp_gpio.h"
 #include "bsp_led.h"
 #include "bsp_delay.h"
