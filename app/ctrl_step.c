@@ -89,6 +89,7 @@ void pick_set(int32_t hz)
     {
         SET_BIT(step.flag, PICK_FLAG_RUN);
 
+        __HAL_TIM_CLEAR_FLAG(&COUNT_TIM, PICK_IT_CC);
         __HAL_TIM_DISABLE_IT(&COUNT_TIM, PICK_IT_CC);
         __HAL_TIM_ENABLE(&COUNT_TIM);
 
@@ -126,7 +127,7 @@ void pick_update(uint32_t inc, uint32_t cnt)
     }
 }
 
-void pick_index(uint32_t idx)
+void pick_index(int32_t idx)
 {
     if (READ_BIT(step.flag, PICK_FLAG_RUN | PICK_FLAG_AUTO))
     {
@@ -138,8 +139,7 @@ void pick_index(uint32_t idx)
     if (step.idx != idx)
     {
         step.set = idx;
-        int32_t delta = (int32_t)(step.set - step.idx);
-        pick_start(delta);
+        pick_start(step.set - step.idx);
     }
 }
 
@@ -152,6 +152,7 @@ void pick_start(int32_t offset)
 
     __HAL_TIM_SET_COUNTER(&COUNT_TIM, 0);
     __HAL_TIM_SET_COMPARE(&COUNT_TIM, PICK_CHANNEL, step.cnt);
+    __HAL_TIM_CLEAR_FLAG(&COUNT_TIM, PICK_IT_CC);
     __HAL_TIM_ENABLE_IT(&COUNT_TIM, PICK_IT_CC);
     __HAL_TIM_ENABLE(&COUNT_TIM);
 
@@ -168,11 +169,11 @@ void pick_stop(void)
     __HAL_TIM_SET_COUNTER(&COUNT_TIM, 0);
     if (READ_BIT(step.flag, PICK_FLAG_REVERSE))
     {
-        step.idx -= step.cnt;
+        step.idx -= (int32_t)step.cnt;
     }
     else
     {
-        step.idx += step.cnt;
+        step.idx += (int32_t)step.cnt;
     }
 }
 

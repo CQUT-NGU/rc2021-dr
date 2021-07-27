@@ -215,7 +215,7 @@ void task_defense(void *pvParameters)
                 value = LIMIT_RC(rc->rc.ch[RC_CH_RV], DEFENSE_RC_DEADLINE);
                 if (value > 330)
                 {
-                    const uint32_t idx = 17500;
+                    const int32_t idx = 17500;
 
                     clip_set_pwm(900);
                     pick_index(idx);
@@ -274,7 +274,7 @@ void task_defense(void *pvParameters)
         if (serial->c == 'h')
         {
             serial->c = 0;
-            pick_index((uint32_t)serial->x);
+            pick_index((int32_t)serial->x);
         }
 
         {

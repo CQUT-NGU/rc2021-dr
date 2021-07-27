@@ -29,8 +29,8 @@ typedef struct
 {
     uint32_t fr;
     uint32_t cnt;
-    uint32_t idx;
-    uint32_t set;
+    int32_t idx;
+    int32_t set;
     int8_t flag;
 } ctrl_step_t;
 
@@ -43,7 +43,7 @@ extern void pick_set(int32_t hz);
 extern uint32_t pick_set_dir(int32_t offset);
 extern void pick_set_freq(uint32_t hz);
 extern void pick_zero_cli(int32_t idx);
-extern void pick_index(uint32_t idx);
+extern void pick_index(int32_t idx);
 extern void pick_start(int32_t offset);
 extern void pick_stop(void);
 extern void pick_update(uint32_t inc, uint32_t cnt);
